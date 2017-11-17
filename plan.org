@@ -1,0 +1,18 @@
+* timetable
+
+| w/c              | activity                                 |  % |
+|------------------+------------------------------------------+----|
+| 4/12             | formal project meeting                   |  2 |
+| 8/12             | submit risk assessments                  |    |
+| 11/12            | lit review q&a                           |    |
+| 26/1             | submit project background and lit review | 10 |
+| 26/1             | project plan                             |  5 |
+| 29/1             | project activity starts                  |    |
+| 12/3             | full time project                        |    |
+| 19/3             | formal progress interview                |  3 |
+| 26/3             | easter vacation starts                   |    |
+| 20/4             | easter vacation ends                     |    |
+| 30/4             | presentation, viva & report writing q&a  |    |
+| 14/5             | presentation & viva                      | 12 |
+| 1/6              | submit project notebook                  |  8 |
+| 1/6              | submit formal report                     | 60 |
