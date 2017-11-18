@@ -18,3 +18,39 @@
 | 36 | 1/6/18     | Submit formal report                     | 60 | joint      |
 
 (?) Week commencing. Specific date not yet given.
+
+* Literature Review
+
+** Physics
+   Understand basic physics relating to causes and effects of ENSO.
+** Prediction/Detection
+   Understand how we can use satellite imaging to: predict an incoming ENSO
+   event, and show that an ENSO event has occurred.
+** Effects of ENSO
+   Similar to above but perhaps in more details. How it affects biology, wind
+   patterns, sea currents, temperatures etc.
+*** On SE Asia / Australia / S America
+    ENSO is known to affect these regions -- how?
+*** On Europe
+    ENSO is speculated to affect this region. Some say yes there is an effect,
+    some say no there isn't. Review all arguments.
+
+* Plan
+  Will fill this in after the next couple weeks when we have a better
+  understanding of what we're dealing with.
+
+** Structure
+   The moodle documents suggest a plan structure something like
+
+*** Summary of project, objectives
+    Show that we understand the project, and have a clear idea of where we want
+    to go. End goal is probably going to be in flux for some time while we
+    review literature, come across problems.
+*** "Work packages"
+    Separate the "big idea" into smaller, manageable sub-problems. Like getting
+    the data, converting the data into something we can work with, cloud
+    removal, etc. Some units will depend on other units being finished, but try
+    and create these units so that we can work on the independently. That way we
+    can say/show that we've both worked equally and efficiently.
+*** Gannt chart
+    Diagram of the above "work packages". 
