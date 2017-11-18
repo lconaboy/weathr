@@ -1,18 +1,20 @@
 * timetable
 
-| w/c              | activity                                 |  % |
-|------------------+------------------------------------------+----|
-| 4/12             | formal project meeting                   |  2 |
-| 8/12             | submit risk assessments                  |    |
-| 11/12            | lit review q&a                           |    |
-| 26/1             | submit project background and lit review | 10 |
-| 26/1             | project plan                             |  5 |
-| 29/1             | project activity starts                  |    |
-| 12/3             | full time project                        |    |
-| 19/3             | formal progress interview                |  3 |
-| 26/3             | easter vacation starts                   |    |
-| 20/4             | easter vacation ends                     |    |
-| 30/4             | presentation, viva & report writing q&a  |    |
-| 14/5             | presentation & viva                      | 12 |
-| 1/6              | submit project notebook                  |  8 |
-| 1/6              | submit formal report                     | 60 |
+|  w | date       | activity                                 |  % | assessment |
+|----+------------+------------------------------------------+----+------------|
+| 11 | 4/12/17 ?  | Formal project meeting                   |  2 | individual |
+| 11 | 8/12/17    | Submit risk assessments                  |    |            |
+| 12 | 11/12/17 ? | Lit review q&a                           |    |            |
+| 18 | 26/1/18    | Submit project background and lit review | 10 | individual |
+| 18 | 26/1/18    | Project plan                             |  5 | joint      |
+| 19 | 29/1/18    | Project activity starts                  |    |            |
+| 25 | 12/3/18    | Full time project                        |    |            |
+| 26 | 19/3/18 ?  | Formal progress interview                |  3 | individual |
+| 27 | 26/3/18    | Easter vacation starts                   |    |            |
+| 30 | 20/4/18    | Easter vacation ends                     |    |            |
+| 32 | 30/4/18 ?  | Presentation, viva & report writing q&a  |    |            |
+| 34 | 14/5/18 ?  | Presentation & viva                      | 12 | individual |
+| 36 | 1/6/18     | Submit project notebook                  |  8 | individual |
+| 36 | 1/6/18     | Submit formal report                     | 60 | joint      |
+
+(?) Week commencing. Specific date not yet given.
