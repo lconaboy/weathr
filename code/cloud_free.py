@@ -9,15 +9,19 @@ from PIL import Image
 from skimage import filters
 
 
-def cloud_free(file_glob):
+def cloud_free(file_glob, N=100, days=30):
     """
     produces a cloud free image using Otsu's method of thresholding on each
     through a stack of images
+
+    file_glob = path to images
+    N         = number of images in histogram
+    days      = number of days in image
     """
     fnames = glob.glob(file_glob)
     # Figure out the image sizes. Assume they all have the same size as the
     # first.
-    # shape = (360, 870) # uncomment for test
+#    shape = (700, 700) # uncomment for test
     shape = Image.open(fnames[0]).size  # comment for test
     # number of images for histogram
     N = 100
@@ -32,7 +36,7 @@ def cloud_free(file_glob):
     for idx in range(0, N-1):
         print(idx, end="\r")
         tmp = np.asarray(Image.open(fnames[idx]), dtype=int)
-    #    img[:, :, idx] = tmp[940:1300, 1970:2840] # uncomment for test
+#        img[:, :, idx] = tmp[3000:3700, 1500:2200]  # uncomment for test
         img[:, :, idx] = tmp  # comment for test
 
     # use otsu thresholding on each pixel slice
@@ -47,15 +51,16 @@ def cloud_free(file_glob):
             elif filters.threshold_otsu(tmp) != 0:
                 thr[i, j] = filters.threshold_otsu(tmp)
             else:
-                thr[i, j] = filters.threshold_mean(tmp)
-
+                thr[i, j] = np.mean(tmp) + 3*np.std(tmp)
     # now define the cfi as in cloud_free.py
-    for idx, fname in enumerate(fnames[0:60]):
+    for idx in range(0, days):
         print(idx, end="\r")
         tmp = img[:, :, idx]
         loc = (tmp <= thr) & (tmp > 0)
+    #    sky = (tmp == 0)  # this method for the sky breaks it
         cfi[loc] += tmp[loc]
         gpc[loc] += 1
+    #    gpc[sky] = 1
 
     # calculate cloud free
     C = cfi//gpc
@@ -89,7 +94,6 @@ def cloud_free_test(band, N, val):
                 thr[i, j] = val
             else:
                 thr[i, j] = filters.threshold_otsu(band[i, j, :])
-
     # now define the cfi as in cloud_free.py
     for idx in range(0, val):
         print(idx, end="\r")
@@ -121,12 +125,13 @@ def test_band(lx, ly, lz, n=15, val=25):
 
     return band
 
-
-file_glob = 'code/vis8/*.jpg'
-# band = test_band(50, 50, 75, 15, 25)
-# C = cloud_free_test(band, 75, 25)
+file_glob = 'code/vis8/thirteen/*.jpg'
 C = cloud_free(file_glob)
 
+# test data
+# band = test_band(100, 100, 75, 15, 25)
+# C = cloud_free_test(band, 75, 25)
+
 plt.figure()
-plt.imshow(C, cmap='Greys')  # perhaps should use cmap='Greys_r'?
+plt.imshow(C, cmap='Greys_r')
 plt.show()
