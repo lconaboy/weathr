@@ -41,16 +41,50 @@
 
 ** Structure
    The moodle documents suggest a plan structure something like
-
 *** Summary of project, objectives
     Show that we understand the project, and have a clear idea of where we want
     to go. End goal is probably going to be in flux for some time while we
     review literature, come across problems.
-*** "Work packages"
+**** Aims
+***** TODO Connection between ENSO and European/African weather
+# This should be expanded to include more information about how we'll be
+# exploring a connection, and brief discussion of why we're doing this
+# (humanitarian aspect). Generally just be more descriptive here.
+      Show whether there exists a connection between El Nino events and
+      European/African weather. This will be investigated using satellite
+      imaging data from EUMETSAT; in particular, data for Europe and
+      Africa. Will explode cloud coverage, vegetation response, and perhaps sea
+      surface temperatures.
+
+      Additionally may explore effect on the North Atlantic Drift. This will
+      require finding appropriate data as our current data is at 0° latitude,
+      while NAD is around 52° North. Polar data? Polar ice caps?
+*** TODO "Work packages"
     Separate the "big idea" into smaller, manageable sub-problems. Like getting
     the data, converting the data into something we can work with, cloud
     removal, etc. Some units will depend on other units being finished, but try
     and create these units so that we can work on the independently. That way we
     can say/show that we've both worked equally and efficiently.
+**** Cloud coverage
+***** Collect data
+***** Produce Cloud Free Image (CFI)
+****** Investigate suitable algorithms
+******* Thresholding
+******* Otsu
+******* Multiple bands
+****** Produce false colour of CFI
+****** Seasonal CFI
+****** Variation in bands
+       Need to discuss this with Frazer
+***** Threshold satellite data using CFI
+      This determines the Cloud Coverage (CC) which is essentially the number of
+      "cloudy" pixels.
+***** Produce time-series graphs of cloud coverage
+      Since the effect may be small, analysis of a graph of CC over a year may
+      be difficult. Could instead plot the difference (residual) between a
+      non-EN year, and an EN-year, which should (hopefully) a clearer signal.
+**** TODO NDVI
+**** TODO SST
+**** TODO Ice caps
 *** Gannt chart
-    Diagram of the above "work packages". 
+    Diagram of the above "work packages".
