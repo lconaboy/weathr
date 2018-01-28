@@ -74,6 +74,8 @@
 ******* Multiple bands
 ****** Produce false colour of CFI
 ****** Seasonal CFI
+       Frazer mentioned something like producing a running 1-month long
+       CFI. This might be useful for NDVI.
 ****** Variation in bands
        Need to discuss this with Frazer
 ***** Threshold satellite data using CFI
