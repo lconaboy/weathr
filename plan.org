@@ -134,6 +134,7 @@
       + sc - sub child
 
     | work package                          | n     | start | duration | type |
+    |---------------------------------------+-------+-------+----------+------|
     | Collect data                          | 1     |     0 |        7 | p    |
     | Cloud Free Image                      | 2     |     7 |       51 | p    |
     | Investigate algorithms                | 2a    |     7 |       10 | c    |
