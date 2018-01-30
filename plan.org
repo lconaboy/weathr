@@ -68,6 +68,9 @@
     can say/show that we've both worked equally and efficiently.
 **** Cloud coverage
 ***** Collect data
+****** SOI
+       Will need Southern Oscillation Index data to overlay on CC data, to
+       compare the two. See http://www.bom.gov.au/climate/glossary/soi.shtml
 ***** Produce Cloud Free Image (CFI)
 ****** Investigate suitable algorithms
 ******* Thresholding
