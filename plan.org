@@ -90,7 +90,7 @@
       be difficult. Could instead plot the difference (residual) between a
       non-EN year, and an EN-year, which should (hopefully) a clearer signal.
 
-**** TODO NDVI
+**** DONE NDVI
 ***** Obtain cloud masks
       Use cloud coverage data to determine which pixels are ground.
 ***** Obtain land masks
@@ -119,7 +119,7 @@
 ****** North Atlantic Drift
        The North Atlantic Drift may be shuting down. We can try to observe any reported
        trends, either with our SSTs or EUMETSAT's.
-**** TODO Ice caps	
+**** DONE Ice caps	
 ***** Reduction in ice coverage at poles
       A stretch goal, only if we have plenty of time remaining.
 *** Gannt chart
