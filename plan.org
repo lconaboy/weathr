@@ -59,7 +59,8 @@
       Additionally may explore effect on the North Atlantic Drift. This will
       require finding appropriate data as our current data is at 0° latitude,
       while NAD is around 52° North. Polar data? Polar ice caps?
-*** TODO "Work packages"
+*** TODO 
+"Work packages"
     Separate the "big idea" into smaller, manageable sub-problems. Like getting
     the data, converting the data into something we can work with, cloud
     removal, etc. Some units will depend on other units being finished, but try
@@ -85,8 +86,70 @@
       Since the effect may be small, analysis of a graph of CC over a year may
       be difficult. Could instead plot the difference (residual) between a
       non-EN year, and an EN-year, which should (hopefully) a clearer signal.
+
 **** TODO NDVI
-**** TODO SST
-**** TODO Ice caps
+***** Obtain cloud masks
+      Use cloud coverage data to determine which pixels are ground.
+***** Obtain land masks
+      Mask out the land using landmask.gif, perhaps restrict area to Africa.
+***** Calculate NDVI 
+      Obtain values for ground pixels in both red and NIR bands and then use the
+      NDVI equation to calculate a value over Africa.
+***** Analyse NDVI
+      Correlate any NDVI effects with ENSO years. Also compare what we observe to
+      published results.
+
+**** DONE SST
+***** Attempt to calculate SSTs
+****** Refine cloud coverage algorithm
+       Even very thin cloud cover will have a tremendous impact on SST deltas so 
+       we need to refine the cloud removal algorithm as best as possible.
+****** Test refined algorithm
+       Need to be confident that it works, so test on mock data.
+****** Calculate short term means
+       To keep the uncertainty on SSTs low we will have to produce means on a short
+       timescale (i.e. fornightly).
+***** Compare calculated SSTs to EUMETSAT data products
+      We can find the difference between our SSTs and those produced by EUMETSAT to
+      see if they match within errors.
+***** Look for patterns
+****** North Atlantic Drift
+       The North Atlantic Drift may be shuting down. We can try to observe any reported
+       trends, either with our SSTs or EUMETSAT's.
+**** TODO Ice caps	
+***** Reduction in ice coverage at poles
+      A stretch goal, only if we have plenty of time remaining.
 *** Gannt chart
     Diagram of the above "work packages".
+    - start (day 0) is 29/1
+    - before full time (day 42) work will take slightly longer as there are other things
+      to focus on (i.e. bad boi cosmo)
+    - total time is 123 days (from 29/1 to 1/6)
+    - type:
+      + p - parent
+      + c - child
+      + sc - sub child
+
+    | work package                          | n     | start | duration | type |
+    | Collect data                          | 1     |     0 |        7 | p    |
+    | Cloud Free Image                      | 2     |     7 |       51 | p    |
+    | Investigate algorithms                | 2a    |     7 |       10 | c    |
+    | Thresholding                          | 2ai   |     7 |        2 | sc   |
+    | Otsu                                  | 2aii  |     9 |        4 | sc   |
+    | Multiband                             | 2aiii |    13 |        4 | sc   |
+    | Produce false colour CFI              | 2b    |    17 |       12 | c    |
+    | Produce seasonal CFI                  | 2c    |    29 |       12 | c    |
+    | Threshold satellite data with CFI     | 2d    |    41 |       10 | c    |
+    | Produce time-series of cloud coverage | 2e    |    51 |        7 | c    |
+    | NDVI                                  | 3     |    58 |       12 | p    |
+    | Obtain cloud and land masks           | 3a    |    58 |        3 | c    |
+    | Calculate NDVI                        | 3b    |    61 |        4 | c    |
+    | Analyse NDVI                          | 3c    |    65 |        5 | c    |
+    | SST                                   | 4     |    70 |       19 | p    |
+    | Refine cloud coverage algorithm       | 4a    |    70 |        7 | c    |
+    | Test cloud coverage algorithm         | 4b    |    77 |        4 | c    |
+    | Calculate short term means            | 4c    |    81 |        4 | c    |
+    | Look for patterns                     | 4d    |    85 |        4 | c    |
+    | Ice caps                              | 5     |    89 |       13 | p    |
+    | Report writing                        | 6     |   102 |       21 | p    |
+
