@@ -1,0 +1,95 @@
+\documentclass[12pt,preprint]{article}
+
+\usepackage[a4paper, total={7in, 9in}]{geometry}
+
+\newcommand{\elnino}[0]{\emph{El Ni\~no}}
+\newcommand{\enso}[0]{\emph{ENSO}}
+\newcommand{\workpackage}[2]{\textsc{#1} --- #2}
+
+% TODO Better title
+\title{Project Plan}
+\date{}
+
+\begin{document}
+
+\section{Statement of aims}
+
+\elnino{} is known to have significant local effects, and some
+research claims measurable distant effects in Europe and Africa. It is
+the aim of this project to investigate the causal relation -- if any ---
+between \elnino{} events upon European and African weather. We will
+use data from EUMETSAT, particularly that which focuses on Africa, and
+apply image processing techniques in order to extract useful
+information such as how cloud coverage varies over time.
+
+\section{Work packages}
+
+Work packages are presented in the order that they are expected to
+begin; i.e. generally, any given work package can depend on all those
+before it.
+
+\vspace{.1cm}
+
+\workpackage{Collect data}{We need both greyscale and multi-band data
+  for many years.}
+
+\vspace{.1cm}
+
+\workpackage{Cloud free image}{To calculate the cloud coverage, we
+  need to know how a pixel looks without cloud cover.}
+\workpackage{Investigate algorithms}{Many algorithms exist for
+  thresholding, each with benefits and negatives.}
+\workpackage{Thresholding}{Threshold images using a manually selected
+  threshold.} \workpackage{Otsu}{Otsu's method selects a threshold
+  automatically for bimodal data.} \workpackage{Multiband}{An improved
+  method uses multiple bands of any image and identifies clouds by
+  comparing peaks in all bands.} \workpackage{False colour
+  CFI}{Produce false colour CFI using the bands above.}
+\workpackage{Seasonal CFI}{Over the year, vegetation in Africa varies
+  in position. We can capture this in our CFI by producing a season
+  CFI.} \workpackage{Treshold data with CFI}{With a CFI we can
+  identify the cloud coverage by comparing each pixel in the input
+  with the corresponding pixel in the CFI with respect to a chosen
+  threshold.} \workpackage{Time-series of cloud coverage}{Make plots
+  of cloud coverage}.
+
+\vspace{.1cm}
+
+\workpackage{NDVI}{To relate any effects of \elnino{} on human life,
+  we will explore whether vegetation is affected. This is done using
+  the Normalized Difference Vegetation Index.} \workpackage{Cloud and
+  land masks}{Need to mask clouds and sea, so that we only consider
+  land.} \workpackage{Time-series of NDVI}{As with cloud coverage,
+  produce plots of NDVI to identify correlations with \elnino{}
+  events.}
+
+\vspace{.1cm}
+
+\workpackage{SST}{A main indicator of \elnino{} is anomolous increases
+  in sea surface temperatures. This is a difficult task, especially
+  considering that those temperature changes are of only a few degrees
+  celsius.} \workpackage{Improve cloud cover algorithms}{Further
+  difficulty arises with having bright clouds on bright seas. Will
+  need improved algorithms for determining cloud cover.}
+\workpackage{Seasonal means}{As with CFI above, there will be seasonal
+  variation that we would like to capture, rather than average out.}
+
+\vspace{.1cm}
+
+\workpackage{Ice caps}{Investigate the effect of \elnino{} on polar
+  ice caps. This is a stretch goal and will require supplementary data.}
+
+\vspace{.1cm}
+
+\workpackage{Report writing}{Begin writing report. Ideally we will be
+  collecting and assimilating notes while the main investigation is
+  underway, so that we are not struggling to remember points of
+  interest long after they have been found.}
+
+\vspace{.1cm}
+
+The plan is of course subject to change. There will be work packages
+that will overrun, and we may discover new avenues of research to
+investigate. In all cases, the plan will be updated accordingly.
+
+\end{document}
