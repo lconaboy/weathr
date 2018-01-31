@@ -1,6 +1,7 @@
 \documentclass[12pt,preprint]{article}
 
 \usepackage[a4paper, total={7in, 9in}]{geometry}
+\usepackage{graphicx}
 
 \newcommand{\elnino}[0]{\emph{El Ni\~no}}
 \newcommand{\enso}[0]{\emph{ENSO}}
@@ -92,4 +93,35 @@ The plan is of course subject to change. There will be work packages
 that will overrun, and we may discover new avenues of research to
 investigate. In all cases, the plan will be updated accordingly.
 
+\begin{figure}
+  \centering
+  \includegraphics[width = \textwidth]{gantt.pdf}
+  \caption{Diagram of the above work packages. Red is for a parent task, green is for a subtask and blue is for a sub-subtask. The dashed line indicates the start of full time work and the solid black line indicates the deadline.}
+\end{figure}
+
+\begin{center}
+\begin{tabular}{lr}
+Collect data & 1 \\
+Cloud Free Image & 2\\
+Investigate algorithms & 2a\\
+Thresholding & 2ai\\
+Otsu & 2aii\\
+Multiband & 2aiii\\
+Produce false colour CFI & 2b\\
+Produce seasonal CFI & 2c\\
+Threshold satellite data with CFI & 2d\\
+Produce time-series of cloud coverage & 2e\\
+NDVI & 3\\
+Obtain cloud and land masks & 3a\\
+Calculate NDVI & 3b\\
+Analyse NDVI & 3c\\
+SST & 4\\
+Refine cloud coverage algorithm & 4a\\
+Test cloud coverage algorithm & 4b\\
+Calculate short term means & 4c\\
+Look for patterns & 4d\\
+Ice caps & 5 \\
+Report writing & 6\\
+\end{tabular}
+\end{center}
 \end{document}
