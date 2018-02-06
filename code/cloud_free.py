@@ -4,12 +4,12 @@ import matplotlib
 matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
 import glob
-import time
 from PIL import Image
 from skimage import filters
+from scipy.signal import medfilt
 
 
-def cloud_free(file_glob, N=100, days=30):
+def cloud_free(file_glob, N=50, days=30):
     """
     produces a cloud free image using Otsu's method of thresholding on each
     through a stack of images
@@ -21,14 +21,12 @@ def cloud_free(file_glob, N=100, days=30):
     fnames = glob.glob(file_glob)
     # Figure out the image sizes. Assume they all have the same size as the
     # first.
-#    shape = (700, 700) # uncomment for test
+#    shape = (700, 700)  # uncomment for test
     shape = Image.open(fnames[0]).size  # comment for test
-    # number of images for histogram
-    N = 100
     # Preallocate numpy arrays for cloud-free image and ground pixel counts.
     cfi = np.zeros(shape)
     tmp = np.zeros(shape)
-    gpc = np.ones(shape)
+    gpc = np.zeros(shape)
     img = np.zeros((shape[0], shape[1],  N), dtype=int)
     thr = np.zeros(shape)
 
@@ -36,10 +34,9 @@ def cloud_free(file_glob, N=100, days=30):
     for idx in range(0, N-1):
         print(idx, end="\r")
         tmp = np.asarray(Image.open(fnames[idx]), dtype=int)
-#        img[:, :, idx] = tmp[3000:3700, 1500:2200]  # uncomment for test
+#        img[:, :, idx] = tmp[0:700, 0:700]  # uncomment for test
         img[:, :, idx] = tmp  # comment for test
 
-    # use otsu thresholding on each pixel slice
     for i in range(0, shape[0]):
         print(i, end="\r")
         for j in range(0, shape[1]):
@@ -47,21 +44,30 @@ def cloud_free(file_glob, N=100, days=30):
             # account for space pixels
             tmp = img[i, j, :]
             if tmp.min() == tmp.max():
-                thr[i, j] = tmp.min()
-            elif filters.threshold_otsu(tmp) != 0:
-                thr[i, j] = filters.threshold_otsu(tmp)
+                thr[i, j] = tmp.max()
             else:
-                thr[i, j] = np.mean(tmp) + 3*np.std(tmp)
+                ots = filters.threshold_otsu(tmp)
+                mu = np.mean(tmp)
+                sigma = np.std(tmp)
+                if ots != 0:
+                    # the otsu thresholding doesn't work too well for nir
+                    # so take average of otsu and mean for nir
+                    thr[i, j] = filters.threshold_otsu(tmp)  # comment for nir
+#                    thr[i, j] = (ots + mu + 2.5*sigma)/2  # uncomment for nir
+                else:
+                    thr[i, j] = mu + 2.5*sigma
     # now define the cfi as in cloud_free.py
     for idx in range(0, days):
         print(idx, end="\r")
         tmp = img[:, :, idx]
-        loc = (tmp <= thr) & (tmp > 0)
-    #    sky = (tmp == 0)  # this method for the sky breaks it
+        loc = (tmp <= thr)
+        sky = (tmp == 0)  # this method for the sky breaks it
         cfi[loc] += tmp[loc]
         gpc[loc] += 1
-    #    gpc[sky] = 1
-
+        # incrementing the sky pixels doesn't matter because their value
+        # is zero anyway (i.e. 0/n = 0)
+        gpc[sky] += 1
+    
     # calculate cloud free
     C = cfi//gpc
     # adjust contrast
@@ -116,6 +122,7 @@ def test_band(lx, ly, lz, n=15, val=25):
     over a background of value = val
     """
     rand_x = np.random.randint(0, lx-1, size=(n, lz))
+
     rand_y = np.random.randint(0, ly-1, size=(n, lz))
 
     band = np.ones(shape=(lx, ly, lz))*val
@@ -125,13 +132,59 @@ def test_band(lx, ly, lz, n=15, val=25):
 
     return band
 
-file_glob = 'code/vis8/thirteen/*.jpg'
+
+def false_colour(rfn, gfn, bfn):
+    """
+    rfn is the filename of the 'red' image
+    gfn, bfn ...
+    """
+    r = np.asarray(Image.open(rfn), dtype=int)
+    g = np.asarray(Image.open(gfn), dtype=int)
+    b = np.asarray(Image.open(bfn), dtype=int)
+
+    fcol = np.zeros(shape=(3712, 3712, 3))
+
+    fcol[:, :, 0] = np.mean(r[:, :, 0:3], axis=2)/255
+    fcol[:, :, 1] = np.mean(g[:, :, 0:3], axis=2)/255
+    fcol[:, :, 2] = np.mean(b[:, :, 0:3], axis=2)/255
+
+    return fcol
+
+
+file_glob = 'code/bands13/nir/*.jpg'
 C = cloud_free(file_glob)
 
-# test data
-# band = test_band(100, 100, 75, 15, 25)
-# C = cloud_free_test(band, 75, 25)
+# # test data
+# # band = test_band(100, 100, 75, 15, 25)
+# # C = cloud_free_test(band, 75, 25)
 
+# there are a few occasions where the algorithm has failed in small patches
+# to account for this we can smooth over those patches
+
+# find the empty values
+nans = np.isnan(C)
+# zero the empty values
+C_smooth = C
+C_smooth[nans] = 0
+# smooth
+print('smoothing')
+C_smooth = medfilt(C_smooth, 5)
+# replace the empty values with smoothed values
+C_final = C
+print('replacing')
+C_final[nans] = C_smooth[nans]
+
+# display the final figure
 plt.figure()
-plt.imshow(C, cmap='Greys_r')
+plt.imshow(C_final, cmap='Greys_r')
+plt.show()
+
+# produce the false colour image
+rfn = 'code/bands13/falsecol/bands13-nir-fc.jpg'
+gfn = 'code/bands13/falsecol/bands13-vis8-fc.jpg'
+bfn = 'code/bands13/falsecol/bands13-vis6-fc.jpg'
+
+falsecol = false_colour(rfn, gfn, bfn)
+plt.figure()
+plt.imshow(falsecol)
 plt.show()
