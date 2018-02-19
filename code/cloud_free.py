@@ -59,12 +59,11 @@ def cloud_free(file_glob, land_mask, N=50, days=30, rgn=[0, 3712, 0, 3712]):
                 mu = np.mean(tmp)
                 sigma = np.std(tmp)
                 if ots != 0:
-                    # the otsu thresholding doesn't work too well for nir
-                    # so take average of otsu and mean for nir
-                    thr[i, j] = filters.threshold_otsu(tmp)  # comment for nir
-#                    thr[i, j] = (ots + mu + 2.5*sigma)/2  # uncomment for nir
+                    # the otsu thresholding alone doesn't work too well for nir
+                    # so take average of otsu and mean
+                    thr[i, j] = (ots + mu + 3*sigma)/2
                 else:
-                    thr[i, j] = mu + 2.5*sigma
+                    thr[i, j] = mu + 3*sigma
 
     # now define the cfi as in cloud_free.py
     for idx in range(0, days):
@@ -77,12 +76,32 @@ def cloud_free(file_glob, land_mask, N=50, days=30, rgn=[0, 3712, 0, 3712]):
         # incrementing the sky pixels doesn't matter because their value
         # is zero anyway (i.e. 0/n = 0)
         gpc[sky] += 1
-    
+
     # calculate cloud free
     C = cfi//gpc
     # adjust contrast
     # C = C*(255/np.max(C))
-    return (C, thr)
+    # there are a few occasions where the algorithm has failed in small patches
+    # to account for this we can smooth over those patches
+
+    # find the nan
+    nans = np.isnan(C)
+    # if there are none skip the smoothing
+    if np.any(~nans):
+        C_final = C
+    else:
+        # zero the empty values
+        C_smooth = C
+        C_smooth[nans] = 0
+        # smooth
+        print('smoothing')
+        C_smooth = medfilt(C_smooth, 5)
+        # replace the empty values with smoothed values
+        C_final = C
+        print('replacing')
+        C_final[nans] = C_smooth[nans]
+
+    return (C_final, thr)
 
 
 def cloud_free_test(band, N, val):
@@ -161,43 +180,20 @@ def false_colour(rfn, gfn, bfn):
     return fcol
 
 
-file_glob = 'code/bands13/vis8/*.jpg'
+file_glob = 'code/bands13/vis6/*.jpg'
 land_mask = 'code/landmask.gif'
 # # data reduction sizes
 # rgn = [2715, 3015, 2400, 2700]  # 300x300
 rgn = [2615, 3015, 2350, 2750]  # 400x400
 vals = cloud_free(file_glob, land_mask, 50, 30, rgn)
 
-C = vals[0]
-thr = vals[1]
-
 # # test data
 # # band = test_band(100, 100, 75, 15, 25)
 # # C = cloud_free_test(band, 75, 25)
 
-# there are a few occasions where the algorithm has failed in small patches
-# to account for this we can smooth over those patches
-
-# find the nan
-nans = np.isnan(C)
-# if there are none skip the smoothing
-if np.any(~nans):
-    C_final = C
-else:
-    # zero the empty values
-    C_smooth = C
-    C_smooth[nans] = 0
-    # smooth
-    print('smoothing')
-    C_smooth = medfilt(C_smooth, 5)
-    # replace the empty values with smoothed values
-    C_final = C
-    print('replacing')
-    C_final[nans] = C_smooth[nans]
-
 # display the final figure
 plt.figure()
-plt.imshow(C_final, cmap='Greys_r')
+plt.imshow(vals[0], cmap='Greys_r')
 plt.show()
 
 # # produce the false colour image
@@ -208,5 +204,3 @@ plt.show()
 # plt.figure()
 # plt.imshow(falsecol)
 # plt.show()
-
-
