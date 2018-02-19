@@ -9,18 +9,22 @@ from skimage import filters
 from scipy.signal import medfilt
 
 
-def cloud_free(file_glob, land_mask, N=50, days=30, rgn=[0, 3712, 0, 3712]):
+def cloud_free(fnames, land_mask, rgn=[0, 3712, 0, 3712]):
     """
     produces a cloud free image using Otsu's method of thresholding on each
     through a stack of images
 
-    file_glob = path to images
+    set up for producing monthly means so N and days are given by the number
+    of filenames supplied
+
+    fnames    = glob of filenames
     land_mask = path to land mask
-    N         = number of images in histogram
-    days      = number of days in image
     rgn       = region of image to focus on [y0, y1, x0, x1]
     """
-    fnames = glob.glob(file_glob)
+
+    N = len(fnames)  # number of images for histogram
+    days = len(fnames)  # number of days for CFI
+
     # Figure out the image sizes. Assume they all have the same size as the
     # first.
 #    shape = Image.open(fnames[0]).size
@@ -36,7 +40,6 @@ def cloud_free(file_glob, land_mask, N=50, days=30, rgn=[0, 3712, 0, 3712]):
     # load the land mask
     lm = np.asarray(Image.open(land_mask), dtype=int)
     lm = lm[rgn[0]:rgn[1], rgn[2]:rgn[3]]  # reduce the size of the land mask
-    lp = np.argwhere(lm != 1)  # find land pixels
 
     # load N images to produce histograms for individual pixels
     for idx in range(0, N-1):
@@ -180,21 +183,53 @@ def false_colour(rfn, gfn, bfn):
     return fcol
 
 
-file_glob = 'code/bands13/vis6/*.jpg'
-land_mask = 'code/landmask.gif'
-# # data reduction sizes
+# data reduction sizes
 # rgn = [2715, 3015, 2400, 2700]  # 300x300
 rgn = [2615, 3015, 2350, 2750]  # 400x400
-vals = cloud_free(file_glob, land_mask, 50, 30, rgn)
+
+land_mask = 'code/landmask.gif'
+file_glob = 'code/bands13/vis6/*.jpg'
+fnames = glob.glob(file_glob)
+
+# now need to find the position of the month in the string
+# first find the length of the path without the '*.jpg'
+dir_len = len(file_glob[0:-5])
+# now it is always a fixed number of characters between the path
+# and the month
+date_pos = 15 + dir_len
+# now we can extract the month in a loop
+month = np.zeros(len(fnames), dtype=int)
+for i in range(0, len(fnames)):
+    month[i] = np.int(fnames[i][date_pos:date_pos + 2])
+
+# now we can iterate over each month by supplying the relevant fnames
+# to cloud free (use logical indexing and a loop)
+cfi = np.zeros(shape=(400, 400, max(month)))
+thr = np.zeros(shape=(400, 400, max(month)))
+fnames = np.array(fnames)
+
+for i in range(min(month), max(month)+1):
+    month_fn = fnames[month == i]
+    print(month_fn)
+    vals = cloud_free(month_fn, land_mask, rgn)
+    cfi[:, :, i-1] = vals[0]
+    thr[:, :, i-1] = vals[1]
+
+# display the final figure(s)
+# plt.figure()
+# plt.imshow(vals[0], cmap='Greys_r')
+# plt.show()
+
+for i in range(0, max(month)):
+    plt.figure()
+    plt.imshow(cfi[:, :, i], cmap='Greys_r')
+    plt.show()
+
+
 
 # # test data
 # # band = test_band(100, 100, 75, 15, 25)
 # # C = cloud_free_test(band, 75, 25)
-
-# display the final figure
-plt.figure()
-plt.imshow(vals[0], cmap='Greys_r')
-plt.show()
 
 # # produce the false colour image
 # rfn = 'code/bands13/falsecol/bands13-nir-fc.jpg'
@@ -204,3 +239,4 @@ plt.show()
 # plt.figure()
 # plt.imshow(falsecol)
 # plt.show()
+
