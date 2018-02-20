@@ -1,7 +1,5 @@
 import numpy as np
 import matplotlib
-# make figure windows active
-matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
 import glob
 from PIL import Image
