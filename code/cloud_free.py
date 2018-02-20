@@ -7,7 +7,7 @@ import glob
 from PIL import Image
 from skimage import filters
 from scipy.signal import medfilt
-
+from util import *
 
 def threshold(images):
     """Uses Otsu's method to calculate a treshold that splits a bimodal
@@ -145,42 +145,13 @@ def false_colour(rfn, gfn, bfn):
 
     return fcol
 
-rgn = [slice(2615, 3015), slice(2350, 2750)]  # 400x400
-files = glob.glob('bands13/vis6/*.jpg')
-shape = Image.open(files[0]).size
-images = np.zeros((400, 400, len(files)))
-land_mask = np.asarray(Image.open('landmask.gif'), dtype=int)[rgn[0], rgn[1]]
-for idx in np.arange(0, len(files)):
-    print('Loading file idx = {}'.format(idx), end='\r')
-    image = np.asarray(Image.open(files[idx]), dtype=int)
-    images[:, :, idx] = image[rgn[0], rgn[1]] * (1 - land_mask)
 
-thr = threshold(images)
-vals = cloud_free(images, thr)
+images_masked = load_images_with_region(glob.glob(weathr_data['vis6']),
+                                        weathr_regions['capetown'])
+
+thr = threshold(images_masked)
+vals = cloud_free(images_masked, thr)
 
 plt.figure()
 plt.imshow(vals, cmap='Greys_r')
 plt.show()
-
-
-
-
-# vals = cloud_free(file_glob, land_mask, 50, 30, rgn)
-
-# # # test data
-# # # band = test_band(100, 100, 75, 15, 25)
-# # # C = cloud_free_test(band, 75, 25)
-
-# # display the final figure
-# plt.figure()
-# plt.imshow(vals[0], cmap='Greys_r')
-# plt.show()
-
-# # # produce the false colour image
-# # rfn = 'code/bands13/falsecol/bands13-nir-fc.jpg'
-# # gfn = 'code/bands13/falsecol/bands13-vis8-fc.jpg'
-# # bfn = 'code/bands13/falsecol/bands13-vis6-fc.jpg'
-# # falsecol = false_colour(rfn, gfn, bfn)
-# # plt.figure()
-# # plt.imshow(falsecol)
-# # plt.show()
