@@ -9,99 +9,65 @@ from skimage import filters
 from scipy.signal import medfilt
 
 
-def cloud_free(file_glob, land_mask, N=50, days=30, rgn=[0, 3712, 0, 3712]):
+def threshold(images):
+    """Uses Otsu's method to calculate a treshold that splits a bimodal
+histogram. images is expected to be an 3D matrix, and the treshold
+is calculated along the third axis.
+
+Note: Applies some extra massaging of the input images when Otsu may
+fail, i.e. when the input is not bimodal. In the event that the
+histogram is not bimodal, the average is used instead. A reasonable
+fallback.
+
     """
-    produces a cloud free image using Otsu's method of thresholding on each
-    through a stack of images
+    thr = np.zeros((images.shape[0], images.shape[1]))
 
-    file_glob = path to images
-    land_mask = path to land mask
-    N         = number of images in histogram
-    days      = number of days in image
-    rgn       = region of image to focus on [y0, y1, x0, x1]
-    """
-    fnames = glob.glob(file_glob)
-    # Figure out the image sizes. Assume they all have the same size as the
-    # first.
-#    shape = Image.open(fnames[0]).size
-    shape = (rgn[1]-rgn[0], rgn[3]-rgn[2])
+    # How can this be vectorized? Give me that speed. for loops bad.
+    for i in np.arange(0, images.shape[0]):
+        for j in np.arange(0, images.shape[1]):
+            if np.any(images[i, j, :] != images[i, j, 0]):
+                ots = filters.threshold_otsu(images[i, j, :])
+                mu = np.mean(images[i, j, :])
+                std = np.std(images[i, j, :])
 
-    # Preallocate numpy arrays for cloud-free image and ground pixel counts.
-    cfi = np.zeros(shape)
-    tmp = np.zeros(shape)
-    gpc = np.zeros(shape)
-    img = np.zeros((shape[0], shape[1],  N), dtype=int)
-    thr = np.zeros(shape)
-
-    # load the land mask
-    lm = np.asarray(Image.open(land_mask), dtype=int)
-    lm = lm[rgn[0]:rgn[1], rgn[2]:rgn[3]]  # reduce the size of the land mask
-    lp = np.argwhere(lm != 1)  # find land pixels
-
-    # load N images to produce histograms for individual pixels
-    for idx in range(0, N-1):
-        print(idx, end="\r")
-        tmp = np.asarray(Image.open(fnames[idx]), dtype=int)
-        tmp = tmp[rgn[0]:rgn[1], rgn[2]:rgn[3]]  # reduce size
-        tmp[lm != 0] = 0  # use only land pixels
-        img[:, :, idx] = tmp
-
-    for i in range(0, shape[0]):
-        print(i, end="\r")
-        for j in range(0, shape[1]):
-            # otsu thresholding doesn't like single value pixels
-            # account for space pixels
-            tmp = img[i, j, :]
-            if tmp.min() == tmp.max():
-                thr[i, j] = tmp.max()
+                thr[i, j] = (ots + mu + 3*std)/2 if ots != 0 else mu + 3*std
             else:
-                ots = filters.threshold_otsu(tmp)
-                mu = np.mean(tmp)
-                sigma = np.std(tmp)
-                if ots != 0:
-                    # the otsu thresholding alone doesn't work too well for nir
-                    # so take average of otsu and mean
-                    thr[i, j] = (ots + mu + 3*sigma)/2
-                else:
-                    thr[i, j] = mu + 3*sigma
+                thr[i, j] = images[i, j, 0]
 
-    # now define the cfi as in cloud_free.py
-    for idx in range(0, days):
-        print(idx, end="\r")
-        tmp = img[:, :, idx]
-        loc = (tmp <= thr)
-        sky = (tmp == 0)  # this method for the sky breaks it
-        cfi[loc] += tmp[loc]
+    return thr
+
+
+def cloud_free(images, threshold):
+    """Returns a cloud-free image using clear pixels from images as
+determined by the given threshold. Output is an image of same shape as
+input images.
+
+    """
+    M, N, P = images.shape
+    cfi = np.zeros((M, N))
+    gpc = np.zeros((M, N))
+
+    for idx in np.arange(0, P):
+        print('Searching image {} for clear pixel'.format(idx), end='\r')
+        loc = (images[:, :, idx] <= threshold)
+        sky = (images[:, :, idx] == 0)
+        cfi[loc] += images[:, :, idx][loc]
         gpc[loc] += 1
-        # incrementing the sky pixels doesn't matter because their value
-        # is zero anyway (i.e. 0/n = 0)
         gpc[sky] += 1
 
-    # calculate cloud free
     C = cfi//gpc
-    # adjust contrast
-    # C = C*(255/np.max(C))
-    # there are a few occasions where the algorithm has failed in small patches
-    # to account for this we can smooth over those patches
 
-    # find the nan
     nans = np.isnan(C)
-    # if there are none skip the smoothing
     if np.any(~nans):
         C_final = C
     else:
-        # zero the empty values
         C_smooth = C
         C_smooth[nans] = 0
-        # smooth
-        print('smoothing')
         C_smooth = medfilt(C_smooth, 5)
-        # replace the empty values with smoothed values
         C_final = C
-        print('replacing')
         C_final[nans] = C_smooth[nans]
 
-    return (C_final, thr)
+    return C_final
 
 
 def cloud_free_test(band, N, val):
@@ -179,28 +145,42 @@ def false_colour(rfn, gfn, bfn):
 
     return fcol
 
+rgn = [slice(2615, 3015), slice(2350, 2750)]  # 400x400
+files = glob.glob('bands13/vis6/*.jpg')
+shape = Image.open(files[0]).size
+images = np.zeros((400, 400, len(files)))
+land_mask = np.asarray(Image.open('landmask.gif'), dtype=int)[rgn[0], rgn[1]]
+for idx in np.arange(0, len(files)):
+    print('Loading file idx = {}'.format(idx), end='\r')
+    image = np.asarray(Image.open(files[idx]), dtype=int)
+    images[:, :, idx] = image[rgn[0], rgn[1]] * (1 - land_mask)
 
-file_glob = 'code/bands13/vis6/*.jpg'
-land_mask = 'code/landmask.gif'
-# # data reduction sizes
-# rgn = [2715, 3015, 2400, 2700]  # 300x300
-rgn = [2615, 3015, 2350, 2750]  # 400x400
-vals = cloud_free(file_glob, land_mask, 50, 30, rgn)
+thr = threshold(images)
+vals = cloud_free(images, thr)
 
-# # test data
-# # band = test_band(100, 100, 75, 15, 25)
-# # C = cloud_free_test(band, 75, 25)
-
-# display the final figure
 plt.figure()
-plt.imshow(vals[0], cmap='Greys_r')
+plt.imshow(vals, cmap='Greys_r')
 plt.show()
 
-# # produce the false colour image
-# rfn = 'code/bands13/falsecol/bands13-nir-fc.jpg'
-# gfn = 'code/bands13/falsecol/bands13-vis8-fc.jpg'
-# bfn = 'code/bands13/falsecol/bands13-vis6-fc.jpg'
-# falsecol = false_colour(rfn, gfn, bfn)
+
+
+
+# vals = cloud_free(file_glob, land_mask, 50, 30, rgn)
+
+# # # test data
+# # # band = test_band(100, 100, 75, 15, 25)
+# # # C = cloud_free_test(band, 75, 25)
+
+# # display the final figure
 # plt.figure()
-# plt.imshow(falsecol)
+# plt.imshow(vals[0], cmap='Greys_r')
 # plt.show()
+
+# # # produce the false colour image
+# # rfn = 'code/bands13/falsecol/bands13-nir-fc.jpg'
+# # gfn = 'code/bands13/falsecol/bands13-vis8-fc.jpg'
+# # bfn = 'code/bands13/falsecol/bands13-vis6-fc.jpg'
+# # falsecol = false_colour(rfn, gfn, bfn)
+# # plt.figure()
+# # plt.imshow(falsecol)
+# # plt.show()
