@@ -146,12 +146,39 @@ def false_colour(rfn, gfn, bfn):
     return fcol
 
 
-images_masked = load_images_with_region(glob.glob(weathr_data['vis6']),
-                                        weathr_regions['capetown'])
+def sep_months(fnames):
+    months = np.zeros(len(fnames), dtype=int)
 
-thr = threshold(images_masked)
-vals = cloud_free(images_masked, thr)
+    for i in range(0, len(fnames)):
+        months[i] = int(fnames[i][-13:-11])
+
+    return months
+
+def images_monthly_masked(fnames, rgn, m=1):
+    fnames = np.array(fnames)  # have to convert to array for logic idxing
+    months = sep_months(fnames)
+    month_fn = fnames[months == m]
+    images_masked = load_images_with_region(month_fn, rgn)
+
+    return images_masked
+
+
+fnames = glob.glob(weathr_data['vis6'])
+months = sep_months(fnames)
+
+thr = np.zeros(shape=(slice_d(weathr_regions['capetown'][0]),
+                      slice_d(weathr_regions['capetown'][1]),
+                      months.shape[0]))
+vals = np.zeros(shape=(slice_d(weathr_regions['capetown'][0]),
+                       slice_d(weathr_regions['capetown'][1]),
+                       months.shape[0]))
+
+for m in range(1, max(months)+1):
+    images_masked = images_monthly_masked(fnames,
+                                          weathr_regions['capetown'], m)
+    thr[:, :, m-1] = threshold(images_masked)
+    vals[:, :, m-1] = cloud_free(images_masked, thr[:, :, m-1])
 
 plt.figure()
-plt.imshow(vals, cmap='Greys_r')
+plt.imshow(vals[:, :, 2], cmap='Greys_r')
 plt.show()
