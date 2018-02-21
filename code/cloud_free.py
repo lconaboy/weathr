@@ -7,6 +7,7 @@ from skimage import filters
 from scipy.signal import medfilt
 from util import *
 
+
 def threshold(images):
     """Uses Otsu's method to calculate a treshold that splits a bimodal
 histogram. images is expected to be an 3D matrix, and the treshold
@@ -144,30 +145,13 @@ def false_colour(rfn, gfn, bfn):
     return fcol
 
 
-def sep_months(fnames):
-    months = np.zeros(len(fnames), dtype=int)
-
-    for i in range(0, len(fnames)):
-        months[i] = int(fnames[i][-13:-11])
-
-    return months
-
-def images_monthly_masked(fnames, rgn, m=1):
-    fnames = np.array(fnames)  # have to convert to array for logic idxing
-    months = sep_months(fnames)
-    month_fn = fnames[months == m]
-    images_masked = load_images_with_region(month_fn, rgn)
-
-    return images_masked
-
-
 images_masked = load_images_with_region(glob.glob(weathr_data['vis6']),
                                         weathr_regions['capetown'])
 
 thr = threshold(images_masked)
 vals = cloud_free(images_masked, thr)
 
-savename = '_month'
+savename = '_total'
 np.save(('thr' + savename), thr)
 np.save(('vals' + savename), vals)
 
