@@ -163,12 +163,22 @@ def images_monthly_masked(fnames, rgn, m=1):
     return images_masked
 
 
-images_masked = load_images_with_region(glob.glob(weathr_data['vis6']),
-                                        weathr_regions['capetown'])
+fnames = glob.glob(weathr_data['vis6'])
+months = sep_months(fnames)
 
-thr = threshold(images_masked)
-vals = cloud_free(images_masked, thr)
+thr = np.zeros(shape=(slice_d(weathr_regions['capetown'][0]),
+                      slice_d(weathr_regions['capetown'][1]),
+                      months.shape[0]))
+vals = np.zeros(shape=(slice_d(weathr_regions['capetown'][0]),
+                       slice_d(weathr_regions['capetown'][1]),
+                       months.shape[0]))
+
+for m in range(1, max(months)+1):
+    images_masked = images_monthly_masked(fnames,
+                                          weathr_regions['capetown'], m)
+    thr[:, :, m-1] = threshold(images_masked)
+    vals[:, :, m-1] = cloud_free(images_masked, thr[:, :, m-1])
 
 plt.figure()
-plt.imshow(vals, cmap='Greys_r')
+plt.imshow(vals[:, :, j], cmap='Greys_r')
 plt.show()
