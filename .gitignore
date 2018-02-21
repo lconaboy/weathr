@@ -2,3 +2,14 @@ auto/*
 docs/*
 code/vis8/*
 .DS_Store
+code/matplotlibrc
+# This ignores emacs autosaves
+*~
+# This ignores stuff created by virtualenv
+code/bin/*
+code/share/*
+code/lib/*
+code/include/*
+# Those dumb mac dirs
+code/__MACOSX/
+code/__pycache__/
