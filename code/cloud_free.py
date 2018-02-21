@@ -169,6 +169,10 @@ images_masked = load_images_with_region(glob.glob(weathr_data['vis6']),
 thr = threshold(images_masked)
 vals = cloud_free(images_masked, thr)
 
+savename = '_month'
+np.save(('thr' + savename), thr)
+np.save(('vals' + savename), vals)
+
 plt.figure()
 plt.imshow(vals, cmap='Greys_r')
 plt.show()

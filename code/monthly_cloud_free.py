@@ -179,6 +179,10 @@ for m in range(1, max(months)+1):
     thr[:, :, m-1] = threshold(images_masked)
     vals[:, :, m-1] = cloud_free(images_masked, thr[:, :, m-1])
 
+savename = '_month'
+np.save(('thr' + savename), thr)
+np.save(('vals' + savename), vals)
+
 plt.figure()
-plt.imshow(vals[:, :, j], cmap='Greys_r')
+plt.imshow(vals[:, :, 2], cmap='Greys_r')
 plt.show()
