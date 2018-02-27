@@ -12,9 +12,11 @@ from cloud_free import threshold, cloud_free
 
 def sep_months(fnames):
     months = np.zeros(len(fnames), dtype=int)
-
+    path = path_to_weathr_data(year, band)
+    x0 = len(path[:-5]) + 28
+    x1 = x0 + 2
     for i in range(0, len(fnames)):
-        months[i] = int(fnames[i][-13:-11])
+        months[i] = int(fnames[i][x0:x1])
 
     return months
 
@@ -27,15 +29,17 @@ def images_monthly_masked(fnames, rgn, m=1):
     return images_masked
 
 
-fnames = glob.glob(weathr_data['vis6'])
+year = '08'
+band = 'vis8'
+fnames = glob.glob(path_to_weathr_data(year, band))
 months = sep_months(fnames)
 
 thr = np.zeros(shape=(slice_d(weathr_regions['capetown'][0]),
                       slice_d(weathr_regions['capetown'][1]),
-                      months.shape[0]))
+                      len(set(months))))
 vals = np.zeros(shape=(slice_d(weathr_regions['capetown'][0]),
                        slice_d(weathr_regions['capetown'][1]),
-                       months.shape[0]))
+                       len(set(months))))
 
 for m in range(1, max(months)+1):
     images_masked = images_monthly_masked(fnames,
@@ -43,9 +47,11 @@ for m in range(1, max(months)+1):
     thr[:, :, m-1] = threshold(images_masked)
     vals[:, :, m-1] = cloud_free(images_masked, thr[:, :, m-1])
 
-savename = '_month'
-np.save(('thr' + savename), thr)
-np.save(('vals' + savename), vals)
+savename = '_' + year + '_' + band
+
+np.save('thr' + savename, thr)
+np.save('vals' + savename, vals)
+
 
 plt.figure()
 plt.imshow(vals[:, :, 2], cmap='Greys_r')
