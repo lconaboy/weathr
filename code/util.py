@@ -37,6 +37,23 @@ Note: be careful, this could raise a MemoryError exception."""
     print('All files loaded...', end='\n')
     return images
 
+def path_to_weathr_data(year='08', band='vis6'):
+    path = './data/'
+    path_year = path + year +'/'
+    path_band = path_year + band +'/*.jpg'
+
+    return path_band
+
+def sep_months(fnames, year, band):
+    months = np.zeros(len(fnames), dtype=int)
+    path = path_to_weathr_data(year, band)
+    x0 = len(path[:-5]) + 28
+    x1 = x0 + 2
+    for i in range(0, len(fnames)):
+        months[i] = int(fnames[i][x0:x1])
+
+    return months
+
 
 # Our particular areas of interest. Useful for cutting down on
 # processing time, and focusing in on the action.
