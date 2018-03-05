@@ -1,0 +1,57 @@
+# -*- fill-column: 80; -*-
+#+STARTUP: indent
+* README
+** Structure of data
+Here we summarise the structure of our data. This includes data that have
+collected from EUMETSAT, and data that we have produced for our report
+(thresholds, etc).
+*** EUMETSAT
+The data we have collected up to now has been daily images in the bands NIR,
+VIS6, and VIS8, at approximately midday (Africa time). This should be enough to
+investigate the questions we are interested in.
+
+This data comes as false-color JPEG with all important information provided in
+the file names; namely, the file names include year, month, day, time. There is
+extra stuff in the file names that I'm unclear on. We should try to find some
+info on the EUMETSAT website that describes the data in the file names. In
+particular, the files look something like
+==MSG2-SEVI-MSG15-0100-NA-20081216115741.675000000Z-20081216115753-1265846.jpg=
+the first part being the instrument info; not sure what the "0100" signifies,
+and this is sometimes different depending on the image; not sure what "NA" means
+(North Africa?); after that comes the date info in the format <year
+4chars><months 2chars><day 2chars><hr 2chars><mins 2chars>, etc.; after that is
+less clear. I think it is showing the range of time where this image was
+collected. There are some pathological file names, however, for the year-08
+data. For example,
+=MSG2-SEVI-MSG15-0201-NA-20080419115739.706000000Z-20110705103115-1265846.jpg=. If
+the assumption that the dates are the range in which the image was collected,
+then this image was collected sometime between 2008 and 2011. Doesn't really
+make much sense. I wonder if this image wasn't collected at all in 2008. Maybe
+this particular date (19/04/2008) is before the satellite started working, and
+EUMETSAT is just guessing? I dunno.
+
+**** Moving data
+So that's the data we get from EUMETSAT. We move it into a slightly more
+simple format like so
+=./weathr/code/data/eumetsat/<year><month><day><hour><min>_<band>.jpg=.
+
+For safety's sake, make a backup of the old data, and make new dirs for our
+data
+#+begin_src bash
+tar cf data.tar ./data/{08,09,10,11,12,13,14,15,16,17}
+mkdir -p ./data/eumetsat/{2008,2009,2010,2011,2012,2013,2014,2015,2016,2017/{nir,vis6,vis8}
+#+end_src
+
+The following code moves all data in the year directories under =./data/= into
+=./data/eumetsat/= in the format described above. Days where there are multiple
+entries are not accounted for; only one file will win.
+#+begin_src bash :tangle data/rename_to_date.sh :shebang "#! env bash"
+for dir in {08,09,10,11,12,13,14,15,16,17}; do
+  for band in {nir,vis6,vis8}; do
+    for FILE in ./$dir/$band/*.jpg; do
+      match=$(echo $FILE | egrep -o "NA-([0-9]{12})" | cut -d '-' -f 2)
+      cp "$FILE" "./eumetsat/${match}_$band.jpg"
+    done
+  done
+done
+#+end_src
