@@ -55,3 +55,18 @@ for dir in {08,09,10,11,12,13,14,15,16,17}; do
   done
 done
 #+end_src
+
+**** Cleaning data
+ Some data contained dropouts (i.e. great big black lines across the data).
+ Conveniently, all of these files had sizes <1MB (biggest ~800KB) and all the good data had file sizes >1MB (smallest ~1.2MB) so removing all the data with file sizes below 1MB provides a quick and dutty fix to this.
+
+ First run this to find the files and check you have the right ones 
+#+begin_src bash
+find ./data/eumetsat/ -type f -size -1M
+ #+end_src
+
+ if they are correct then add -delete to remove them
+
+#+begin_src bash
+find ./data/eumetsat/ -type f -size -1M -delete
+ #+end_src
