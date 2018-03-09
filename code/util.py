@@ -4,8 +4,11 @@ always accessible when needed.
 
 """
 import glob
+import datetime
+import os
 import numpy as np
 from PIL import Image
+
 
 def slice_d(region):
     """The difference between region slice's stop and start."""
@@ -14,13 +17,16 @@ def slice_d(region):
 
     return stop - start
 
+
 def make_region(slicex=slice(None), slicey=slice(None)):
     """Makes a region with default empty slices."""
     return [slicex, slicey]
 
+
 def image_region(image, region):
     """Returns the slice of image using region."""
     return image[region[0], region[1]]
+
 
 def load_images_with_region(files, region):
     """Loads all images in files narrowed to the given region.
@@ -37,22 +43,44 @@ Note: be careful, this could raise a MemoryError exception."""
     print('All files loaded...', end='\n')
     return images
 
-def path_to_weathr_data(year='08', band='vis6'):
-    path = './data/'
-    path_year = path + year +'/'
-    path_band = path_year + band +'/*.jpg'
 
-    return path_band
+def parse_data_datetime(path, band):
+    """Takes the path (i.e. './data/eumetsat/') and returns the
+    datetime variables in  a list"""
 
-def sep_months(fnames, year, band):
-    months = np.zeros(len(fnames), dtype=int)
-    path = path_to_weathr_data(year, band)
-    x0 = len(path[:-5]) + 28
-    x1 = x0 + 2
-    for i in range(0, len(fnames)):
-        months[i] = int(fnames[i][x0:x1])
+    globbo = path + '*_' + band + '.jpg'
+    # load pathnames
+    pnames = glob.glob(globbo)
+    # load filenames
+    fnames = [os.path.splitext(os.path.basename(x))[0][0:-1-len(band)]
+              for x in pnames]
+    # parse filenames into datetime
+    dnames = [datetime.datetime.strptime(fname, '%Y%m%d%H%M')
+              for fname in fnames]
 
-    return months
+    return dnames
+
+
+def load_data_window(dnames, start, window):
+    """Takes datetime parsed names from parse_data_datetime"""
+
+    return [fname for fname in dnames if fname > (start-window/2)
+            and fname < (start+window/2)]
+
+
+def sep_months(dnames, y, m):
+    """Takes datetime parsed data and separates into month and year"""
+    idxs = [dn.month == m and dn.year == y for dn in dnames] 
+
+    return idxs
+
+
+def path_to_weathr_data(band):
+    path = './data/eumetsat/'
+    glob_path = path + '*_' + band +'.jpg'
+
+    return path, glob_path
+
 
 
 # Our particular areas of interest. Useful for cutting down on

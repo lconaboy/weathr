@@ -4,6 +4,8 @@ from PIL import Image
 from glob import glob
 from util import *
 
+"""cloud_coverage needs to be updated to use windowed data (broken in
+current format but no point fixing if it is getting updated)"""
 
 def cloud_coverage(fnames, thr):
     months = sep_months(fnames, year, band)
@@ -12,7 +14,7 @@ def cloud_coverage(fnames, thr):
 
     monthly_fraction = np.zeros(len(set(months)))
     monthly_fraction_sig = np.zeros(len(set(months)))
-    
+
     for i in range(0, len(set(months))):
         month_fn = fnames[months == i+1]
         images_masked = load_images_with_region(month_fn,
@@ -26,15 +28,15 @@ def cloud_coverage(fnames, thr):
 
         monthly_fraction[i] = np.mean(cloud_fraction)
         monthly_fraction_sig[i] = np.std(cloud_fraction)
-        
+
     return (monthly_fraction, monthly_fraction_sig)
 
 
-year = '08'
+year = 2008
 band = 'vis8'
 
 # need to convert to array for logical indexing
-fnames = np.array(glob.glob(path_to_weathr_data(year, band))) 
+fnames = np.array(glob.glob(path_to_weathr_data(band)))
 
 thr_fname = 'thr_' + year + '_' + band + '.npy'
 thr = np.load(thr_fname)
