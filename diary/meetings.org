@@ -10,5 +10,6 @@ A note of things to talk about at meetings with Frazer and maybe some notes too.
       - see if he would read over a new draft
     2. Cleaned up data
       - we have restructured the data
+    3. Weird artefacts in NDVI data
     
 *** Notes
