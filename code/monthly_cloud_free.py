@@ -13,13 +13,13 @@ from cloud_free import threshold, cloud_free
 
 def images_monthly_masked(fnames, dnames, y, m, rgn):
     fnames = np.array(fnames)  # array for logical idxing
-    idxs = sep_months(dnames, y=2008, m=1)
+    idxs = sep_months(dnames, y, m)
     images_masked = load_images_with_region(fnames[idxs], rgn)
 
     return images_masked
 
 
-y = 2008  # year of data to look at
+y = 2017  # year of data to look at
 band = 'vis8'  # band to look at
 paths = path_to_weathr_data(band)  # paths for this band
 mnths = np.arange(1,13)
@@ -40,6 +40,8 @@ for m in mnths:
     thr[:, :, m-1] = threshold(images_masked)
     vals[:, :, m-1] = cloud_free(images_masked, thr[:, :, m-1])
 
+np.save('vis8_2017_cf', vals)
+np.save('vis8_2017_thr', thr)
 
 plt.figure()
 plt.imshow(vals[:, :, 2], cmap='Greys_r')
