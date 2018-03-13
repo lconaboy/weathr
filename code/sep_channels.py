@@ -34,6 +34,6 @@ for year in years:
         image = Image.open(fnames[idx])
 
         R,G,B = image.split()
-        R.save(nir_path + fnames[idx][8::])
-        G.save(vis8_path + fnames[idx][8::])
-        B.save(vis6_path + fnames[idx][8::])
+        R.save(nir_path + fnames[idx][8::], quality=100)
+        G.save(vis8_path + fnames[idx][8::], quality=100)
+        B.save(vis6_path + fnames[idx][8::], quality=100)
