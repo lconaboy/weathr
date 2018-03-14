@@ -61,6 +61,15 @@ def parse_data_datetime(path, band):
     return dnames
 
 
+def parse_data_string(dnames, path, band):
+    """Converts datetime back to strings (i.e. fnames)"""
+    strings = [dname.strftime('%Y%m%d%H%M') for dname in dnames]
+
+    fnames = [path + string + '_' + band + '.jpg' for string in strings]
+
+    return fnames
+
+
 def load_data_window(dnames, start, window):
     """Takes datetime parsed names from parse_data_datetime"""
 
@@ -86,7 +95,8 @@ def path_to_weathr_data(band):
 # Our particular areas of interest. Useful for cutting down on
 # processing time, and focusing in on the action.
 weathr_regions = {'capetown': make_region(slice(2615, 3015), slice(2350, 2750))}
-
+\
+    
 # These are named paths/globs for data we use. We should at some point come
 # up with a better way of storing our data as it's all over the place
 # at the moment.
