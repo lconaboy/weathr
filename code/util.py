@@ -32,7 +32,7 @@ Note: be careful, this could raise a MemoryError exception."""
     for idx in np.arange(0, len(files)):
         print('Loading file {} [{}/{}]'.format(files[idx], idx+1, len(files)), end='\r')
         image = np.asarray(Image.open(files[idx]), dtype=int)
-        images[:, :, idx] = image_region(image, region) * (1 - land_mask)
+        images[:, :, idx] = image_region(image, region) * (1 - image_region(land_mask, region))
 
     print('All files loaded...', end='\n')
     return images
@@ -65,5 +65,6 @@ weathr_regions = {'capetown': make_region(slice(2615, 3015), slice(2350, 2750))}
 weathr_data = {'vis6': './bands13/vis6/*.jpg',
                'landmask': './landmask.gif'}
 
-land_mask = image_region(np.asarray(Image.open(weathr_data['landmask']), dtype=int),
-                         weathr_regions['capetown'])
+# land_mask = image_region(np.asarray(Image.open(weathr_data['landmask']), dtype=int),
+#                           weathr_regions['capetown'])
+land_mask = np.asarray(Image.open(weathr_data['landmask']), dtype=int)
