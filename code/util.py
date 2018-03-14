@@ -26,8 +26,8 @@ def load_images_with_region(files, region):
     """Loads all images in files narrowed to the given region.
 
 Note: be careful, this could raise a MemoryError exception."""
-    orig_shape = Image.open(files[0]).size
-    images = np.zeros((slice_d(region[0]), slice_d(region[1]), len(files)))
+    new_shape = image_region(np.asarray(Image.open(files[0]), dtype=int), region).shape
+    images = np.zeros((new_shape[0], new_shape[1], len(files)))
 
     for idx in np.arange(0, len(files)):
         print('Loading file {} [{}/{}]'.format(files[idx], idx+1, len(files)), end='\r')
