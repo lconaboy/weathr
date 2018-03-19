@@ -1,7 +1,7 @@
 A note of things to talk about at meetings with Frazer and maybe some notes too.
 
 * Meetings
-** Thurs 8/3/18 (emailed 6/3/18 -- ON STRIKE)
+** 
 *** Agenda
     1. Literature Review/Introduction
       - what sort of things should we be putting in?
@@ -11,5 +11,12 @@ A note of things to talk about at meetings with Frazer and maybe some notes too.
     2. Cleaned up data
       - we have restructured the data
     3. Weird artefacts in NDVI data
+    4. Is there a way to correlate NDVI and cloud coverage (i.e. +1
+       for strong correlation, 0 for no correlation, -1 for strong
+       anticorrelation). Thinking specifically of the band of
+       vegetation in central Africa, the band of cloud coverage and
+       vegetation move together.
+    5. Cloud fraction seems quite low (maybe?)
+    6. What would be the best way to quantify vegetation coverage
     
 *** Notes

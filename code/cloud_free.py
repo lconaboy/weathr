@@ -138,9 +138,28 @@ def false_colour(rfn, gfn, bfn):
 
     fcol = np.zeros(shape=(3712, 3712, 3))
 
-    fcol[:, :, 0] = np.mean(r[:, :, 0:3], axis=2)/255
-    fcol[:, :, 1] = np.mean(g[:, :, 0:3], axis=2)/255
-    fcol[:, :, 2] = np.mean(b[:, :, 0:3], axis=2)/255
+    # fcol[:, :, 0] = np.mean(r[:, :, 0:3], axis=2)/255
+    # fcol[:, :, 1] = np.mean(g[:, :, 0:3], axis=2)/255
+    # fcol[:, :, 2] = np.mean(b[:, :, 0:3], axis=2)/255
+
+    fcol[:, :, 0] = r/255
+    fcol[:, :, 1] = g/255
+    fcol[:, :, 2] = b/255
+
+    return fcol
+
+def false_colour_npy(rfn, gfn, bfn, month):
+    r = np.load(rfn)
+    g = np.load(gfn)
+    b = np.load(bfn)
+
+    br = np.max([r,g,b])
+    
+    fcol = np.zeros(shape=(r.shape[0], r.shape[1], 3))
+
+    fcol[:, :, 0] = r[:, :, month]/br
+    fcol[:, :, 1] = g[:, :, month]/br
+    fcol[:, :, 2] = b[:, :, month]/br
 
     return fcol
 
