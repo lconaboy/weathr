@@ -48,7 +48,7 @@ def parse_data_datetime(path, band):
     """Takes the path (i.e. './data/eumetsat/') and returns the
     datetime variables in  a list"""
 
-    globbo = path + '*_' + band + '.jpg'
+    globbo = path + '*_' + band + '.png'
     # load pathnames
     pnames = glob.glob(globbo)
     # load filenames
@@ -65,7 +65,7 @@ def parse_data_string(dnames, path, band):
     """Converts datetime back to strings (i.e. fnames)"""
     strings = [dname.strftime('%Y%m%d%H%M') for dname in dnames]
 
-    fnames = [path + string + '_' + band + '.jpg' for string in strings]
+    fnames = [path + string + '_' + band + '.png' for string in strings]
 
     return fnames
 
@@ -86,7 +86,7 @@ def sep_months(dnames, y, m):
 
 def path_to_weathr_data(band):
     path = './data/eumetsat/'
-    glob_path = path + '*_' + band +'.jpg'
+    glob_path = path + '*_' + band +'.png'
 
     return path, glob_path
 
