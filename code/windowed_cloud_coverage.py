@@ -32,9 +32,9 @@ def windowed_cloud_coverage(date_start, x, delta, band, thr):
     images_masked = load_images_with_region(fnames, weathr_regions['capetown'])
 
     # find number of land pixels
-    n_land_pix = np.sum(land_mask==0)
+    n_land_pix = np.sum(image_region(land_mask, weathr_regions['capetown'])==0)
     # find indices of land pixels
-    i_land_pix = land_mask == 0
+    i_land_pix = image_region(land_mask, weathr_regions['capetown']) == 0
 
     # this part is for 'windowing' the monthly thresholds
     print('Windowing thresholds')
