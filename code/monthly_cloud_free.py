@@ -55,8 +55,7 @@ for band in bands:
         
         for jdx, month in enumerate(months):
             images_masked = images_monthly_masked(fnames, dnames,
-                                    year, month,
-  weathr_regions[region])
+                                    year, month, weathr_regions[region])
             vals[:, :, jdx] = cloud_free(images_masked, thr[:, :, idx])
 
             fname = '{}_{}_{}_{}_cf'.format(year, month, band, region)
