@@ -5,7 +5,7 @@ from glob import glob
 from util import *
 import datetime
 
-def windowed_cloud_coverage(date_start, x, delta, band, thr):
+def windowed_cloud_coverage(date_start, x, delta, band, thr, region):
     # Size of window
     window_size = datetime.timedelta(days=delta)
     # Roll window by 1 day
@@ -29,12 +29,12 @@ def windowed_cloud_coverage(date_start, x, delta, band, thr):
                            band)
 
     # load the given filenames
-    images_masked = load_images_with_region(fnames, weathr_regions['capetown'])
+    images_masked = load_images_with_region(fnames, weathr_regions[region])
 
     # find number of land pixels
-    n_land_pix = np.sum(image_region(land_mask, weathr_regions['capetown'])==0)
+    n_land_pix = np.sum(image_region(land_mask, weathr_regions[region])==0)
     # find indices of land pixels
-    i_land_pix = image_region(land_mask, weathr_regions['capetown']) == 0
+    i_land_pix = image_region(land_mask, weathr_regions[region]) == 0
 
     # this part is for 'windowing' the monthly thresholds
     print('Windowing thresholds')
@@ -101,7 +101,9 @@ def windowed_cloud_coverage(date_start, x, delta, band, thr):
 
     return cloud_coverage
 
-years = (2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016)
+#years = (2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016)
+years = [2016]
+region = 'egypt'
 
 for year in years:
     # Start at Jan 01, 20xx
@@ -111,10 +113,10 @@ for year in years:
     x = 365  # try to go for x days
     delta = 30  # with a timedelta of delta
     band = 'vis8'  # select band
-    thr_string =  band + '_' + str(year) +'_thr.npy'
-    thr = np.load(thr_string)  # load monthly thresholds
+    # load monthly thresholds
+    thr = np.load('{}_{}_{}_thr.npy'.format(year, band, region))
     cloud_coverage = windowed_cloud_coverage(date_start, x, delta,
-                                             band, thr)
+                                             band, thr, region)
 
-    np.save(band + '_' + str(year) + '_cc.npy', cloud_coverage)
+    np.save('{}_{}_{}_cc'.format(year, band, region), cloud_coverage)
 
