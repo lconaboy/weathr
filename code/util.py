@@ -84,6 +84,13 @@ def sep_months(dnames, y, m):
     return idxs
 
 
+def sep_years(dnames, y):
+    """Takes datetime parsed data and separates into year"""
+    idxs = [dn.year == y for dn in dnames] 
+
+    return idxs
+
+
 def path_to_weathr_data(band):
     path = './data/eumetsat/'
     glob_path = path + '*_' + band +'.png'
@@ -97,7 +104,8 @@ def path_to_weathr_data(band):
 weathr_regions = {
     'all': make_region(),
     'africa': make_region(slice(620, 3020), slice(1260, 3000)),
-    'capetown': make_region(slice(2615, 3015), slice(2350, 2750))}
+    'capetown': make_region(slice(2615, 3015), slice(2350, 2750)),
+    'egypt': make_region(slice(800,900), slice(2725, 2825))}
 
 # These are named paths/globs for data we use. We should at some point come
 # up with a better way of storing our data as it's all over the place
