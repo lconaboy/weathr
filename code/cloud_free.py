@@ -8,7 +8,7 @@ from scipy.signal import medfilt
 from util import *
 
 
-def threshold(images):
+def variable_threshold(images):
     """Uses Otsu's method to calculate a treshold that splits a bimodal
 histogram. images is expected to be an 3D matrix, and the treshold
 is calculated along the third axis.
@@ -35,6 +35,30 @@ fallback.
 
     return thr
 
+
+def threshold(images):
+    """Uses Otsu's method to calculate a treshold that splits a bimodal
+histogram. images is expected to be an 3D matrix, and the treshold
+is calculated along the third axis.
+
+Note: Applies some extra massaging of the input images when Otsu may
+fail, i.e. when the input is not bimodal. In the event that the
+histogram is not bimodal, the average is used instead. A reasonable
+fallback.
+
+    """
+    thr = np.zeros((images.shape[0], images.shape[1]))
+
+    # How can this be vectorized? Give me that speed. for loops bad.
+    for i in np.arange(0, images.shape[0]):
+        for j in np.arange(0, images.shape[1]):
+            if np.any(images[i, j, :] != images[i, j, 0]):
+                ots = filters.threshold_otsu(images[i, j, :])
+                thr[i, j] = ots
+            else:
+                thr[i, j] = images[i, j, 0]
+
+    return thr
 
 def cloud_free(images, threshold):
     """Returns a cloud-free image using clear pixels from images as
