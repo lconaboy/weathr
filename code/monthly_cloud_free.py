@@ -19,29 +19,45 @@ def images_monthly_masked(fnames, dnames, y, m, rgn):
     return images_masked
 
 
-y = 2014  # year of data to look at
+def images_yearly_masked(fnames, dnames, y, rgn):
+    fnames = np.array(fnames)  # array for logical idxing
+    idxs = sep_years(dnames, y)
+    images_masked = load_images_with_region(fnames[idxs], rgn)
+
+    return images_masked
+
+
+years = (2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2016)  # year of data to look at
 bands = ('vis6', 'vis8', 'nir')  # band to look at
+region = 'capetown'
 
 for band in bands:
     paths = path_to_weathr_data(band)  # paths for this band
-    mnths = np.arange(1,13)
+    months = np.arange(1,13)
 
     dnames = parse_data_datetime(paths[0], band)  # datetime parsed filenames
     fnames = glob.glob(paths[1])  # filenames
 
-    thr = np.zeros(shape=(slice_d(weathr_regions['capetown'][0]),
-                          slice_d(weathr_regions['capetown'][1]),
-                          len(mnths)))
-    vals = np.zeros(shape=(slice_d(weathr_regions['capetown'][0]),
-                           slice_d(weathr_regions['capetown'][1]),
-                           len(mnths)))
+    thr = np.zeros(shape=(slice_d(weathr_regions[region][0]),
+                          slice_d(weathr_regions[region][1]),
+                          len(years)))
+    vals = np.zeros(shape=(slice_d(weathr_regions[region][0]),
+                           slice_d(weathr_regions[region][1]),
+                           len(months)))
 
-    for m in mnths:
-        images_masked = images_monthly_masked(fnames, dnames, y, m,
-                                              weathr_regions['capetown'])
-        thr[:, :, m-1] = threshold(images_masked)
-        vals[:, :, m-1] = cloud_free(images_masked, thr[:, :, m-1])
+    for idx, year in enumerate(years):
+        images_masked = images_yearly_masked(fnames, dnames, year,
+                                             weathr_regions[region])
+        thr[:, :, idx] = threshold(images_masked)
 
-        fname = band + '_' + str(y) + '_' +'pingu'
-        np.save(fname + 'cf', vals)
-        np.save(fname + 'thr', thr)
+        fname = '{}_{}_{}_thr'.format(year, band, region)
+        np.save(fname, thr)
+        
+        for jdx, month in enumerate(months):
+            images_masked = images_monthly_masked(fnames, dnames,
+                                    year, month,
+  weathr_regions[region])
+            vals[:, :, jdx] = cloud_free(images_masked, thr[:, :, idx])
+
+            fname = '{}_{}_{}_{}_cf'.format(year, month, band, region)
+            np.save(fname, vals)
