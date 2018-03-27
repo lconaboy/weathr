@@ -1,6 +1,7 @@
 auto/*
 docs/*
 code/vis8/*
+*.npy
 .DS_Store
 code/matplotlibrc
 # This ignores emacs autosaves
