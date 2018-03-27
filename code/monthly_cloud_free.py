@@ -26,8 +26,8 @@ def images_yearly_masked(fnames, dnames, y, rgn):
 
     return images_masked
 
-
-years = (2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2016)  # year of data to look at
+# year of data to look at
+years = [2017]
 bands = ('vis6', 'vis8', 'nir')  # band to look at
 region = 'capetown'
 
@@ -48,15 +48,15 @@ for band in bands:
     for idx, year in enumerate(years):
         images_masked = images_yearly_masked(fnames, dnames, year,
                                              weathr_regions[region])
-        thr[:, :, idx] = threshold(images_masked)
+        thr = threshold(images_masked)
 
         fname = '{}_{}_{}_thr'.format(year, band, region)
         np.save(fname, thr)
         
-        for jdx, month in enumerate(months):
-            images_masked = images_monthly_masked(fnames, dnames,
-                                    year, month, weathr_regions[region])
-            vals[:, :, jdx] = cloud_free(images_masked, thr[:, :, idx])
+        # for jdx, month in enumerate(months):
+        #     images_masked = images_monthly_masked(fnames, dnames,
+        #                             year, month, weathr_regions[region])
+        #     vals[:, :, jdx] = cloud_free(images_masked, thr[:, :, idx])
 
-            fname = '{}_{}_{}_{}_cf'.format(year, month, band, region)
-            np.save(fname, vals)
+        #     fname = '{}_{}_{}_{}_cf'.format(year, month, band, region)
+        #     np.save(fname, vals)
