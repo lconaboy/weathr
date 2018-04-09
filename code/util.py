@@ -105,7 +105,8 @@ weathr_regions = {
     'all': make_region(),
     'africa': make_region(slice(620, 3020), slice(1260, 3000)),
     'capetown': make_region(slice(2615, 3015), slice(2350, 2750)),
-    'egypt': make_region(slice(800,900), slice(2725, 2825))}
+    'egypt': make_region(slice(800,900), slice(2725, 2825)),
+    'eastafrica': make_region(slice(1500, 1800), slice(3000, 3300))}
 
 # These are named paths/globs for data we use. We should at some point come
 # up with a better way of storing our data as it's all over the place
