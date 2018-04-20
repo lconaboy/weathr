@@ -2,7 +2,7 @@ import datetime
 import calendar
 import numpy as np
 import matplotlib.pyplot as plt
-from scipy import optimize
+from scipy import optimize, stats
 
 def add_month(start):
     date = start
@@ -93,7 +93,7 @@ def consecutive_anomalies(nino):
 
 start = datetime.datetime.strptime('200901','%Y%M')
 end = datetime.datetime.strptime('201801', '%Y%M')
-region = 'eastafrica'
+region = 'capetown'
 
 # now to calculate means for EN/LN/neither years from table
 # load el nino years
@@ -173,13 +173,13 @@ cloud_masks = [np.mean(load_seasonal(s, region, 0), axis=0) for s in seasons]
 titles = ['ALL', 'EN', 'LN', 'NEUTRAL']
 
 ### cloud masks
-fig, axes = plt.subplots(2, 2)
-for idx, ax in enumerate(axes.flat):
-    im = ax.imshow(cloud_masks[idx])
-    ax.set_title(titles[idx])
-    ax.axis('off')
-fig.colorbar(im, ax=axes.ravel().tolist())
-# # plt.show()
+# fig, axes = plt.subplots(2, 2)
+# for idx, ax in enumerate(axes.flat):
+#     im = ax.imshow(cloud_masks[idx])
+#     ax.set_title(titles[idx])
+#     ax.axis('off')
+# fig.colorbar(im, ax=axes.ravel().tolist())
+# plt.show()
 
 cloud_frac = [load_seasonal(s, region, 1) for s in seasons]
 seas_frac = np.zeros(shape=(len(cloud_frac), 2))
@@ -216,82 +216,69 @@ def harmonic_anomalies(year, region):
 
     return en_diff
 
+T = 24  # period in months
+def sine_wave(x, a, T=T):
+    return a*np.sin((2*np.pi/T)*x)
 
-def sine_wave(x, a, b):
-    return a*np.sin(b*x)
+
+# for evaluating goodness of fit
+def r_squared(obs_vals, fit_vals):
+    
+
 
 en_diff = harmonic_anomalies(2015, region)
 ln_diff = harmonic_anomalies(2011, region)
 neu_diff = harmonic_anomalies(2013, region)
 
+diffs = [en_diff, ln_diff, neu_diff]
+
+titles = ['2015 El Nino', '2011 La Nina',
+          '2013 Neutral']
+
 xvals = np.arange(0, len(en_diff))
 labels = ['J', 'A', 'S', 'O', 'N', 'D', 'J', 'F', 'M', 'A', 'M', 'J',
           'J', 'A', 'S', 'O', 'N', 'D', 'J', 'F', 'M', 'A', 'M', 'J']
-p0 = [0.05,1/4]  # initial guess
+p0 = [0.05]  # initial guess
 
 ylims = (-0.2, 0.2)  # force all axes to have same y limits
 
 plt.figure(figsize=(9, 6))
-plt.subplot(2, 2, 1)
-en_params, params_covariance = optimize.curve_fit(sine_wave, xvals, en_diff, p0)
-plt.step(xvals, en_diff, color='k')
-plt.plot(xvals, sine_wave(xvals, en_params[0], en_params[1]), color='k')
-plt.ylabel(r'$x-\mu$')
-plt.xlabel('Month')
-plt.title('2015 El Nino (Eastern Africa)')
-plt.axvline(6, color='k', linestyle='dashed')
-plt.axvline(18, color='k', linestyle='dashed')
-plt.ylim(ylim)
-plt.xticks(np.arange(24))
-ax = plt.gca()
-ax.set_xticklabels(labels)
-ax.tick_params(axis='x',which='minor',bottom='off', top='off')
 
-plt.subplot(2, 2, 2)
-ln_params, params_covariance = optimize.curve_fit(sine_wave, xvals, ln_diff, p0)
-plt.step(xvals, ln_diff, color='k')
-plt.plot(xvals, sine_wave(xvals, ln_params[0], ln_params[1]), color='k')
-plt.ylabel(r'$x-\mu$')
-plt.xlabel('Month')
-plt.title('2011 La Nina (Eastern Africa)')
-plt.axvline(6, color='k', linestyle='dashed')
-plt.axvline(18, color='k', linestyle='dashed')
-plt.ylim(ylims)
-plt.xticks(np.arange(24))
-ax = plt.gca()
-ax.set_xticklabels(labels)
-ax.tick_params(axis='x',which='minor',bottom='off', top='off')
+for idx, diff in enumerate(diffs):
+    plt.subplot(2, 2, idx+1)
+    params, params_covariance = optimize.curve_fit(sine_wave, xvals, diff, p0)
+    chi, p = stats.chisquare(diff, sine_wave(xvals, params[0]))
+    plt.step(xvals, diff, color='k', label='_nolegend_')
+    plt.plot(xvals, sine_wave(xvals, params[0]), color='k')
+    plt.ylabel(r'$x-\mu$')
+    plt.xlabel('Month')
+    plt.title(titles[idx])
+    plt.axvline(6, color='k', linestyle='dashed')
+    plt.axvline(18, color='k', linestyle='dashed')
+    plt.ylim(ylims)
+    plt.legend([r'$\chi ^2 = {}$'.format(chi)])
+    plt.xticks(np.arange(24))
+    ax = plt.gca()
+    ax.set_xticklabels(labels)
+    ax.tick_params(axis='x',which='minor',bottom='off', top='off')
+    plt.tight_layout()
+plt.suptitle(r'{}, $T={}$'.format(region, T) )
 
-plt.subplot(2, 2, 3)
-neu_params, params_covariance = optimize.curve_fit(sine_wave, xvals, neu_diff, p0)
-plt.step(xvals, neu_diff, color='k')
-plt.plot(xvals, sine_wave(xvals, neu_params[0], neu_params[1]), color='k')
-plt.ylabel(r'$x-\mu$')
-plt.xlabel('Month')
-plt.title('2013 Neutral (Eastern Africa)')
-plt.axvline(6, color='k', linestyle='dashed')
-plt.axvline(18, color='k', linestyle='dashed')
-plt.ylim(ylim)
-plt.xticks(np.arange(24))
-ax = plt.gca()
-ax.set_xticklabels(labels)
-ax.tick_params(axis='x',which='minor',bottom='off', top='off')
+# plt.subplot(2, 2, 4)
+# xvals1 = np.arange(12)
+# p0 = [0.2,1/2]
+# plt.step(xvals1, total_mean_frac, color='k')
+# plt.ylabel(r'$\mu$')
+# plt.xlabel('Month')
+# plt.title('Mean (Eastern Africa)')
+# plt.xticks(xvals1)
+# ax = plt.gca()
+# ax.set_xticklabels(labels[6:18])
+# ax.tick_params(axis='x',which='minor',bottom='off', top='off')
+# x0,x1 = ax.get_xlim()
+# y0,y1 = ax.get_ylim()
+# ax.set_aspect((x1-x0)/(y1-y0))
+# plt.tight_layout()
 
-plt.subplot(2, 2, 4)
-xvals1 = np.arange(12)
-p0 = [0.2,1/2]
-plt.step(xvals1, total_mean_frac, color='k')
-plt.ylabel(r'$\mu$')
-plt.xlabel('Month')
-plt.title('Mean (Eastern Africa)')
-plt.xticks(xvals1)
-ax = plt.gca()
-ax.set_xticklabels(labels[6:18])
-ax.tick_params(axis='x',which='minor',bottom='off', top='off')
-x0,x1 = ax.get_xlim()
-y0,y1 = ax.get_ylim()
-ax.set_aspect((x1-x0)/(y1-y0))
-plt.tight_layout()
-
-plt.savefig('ea_harmonicdiffs_vmean')
+plt.savefig('{}_cfanom_{}m'.format(region, T))
 plt.show()
