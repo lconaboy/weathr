@@ -289,6 +289,28 @@ def x_labels(period):
         return None
 
 
+def plot_three_errorbars(data, data_err, ylims, ylabel, xlabel, save=False):
+    fig, axes = plt.subplots(1, 3, sharex=True, sharey=True, figsize=(12, 4))
+    titles = ['EN', 'LN', 'Neither']
+    for i in range(0,3):
+        ax = axes.ravel()[i]
+        ax.errorbar(np.arange(12), data[:, i], data_err[:, i])
+        ax.set_ylim(ylims)
+        ax.set_title(titles[i])
+        ax.set_ylabel(ylabel)
+   
+    x_labels(xlabel)
+    plt.tight_layout()
+
+    if not save:
+        plt.show()
+        return None
+    else:
+        fn = input('Enter filename for plot ')
+        plt.savefig(fn)
+        plt.show()
+        return None
+
 
 # start = datetime.datetime.strptime('200901','%Y%M')
 # end = datetime.datetime.strptime('201801', '%Y%M')
