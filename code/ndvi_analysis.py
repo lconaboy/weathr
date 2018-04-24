@@ -5,10 +5,10 @@ from ndvi import *
 import os
 import glob
 
-output_dir = 'results/ndvi/'
+ndvi_dir = 'results/ndvi/'
 # yearmonth_region.png
 # e.g. 201708_capetown.png
-output_fmt = '{}{}_{}'
+ndvi_fmt = '{}{}_{}'
 
 threshold_dir = 'data/thr/'
 # region_year_band_thr.npy
@@ -16,20 +16,8 @@ threshold_dir = 'data/thr/'
 threshold_fmt = '{}_{}_{}_thr.npy'
 
 def ndvi_for_year_and_region(year, region):
-    # Produce standard plots for each month of given year.
-
-    # # Try to load threshold according to threshold_fmt; if it doesn't
-    # # exist, then we'll generate it.
-    # threshold_path = {'vis6': threshold_dir + threshold_fmt.format(region, year, 'vis6'),
-    #                   'vis8': threshold_dir + threshold_fmt.format(region, year, 'vis8')}
-    # threshold = {}
-    # for band, path in threshold_path.items():
-    #     if os.path.isfile(path):
-    #         threshold[band: np.load(path)]
-    #     else:
-    #         threshold[band: cf.threshold(
-    #             load_images_with_region(glob.glob("./data/eumetsa")))]
-
+    """Calculates NDVI for every month in given year and region. Output is
+saved as numpy array into configured threshold_dir and threshold_fmt."""
     # Assume that thresholds exist.
     thresholds = {band: np.load(threshold_dir + threshold_fmt.format(region, year, band))
                   for band in ('vis6', 'vis8')}
@@ -52,7 +40,7 @@ def ndvi_for_year_and_region(year, region):
         vis_avg_cal *= (1 - image_region(land_mask, weathr_regions[region]))
 
         ndvi_month = ndvi(nir_avg_cal, vis_avg_cal)
-        np.save(output_dir + output_fmt.format(year, m, region), ndvi_month)
+        np.save(ndvi_dir + ndvi_fmt.format(year, m, region), ndvi_month)
 
     return None
 
