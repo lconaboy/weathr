@@ -44,7 +44,6 @@ saved as numpy array into configured threshold_dir and threshold_fmt."""
 
     return None
 
-for year in np.arange(2009, 2018):
 def calibration_comparison(year, month, region):
     # Try load NDVI data
     ndvi_uncal = np.load(ndvi_dir + ndvi_fmt.format(year, month, region) + "_uncalibrated.npy")
@@ -66,6 +65,23 @@ def calibration_comparison(year, month, region):
     plt.savefig('calibration_comparision.pdf')
 
     return None
-    for region in ('capetown', 'eastafrica'):
-        print('Producing NDVI data for {} {}'.format(region, year))
-        ndvi_for_year_and_region(year, region)
+
+ndvi_monthly_means_fmt = 'monthly_means_{}.npy'
+def ndvi_monthly_means(region):
+    """Calculate monthly means for region."""
+    mask = (1 - image_region(land_mask, weathr_regions[region])).astype(bool)
+
+    avg = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    for i in np.arange(1, 13):
+        m = '{:02d}'.format(i) # pad with zero
+        f = np.dstack([np.load(fname) for fname in glob.glob(ndvi_dir + ndvi_fmt.format('*', m, region) + '.npy')])
+        avg[i - 1] = np.mean(np.max(f, axis=2)[mask])
+
+    np.save(ndvi_monthly_means_fmt.format(region), avg)
+    return avg
+
+# e.g usage
+# for year in np.arange(2013, 2018):
+#     for region in ('capetown', 'eastafrica'):
+#         print('Producing NDVI data for {} {}'.format(region, year))
+#         ndvi_for_year_and_region(year, region)
