@@ -1,0 +1,24 @@
+col and row are calculated for the case where furthest southern and
+eastern pixel is (0,0), i.e. by subtracting the slice values from 3712
+
+'capetown'
+top left:	lat=  -21.5005147555444
+    		lon=   14.7283752236762
+		col=        1362
+		row=        1097
+		
+bottom right: 	lat=  -35.6591821839962
+       		lon=   33.1927778372229
+		col=         962
+		row=         697
+
+'eastafrica'
+top left:	lat=   10.0854865832772
+    		lon=   34.5182148056909
+		col=         712
+		row=        2212
+
+bottom right:	lat=    1.6146877349319
+       		lon=   46.0706902333863
+		col=         412
+		row=        1912 
