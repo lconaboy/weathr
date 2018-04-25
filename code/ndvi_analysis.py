@@ -63,7 +63,7 @@ def calibration_comparison(year, month, region):
     f.subplots_adjust(right=0.8)
     cb_ax = f.add_axes([0.85, 0.15, 0.05, 0.7])
     f.colorbar(plot2, cax=cb_ax)
-    plt.savefig('test.pdf')
+    plt.savefig('calibration_comparision.pdf')
 
     return None
     for region in ('capetown', 'eastafrica'):
