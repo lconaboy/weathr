@@ -4,6 +4,7 @@ from util import *
 from ndvi import *
 import os
 import glob
+import matplotlib.pyplot as plt
 
 ndvi_dir = 'results/ndvi/'
 # yearmonth_region.png
@@ -66,7 +67,7 @@ def calibration_comparison(year, month, region):
 
     return None
 
-ndvi_monthly_means_fmt = 'monthly_means_{}.npy'
+ndvi_monthly_means_fmt = 'monthly_means_{}'
 def ndvi_monthly_means(region):
     """Calculate monthly means for region."""
     mask = (1 - image_region(land_mask, weathr_regions[region])).astype(bool)
@@ -75,10 +76,32 @@ def ndvi_monthly_means(region):
     for i in np.arange(1, 13):
         m = '{:02d}'.format(i) # pad with zero
         f = np.dstack([np.load(fname) for fname in glob.glob(ndvi_dir + ndvi_fmt.format('*', m, region) + '.npy')])
-        avg[i - 1] = np.mean(np.max(f, axis=2)[mask])
+        avg[i - 1] = np.mean(f[mask])
 
-    np.save(ndvi_monthly_means_fmt.format(region), avg)
     return avg
+
+def plot_ndvi_monthly_and_means(region):
+    mask = (1 - image_region(land_mask, weathr_regions[region])).astype(bool)
+    path = ndvi_dir + ndvi_fmt
+
+    avgs = ndvi_monthly_means(region)
+
+    fnames = sorted(glob.glob(ndvi_dir + ndvi_fmt.format('*', '*', region) + '.npy'))
+    monthlys = np.dstack([np.mean(np.load(fname)[mask]) for fname in fnames]).ravel()
+
+    plt.figure(figsize=(10.5,6))
+    plt.bar(np.arange(len(monthlys)), monthlys, label='Monthly NDVI')
+    plt.plot(np.tile(avgs, 10), c='r', label='Average monthly NDVI for whole dataset')
+    plt.ylim([0.2, np.max(monthlys) + 0.005])
+    plt.xlim(0, len(monthlys))
+    plt.xticks(np.arange(0, 10)*12, np.arange(2008, 2018), rotation=45)
+    plt.title('NDVI for Capetown 2008-2018')
+    plt.xlabel('Month')
+    plt.ylabel('NDVI')
+    plt.legend()
+    plt.savefig('ndvi_monthly_and_means.png')
+
+    return None
 
 # e.g usage
 # for year in np.arange(2013, 2018):
