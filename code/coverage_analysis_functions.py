@@ -106,7 +106,7 @@ def consecutive_anomalies(nino):
 
     ln_idxs = (ln_anom + ln_anom_rev) >= 6
 
-    return [years, season3, en_idxs, ln_idxs]
+    return [years, season3, en_idxs, ln_idxs, nino3]
 
 
 def load_month_from_anoms(month, year, region):
@@ -239,7 +239,30 @@ def yearly_mean_from_tmm(tmm, anoms):
     return [val, err]
 
 
-def absolute_diffs(stacked, yearly_mean):
+def absolute_diffs(tmm, yearly_mean):
+    """For calculating the difference between a tmm value (continuously) and the
+mean. Need to add in errors"""
+    diffs = np.zeros(len(tmm[2]))
+    for i in range(len(tmm[2])):
+        diffs[i] = tmm[2][i] - yearly_mean[0][tmm[1][i] - 1]
+
+    return [tmm[0], tmm[1], diffs]
+
+
+def relative_anomalies(tmm, yearly_mean):
+    """For calculating the anomaly of a tmm value (continuously) relative
+to the mean. Need to add in errors"""
+    rels = np.zeros(len(tmm[2]))
+    for i in range(len(tmm[2])):
+        rels[i] = (tmm[2][i] -
+                   yearly_mean[0][int(tmm[1][i])-1])/yearly_mean[0][int(tmm[1][i])-1]
+
+    return [tmm[0], tmm[1], rels]
+
+    
+def stacked_absolute_diffs(stacked, yearly_mean):
+    """For calculating the difference between a tmm value and stacking by
+month and event."""
     diffs = np.zeros(shape=(12, 3))
     diffs_err = np.zeros(shape=(12, 3))
     for i in range(0, 3):
@@ -251,7 +274,10 @@ def absolute_diffs(stacked, yearly_mean):
     return [diffs, diffs_err]
 
 
-def abs_to_rel(diffs, yearly_mean):
+def stacked_abs_to_rel(diffs, yearly_mean):
+    """Converts (stacked) absolute differences to relative anomalies,
+using the mean of all the data as a baseline
+    """
     rel = np.zeros(shape=(12, 3))
     rel_err = np.zeros(shape=(12, 3))
     for i in range(0, 3):
@@ -312,6 +338,43 @@ def plot_three_errorbars(data, data_err, ylims, ylabel, xlabel, save=False):
         return None
 
 
+def rainfall_three_monthly_means(data, start, end):
+    # now calculate tmm
+    date = start
+    idx = np.argwhere((data[:, 0] == date.year)&(data[:, 1] == date.month)).ravel()
+    c = 0
+    years = []
+    months = []
+    vals = []
+    while date < end:
+        vals.append(np.mean(data[[idx+c-1, idx + c, idx+c+1], 2]))
+        years.append(date.year)
+        months.append(date.month)
+        date = add_month(date)
+        c += 1
+
+    return np.array([years, months, vals])
+
+
+def reduce_to_shorter_range(short_data, long_data):
+    """Reduces long range data to shorter range data (i.e. rainfall data are only available up to 2015) for producing correclations. Returns indexes of larger array to use."""
+    idxs = np.zeros(short_data.shape[1])
+    for n in range(0, short_data.shape[1]):
+        idxs[n] = np.argwhere(((long_data[0] == short_data[0, n])&
+                               (long_data[1] == short_data[1, n])).ravel())
+
+    return idxs.astype(int)
+
+
+def rainfall_monthly_means(data):
+    mean_rf = np.zeros(12)
+    sig_rf = np.zeros(12)
+    for m in range(1, 13):
+        idxs = np.argwhere(data[:, 1] == m).ravel()
+        mean_rf[m-1] = np.mean(data[idxs, 2])
+        sig_rf[m-1] = np.std(data[idxs, 2])
+
+    return np.array([mean_rf, sig_rf])
 # start = datetime.datetime.strptime('200901','%Y%M')
 # end = datetime.datetime.strptime('201801', '%Y%M')
 # region = 'capetown'
