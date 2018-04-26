@@ -4,6 +4,7 @@ from util import *
 from ndvi import *
 import os
 import glob
+import matplotlib.pyplot as plt
 
 ndvi_dir = 'results/ndvi/'
 # yearmonth_region.png
@@ -44,7 +45,6 @@ saved as numpy array into configured threshold_dir and threshold_fmt."""
 
     return None
 
-for year in np.arange(2009, 2018):
 def calibration_comparison(year, month, region):
     # Try load NDVI data
     ndvi_uncal = np.load(ndvi_dir + ndvi_fmt.format(year, month, region) + "_uncalibrated.npy")
@@ -63,9 +63,48 @@ def calibration_comparison(year, month, region):
     f.subplots_adjust(right=0.8)
     cb_ax = f.add_axes([0.85, 0.15, 0.05, 0.7])
     f.colorbar(plot2, cax=cb_ax)
-    plt.savefig('test.pdf')
+    plt.savefig('calibration_comparision.pdf')
 
     return None
-    for region in ('capetown', 'eastafrica'):
-        print('Producing NDVI data for {} {}'.format(region, year))
-        ndvi_for_year_and_region(year, region)
+
+ndvi_monthly_means_fmt = 'monthly_means_{}'
+def ndvi_monthly_means(region):
+    """Calculate monthly means for region."""
+    mask = (1 - image_region(land_mask, weathr_regions[region])).astype(bool)
+
+    avg = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    for i in np.arange(1, 13):
+        m = '{:02d}'.format(i) # pad with zero
+        f = np.dstack([np.load(fname) for fname in glob.glob(ndvi_dir + ndvi_fmt.format('*', m, region) + '.npy')])
+        avg[i - 1] = np.mean(f[mask])
+
+    return avg
+
+def plot_ndvi_monthly_and_means(region):
+    mask = (1 - image_region(land_mask, weathr_regions[region])).astype(bool)
+    path = ndvi_dir + ndvi_fmt
+
+    avgs = ndvi_monthly_means(region)
+
+    fnames = sorted(glob.glob(ndvi_dir + ndvi_fmt.format('*', '*', region) + '.npy'))
+    monthlys = np.dstack([np.mean(np.load(fname)[mask]) for fname in fnames]).ravel()
+
+    plt.figure(figsize=(10.5,6))
+    plt.bar(np.arange(len(monthlys)), monthlys, label='Monthly NDVI')
+    plt.plot(np.tile(avgs, 10), c='r', label='Average monthly NDVI for whole dataset')
+    plt.ylim([0.2, np.max(monthlys) + 0.005])
+    plt.xlim(0, len(monthlys))
+    plt.xticks(np.arange(0, 10)*12, np.arange(2008, 2018), rotation=45)
+    plt.title('NDVI for Capetown 2008-2018')
+    plt.xlabel('Month')
+    plt.ylabel('NDVI')
+    plt.legend()
+    plt.savefig('ndvi_monthly_and_means.png')
+
+    return None
+
+# e.g usage
+# for year in np.arange(2013, 2018):
+#     for region in ('capetown', 'eastafrica'):
+#         print('Producing NDVI data for {} {}'.format(region, year))
+#         ndvi_for_year_and_region(year, region)
