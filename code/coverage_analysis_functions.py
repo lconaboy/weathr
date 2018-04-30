@@ -3,6 +3,8 @@ import calendar
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy import optimize, stats
+from mpl_toolkits.axes_grid1.inset_locator import inset_axes
+
 
 """Ok so here it is. All of the stuff in functions is very useful and
 is being used in other scripts. The stuff commented out below that is
@@ -58,14 +60,15 @@ def to_idx(nino, arg):
     return idxs
 
 
-def consecutive_anomalies(nino):
+def consecutive_anomalies(nino, start, end):
     """Takes the Nino 3.4 anomaly data (text file) where the first column
     is YR data, second is M data and final is ANOM data. Converts to
     ONI anomalies, which are where 3-month running means of the Nino
     3.4 SST anomalies exceed +/- 0.5C for 5 consecutive
     months. Returns an array where the first column is the year,
     second column is the ccentral month (i.e. 1 = DJF), third column
-    is EN and fourth column is LN.
+    is EN and fourth column is LN. Narrows to smoothed data range
+    using start and end as datetime objects.
 
     """
     
@@ -94,7 +97,7 @@ def consecutive_anomalies(nino):
         en_anom_rev[i] = (en_anom_rev[i+1] + en3[i])*en3[i]
 
     en_idxs = (en_anom + en_anom_rev) >= 6  # and voila!
-        
+    
     # as above but for anomalies < -0.5
     ln3 = np.array(nino3) <= -0.5
     ln_anom = np.zeros(len(ln3))
@@ -106,6 +109,15 @@ def consecutive_anomalies(nino):
 
     ln_idxs = (ln_anom + ln_anom_rev) >= 6
 
+    # doesn't actually need to be narrowed
+    # # narrow to smoothed range
+    # a = np.argwhere((np.array(years) == start.year)&
+    #                 (np.array(season3) == start.month)).ravel()
+    # print(a)
+    # b = np.argwhere((np.array(years) == end.year)&
+    #                 (np.array(season3) == end.month)).ravel()
+    # span = slice(int(a), int(b))
+    # print(b)
     return [years, season3, en_idxs, ln_idxs, nino3]
 
 
@@ -167,15 +179,15 @@ and max of the cloud fraction values, as a proxy for the error."""
     return [yr, mn, val, rng]
 
 
-def nino_range(fname, start_m, start_y, end_m, end_y):
+def nino_range(fname, start, end):
     """Takes the fname for the Nino SST anomalies data and reduces it to
 the specified range. All dates must be floats, not int."""
     # now to calculate means for EN/LN/neither years from table
     # load el nino years
     nino = np.loadtxt(fname, skiprows=1, usecols=(0, 1, 4))
     # narrow to our range
-    start = np.argwhere((nino[:, 0] == start_y)*(nino[:, 1] == start_m))
-    end = np.argwhere((nino[:, 0] == end_y)*(nino[:, 1] == end_m))
+    start = np.argwhere((nino[:, 0] == start.year)*(nino[:, 1] == start.month))
+    end = np.argwhere((nino[:, 0] == end.year)*(nino[:, 1] == end.month))
     nino = nino[np.arange(start, end), :]
 
     return nino
@@ -375,6 +387,187 @@ def rainfall_monthly_means(data):
         sig_rf[m-1] = np.std(data[idxs, 2])
 
     return np.array([mean_rf, sig_rf])
+
+
+def load_cloud_fraction_period(start, end, region):
+    """Loads all the cloud fraction for a given period and region. Returns
+a list of lists in the format [YEAR, MONTH, DATA, ERR]."""
+    date = start
+    # initialise
+    year = []
+    month = []
+    data = []
+    err = []
+    # load the data
+    while date < end:
+        tmp = load_month(date, region)[1]  # [1] for cloud fraction
+        
+        year.append(date.year)
+        month.append(date.month)
+        data.append(tmp[0])
+        err.append(tmp[1])
+        
+        date = add_month(date)
+
+    return [year, month, data, err]
+
+
+def yearly_mean(data, err=True):
+    """Input data is of the form [[YEAR], [MONTH], [DATA], [ERR]] so need
+to index. Returns yearly mean across months. The err argument allows
+the function to be used with rainfall data, which wasn't given with an
+error and would return an error when indexed as if it did.
+
+    """
+    if err:
+        val = np.zeros(shape=(12))
+        err = np.zeros(shape=(12))
+        for m in range(1, 13):
+            # find the indices for the current month
+            idxs = np.array(data[1]) == m
+            val[m-1] = np.mean(np.array(data[2])[idxs])
+            # calculate error by adding uncertainties in quadrature
+            err[m-1] = aiq(np.array(data[3])[idxs])
+
+        return [val, err]
+
+    else:
+        val = np.zeros(shape=(12))
+        for m in range(1, 13):
+            # find the indices for the current month
+            idxs = np.array(data[1]) == m
+            val[m-1] = np.mean(np.array(data[2])[idxs])
+
+        return val
+
+
+def cloud_fraction_anomalies(data, data_means, start, end, err=True):
+    """Takes monthly mean data and calculates differences and anomalies
+using yearly means. The err argument allows the function to be used
+with rainfall data, which wasn't given with an error and would return
+an error when indexed as if it did.
+
+    """
+    date = start
+    diffs = np.zeros(len(data[2]))
+    anoms = np.zeros(len(data[2]))
+    i = 0
+    if err:
+        while date < end:
+            idxs = (np.array(data[0]) == date.year)&(np.array(data[1]) == date.month)
+            diffs[i] = np.array(data[2])[idxs] - data_means[0][date.month - 1]
+            anoms[i] = (np.array(data[2])[idxs] -
+                        data_means[0][date.month - 1])/data_means[0][date.month - 1]
+
+            date = add_month(date)
+            i += 1
+
+        return [data[0], data[1], diffs, anoms]
+
+    else:
+        while date < end:
+            idxs = (np.array(data[0]) == date.year)&(np.array(data[1]) == date.month)
+            diffs[i] = np.array(data[2])[idxs] - data_means[date.month - 1]
+            anoms[i] = (np.array(data[2])[idxs] -
+                        data_means[date.month - 1])/data_means[date.month - 1]
+            date = add_month(date)
+            i += 1
+
+        return [data[0], data[1], diffs, anoms]
+
+
+def smooth_data_with_window(data, step):
+    """Smooths the data with a window of 2*step + 1"""
+    start_idx = step
+    end_idx = len(data) - step
+    val = np.zeros(end_idx - start_idx)
+    for i in range(start_idx, end_idx):
+        val[i-start_idx] = np.mean(data[i-step:i+step+1])
+
+    return val
+
+
+def adjust_dates_to_smoothed_range(start, end, step):
+    """Converts dates to smoothed dates in order to account for central
+months lost due to the window size."""
+    new_start = start
+    new_end = end
+    for i in range(0, step):
+        new_start = add_month(new_start)
+        new_end = subtract_month(new_end)
+
+    return [new_start, new_end]
+
+
+def narrow_to_range(data, start, end):
+    """Specifically for narrowing rainfall data to a specified range."""
+    start_idx = np.argwhere((np.array(data[0]) == start.year)&
+                            (np.array(data[1]) == start.month)).ravel()
+    end_idx = np.argwhere((np.array(data[0]) == end.year)&
+                          (np.array(data[1]) == end.month)).ravel()
+
+    return [data[i][start_idx[0]:end_idx[0]] for i in range(0, len(data))]
+    
+
+
+def replace_with_nans(x, idx):
+    """Useful for plotting time series data not plotting certain points. x
+is the data, idx is a Boolean array for indexing."""
+    data = x.copy()
+    data[idx] = np.nan
+    return data
+
+
+def plot_with_inset_correlations(plotting_data, idxs, titles, corr_labels):
+    fig = plt.figure(figsize=(8, 8))
+    for index, pos in enumerate(idxs):
+        p = index + 1
+        ax = fig.add_subplot(2, 2, p)
+        for data in plotting_data:
+            ax.plot(replace_with_nans(data, ~pos)) # replace with nans
+                                                   # to produce
+                                                   # appropriate gaps
+                                                   # in the time
+                                                   # series
+        ax.set_title(titles[index])
+        ax.set_ylim([-2.5, 2.5])
+        ax.set_xlim([0, len(data)])
+        ax.legend(corr_labels)
+    
+        corrs = np.corrcoef([plotting_data[0][pos],
+                             plotting_data[1][pos],
+                             plotting_data[2][pos]])
+        
+        ax1 = inset_axes(ax, 0.75, 0.75, loc=4)
+        ax1.matshow(corrs)
+        for (i, j), z in np.ndenumerate(corrs):
+            ax1.text(j, i, '{:0.1f}'.format(z), ha='center',
+                     va='center', color='white')
+            plt.xticks([0, 1, 2])
+            plt.yticks([0, 1, 2])
+            ax1.set_xticklabels(corr_labels)
+            ax1.set_yticklabels(corr_labels)
+            ax1.tick_params(axis='both', which='both', bottom=False, top=False,
+                            left=False, right=False, labelsize='small')
+
+def shift_dates(start, end, months):
+    """Shifts a date by a given amount. Useful for shifting ONI."""
+    shifted_start = start
+    shifted_end = end
+    if months < 0:
+        for i in range(0, int(-months)):
+            shifted_start = subtract_month(shifted_start)
+            shifted_end = subtract_month(shifted_end)
+    elif months > 0:
+        for i in range(0, int(months)):
+            shifted_start = add_month(shifted_start)
+            shifted_end = add_month(shifted_end)
+
+    # check that the date falls in the correct range
+    if shifted_end > datetime.datetime.strptime('201512','%Y%m'):
+        print('Warning: date outside rainfall data range')
+
+    return (shifted_start, shifted_end)
 # start = datetime.datetime.strptime('200901','%Y%M')
 # end = datetime.datetime.strptime('201801', '%Y%M')
 # region = 'capetown'
