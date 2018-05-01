@@ -103,6 +103,26 @@ def plot_ndvi_monthly_and_means(region):
 
     return None
 
+def fit_sine_to_ndvi_means(region):
+    """Returns a tuple of fitting parameters (std, phase, mean). Fitting method is least squares."""
+    avgs = ndvi_monthly_means(region)
+
+    # know that period is 1 year
+    period = 12 # months
+    freq = 1/period
+
+    guess_mean = 0.235 # Guessed by looking at data
+    guess_std = np.std(avgs)
+    guess_phase = 0
+
+    t = 2*np.pi*freq * np.arange(12)
+    data_guess = guess_std*np.sin(t + guess_phase) + guess_mean
+
+    from scipy.optimize import leastsq
+    optimize_func = lambda x: x[0] * np.sin(t + x[1]) + x[2] - avgs
+
+    return leastsq(optimize_func, [guess_std, guess_phase, guess_mean])[0]
+
 # e.g usage
 # for year in np.arange(2013, 2018):
 #     for region in ('capetown', 'eastafrica'):
