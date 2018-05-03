@@ -123,10 +123,9 @@ def fit_sine_to_ndvi_means(region):
 
     return leastsq(optimize_func, [guess_std, guess_phase, guess_mean])[0]
 
-def plot_ndvi_anomalies(region):
+def plot_ndvi_anomalies(region, smooth=6):
     mask = (1 - image_region(land_mask, weathr_regions[region])).astype(bool)
     path = ndvi_dir + ndvi_fmt
-    smooth = 6
 
     avgs = ndvi_monthly_means(region)
 
