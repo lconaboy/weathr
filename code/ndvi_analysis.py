@@ -92,14 +92,14 @@ def plot_ndvi_monthly_and_means(region):
     plt.figure(figsize=(10.5,6))
     plt.bar(np.arange(len(monthlys)), monthlys, label='Monthly NDVI')
     plt.plot(np.tile(avgs, 10), c='r', label='Average monthly NDVI for whole dataset')
-    plt.ylim([0.2, np.max(monthlys) + 0.005])
+    plt.ylim([np.min(monthlys)-0.05*np.min(monthlys), np.max(monthlys) + 0.05*np.max(monthlys)])
     plt.xlim(0, len(monthlys))
     plt.xticks(np.arange(0, 10)*12, np.arange(2008, 2018), rotation=45)
-    plt.title('NDVI for Capetown 2008-2018')
+    plt.title('NDVI for {} 2008-2018'.format(region))
     plt.xlabel('Month')
     plt.ylabel('NDVI')
     plt.legend()
-    plt.savefig('ndvi_monthly_and_means.png')
+    plt.savefig('ndvi_monthly_and_means_{}.png'.format(region))
 
     return None
 
