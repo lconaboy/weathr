@@ -16,8 +16,6 @@ threshold_dir = 'data/thr/'
 # e.g. capetown_2017_vis8_thr.npy
 threshold_fmt = '{}_{}_{}_thr.npy'
 
-figure_dir = 'results/figures/'
-
 def ndvi_for_year_and_region(year, region):
     """Calculates NDVI for every month in given year and region. Output is
 saved as numpy array into configured threshold_dir and threshold_fmt."""

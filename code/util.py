@@ -117,3 +117,6 @@ weathr_data = {'vis6': './bands13/vis6/*.jpg',
 # land_mask = image_region(np.asarray(Image.open(weathr_data['landmask']), dtype=int),
 #                           weathr_regions['capetown'])
 land_mask = np.asarray(Image.open(weathr_data['landmask']), dtype=int)
+
+# output configurations
+figure_dir = 'results/figures/'
