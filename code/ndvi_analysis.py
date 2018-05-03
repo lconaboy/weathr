@@ -123,6 +123,40 @@ def fit_sine_to_ndvi_means(region):
 
     return leastsq(optimize_func, [guess_std, guess_phase, guess_mean])[0]
 
+def plot_ndvi_anomalies(region):
+    mask = (1 - image_region(land_mask, weathr_regions[region])).astype(bool)
+    path = ndvi_dir + ndvi_fmt
+    smooth = 6
+
+    avgs = ndvi_monthly_means(region)
+
+    fnames = sorted(glob.glob(ndvi_dir + ndvi_fmt.format('*', '*', region) + '.npy'))
+    monthlys = np.dstack([np.mean(np.load(fname)[mask]) for fname in fnames]).ravel()
+
+    # Fitting a sine doesn't actually help too much, and is even worse
+    # for the eastafrica region.
+
+    # fit_std, fit_phase, fit_mean = fit_sine_to_ndvi_means(region)
+    # fit_data = fit_std * np.sin(2 * np.pi * 1/12 * np.arange(12) + fit_phase) + fit_mean
+
+    # anom_fit = monthlys / np.tile(fit_data, 10) - 1
+    # anom_fit_smoothed = np.convolve(anom_fit, np.ones((smooth,))/smooth, mode='valid')
+
+    anom_mean = monthlys / np.tile(avgs, 10) - 1
+    anom_mean_smoothed = np.convolve(anom_mean, np.ones((smooth,))/smooth, mode='valid')
+
+    plt.figure(figsize=(10.5,6))
+    plt.bar(np.arange(len(anom_mean_smoothed)), anom_mean_smoothed, label='Anomaly from dataset mean')
+    # plt.bar(np.arange(len(anom_fit_smoothed)), anom_fit_smoothed, label='Difference from fitted sine wave')
+    # plt.ylim([0.2, np.max(monthlys) + 0.005])
+    plt.xlim(0, len(monthlys))
+    plt.xticks(np.arange(0, 9)*12, np.arange(2009, 2018), rotation=45)
+    plt.title('{}-month smoothed NDVI anomalies for {} 2008-2018'.format(smooth, region))
+    plt.xlabel('Month')
+    plt.ylabel(r'NDVI anomaly $x_i/\mu - 1$')
+    plt.legend()
+    plt.savefig('ndvi_anomalies_{}_smoothed_{}_months.png'.format(region, smooth))
+
 # e.g usage
 # for year in np.arange(2013, 2018):
 #     for region in ('capetown', 'eastafrica'):
