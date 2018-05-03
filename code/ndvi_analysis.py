@@ -65,7 +65,7 @@ def calibration_comparison(year, month, region):
     f.subplots_adjust(right=0.8)
     cb_ax = f.add_axes([0.85, 0.15, 0.05, 0.7])
     f.colorbar(plot2, cax=cb_ax)
-    plt.savefig(figure_dir + 'calibration_comparision.pdf')
+    plt.savefig(figure_dir + 'ndvi_calibration_comparision.pdf')
 
     return None
 
@@ -152,7 +152,7 @@ def plot_ndvi_anomalies(region):
     # plt.bar(np.arange(len(anom_fit_smoothed)), anom_fit_smoothed, label='Difference from fitted sine wave')
     # plt.ylim([0.2, np.max(monthlys) + 0.005])
     plt.xlim(0, len(monthlys))
-    plt.xticks(np.arange(0, 9)*12, np.arange(2009, 2018), rotation=45)
+    plt.xticks(np.arange(0, 10)*12, np.arange(2008, 2018), rotation=45)
     plt.title('{}-month smoothed NDVI anomalies for {} 2008-2018'.format(smooth, region))
     plt.xlabel('Month')
     plt.ylabel(r'NDVI anomaly $x_i/\mu - 1$')
