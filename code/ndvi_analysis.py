@@ -54,10 +54,10 @@ def calibration_comparison(year, month, region):
     import matplotlib.colors as clr
     cmap = clr.LinearSegmentedColormap.from_list('', ['red', 'white', 'darkgreen'])
     f, (ax1, ax2) = plt.subplots(1, 2, sharey=True, figsize=(10,4.5), dpi=150)
-    ax1.set_title('Uncalibrated NDVI for {} {}, {}'.format(region.capitalize(), month, year))
+    ax1.set_title('Uncalibrated NDVI for {} {}, {}'.format(region_to_string(region), month, year))
     ax1.axis('off')
     plot1 = ax1.imshow(ndvi_uncal, cmap=cmap, vmin=-np.max(ndvi_uncal), vmax=np.max(ndvi_uncal))
-    ax2.set_title('Calibrated NDVI for {} {}, {}'.format(region.capitalize(), month, year))
+    ax2.set_title('Calibrated NDVI for {} {}, {}'.format(region_to_string(region), month, year))
     ax2.axis('off')
     plot2 = ax2.imshow(ndvi_cal, cmap=cmap, vmin=-np.max(ndvi_cal), vmax=np.max(ndvi_cal))
     f.subplots_adjust(right=0.8)
@@ -95,7 +95,7 @@ def plot_ndvi_monthly_and_means(region):
     plt.ylim([np.min(monthlys)-0.05*np.min(monthlys), np.max(monthlys) + 0.05*np.max(monthlys)])
     plt.xlim(0, len(monthlys))
     plt.xticks(np.arange(0, 10)*12, np.arange(2008, 2018), rotation=45)
-    plt.title('NDVI for {} 2008-2018'.format(region))
+    plt.title('NDVI for {} 2008-2018'.format(region_to_string(region)))
     plt.xlabel('Month')
     plt.ylabel('NDVI')
     plt.legend()
@@ -150,11 +150,23 @@ def plot_ndvi_anomalies(region, smooth=6):
     # plt.ylim([0.2, np.max(monthlys) + 0.005])
     plt.xlim(0, len(monthlys))
     plt.xticks(np.arange(0, 10)*12, np.arange(2008, 2018), rotation=45)
-    plt.title('{}-month smoothed NDVI anomalies for {} 2008-2018'.format(smooth, region))
+    plt.title('{}-month smoothed NDVI anomalies for {} 2008-2018'.format(smooth, region_to_string(region)))
     plt.xlabel('Month')
     plt.ylabel(r'NDVI anomaly $x_i/\mu - 1$')
     plt.legend()
     plt.savefig(figure_dir + 'ndvi_anomalies_{}_smoothed_{}_months.png'.format(region, smooth))
+
+def do_analysis():
+    regions = ('capetown', 'eastafrica')
+    smoothings = (3, 6, 12)
+
+    for region in regions:
+        plot_ndvi_monthly_and_means(region)
+        plt.close()
+
+        for smooth in smoothings:
+            plot_ndvi_anomalies(region, smooth=smooth)
+            plt.close()
 
 # e.g usage
 # for year in np.arange(2013, 2018):

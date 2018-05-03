@@ -97,6 +97,14 @@ def path_to_weathr_data(band):
 
     return path, glob_path
 
+def region_to_string(region):
+    trans = {'capetown': 'South Africa',  # This is dumb. Should really stop calling it capetown.
+             'eastafrica': 'East Africa',
+             'egypt': 'Egypt',
+             'africa': 'Africa'
+    }
+
+    return trans[region]
 
 
 # Our particular areas of interest. Useful for cutting down on
