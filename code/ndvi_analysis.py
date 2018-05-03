@@ -16,6 +16,8 @@ threshold_dir = 'data/thr/'
 # e.g. capetown_2017_vis8_thr.npy
 threshold_fmt = '{}_{}_{}_thr.npy'
 
+figure_dir = 'results/figures/'
+
 def ndvi_for_year_and_region(year, region):
     """Calculates NDVI for every month in given year and region. Output is
 saved as numpy array into configured threshold_dir and threshold_fmt."""
@@ -63,7 +65,7 @@ def calibration_comparison(year, month, region):
     f.subplots_adjust(right=0.8)
     cb_ax = f.add_axes([0.85, 0.15, 0.05, 0.7])
     f.colorbar(plot2, cax=cb_ax)
-    plt.savefig('calibration_comparision.pdf')
+    plt.savefig(figure_dir + 'calibration_comparision.pdf')
 
     return None
 
@@ -99,7 +101,7 @@ def plot_ndvi_monthly_and_means(region):
     plt.xlabel('Month')
     plt.ylabel('NDVI')
     plt.legend()
-    plt.savefig('ndvi_monthly_and_means_{}.png'.format(region))
+    plt.savefig(figure_dir + 'ndvi_monthly_and_means_{}.png'.format(region))
 
     return None
 
@@ -155,7 +157,7 @@ def plot_ndvi_anomalies(region):
     plt.xlabel('Month')
     plt.ylabel(r'NDVI anomaly $x_i/\mu - 1$')
     plt.legend()
-    plt.savefig('ndvi_anomalies_{}_smoothed_{}_months.png'.format(region, smooth))
+    plt.savefig(figure_dir + 'ndvi_anomalies_{}_smoothed_{}_months.png'.format(region, smooth))
 
 # e.g usage
 # for year in np.arange(2013, 2018):
