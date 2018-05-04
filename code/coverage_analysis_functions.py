@@ -4,6 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy import optimize, stats
 from mpl_toolkits.axes_grid1.inset_locator import inset_axes
+from netCDF4 import Dataset
 
 
 """Ok so here it is. All of the stuff in functions is very useful and
@@ -451,6 +452,7 @@ an error when indexed as if it did.
     date = start
     diffs = np.zeros(len(data[2]))
     anoms = np.zeros(len(data[2]))
+    errs = np.zeros(len(data[2]))
     i = 0
     if err:
         while date < end:
@@ -458,11 +460,12 @@ an error when indexed as if it did.
             diffs[i] = np.array(data[2])[idxs] - data_means[0][date.month - 1]
             anoms[i] = (np.array(data[2])[idxs] -
                         data_means[0][date.month - 1])/data_means[0][date.month - 1]
+            errs[i] = data_means[1][date.month - 1]
 
             date = add_month(date)
             i += 1
 
-        return [data[0], data[1], diffs, anoms]
+        return [data[0], data[1], diffs, anoms, errs]
 
     else:
         while date < end:
@@ -476,15 +479,22 @@ an error when indexed as if it did.
         return [data[0], data[1], diffs, anoms]
 
 
-def smooth_data_with_window(data, step):
+def smooth_data_with_window(cf, step):
     """Smooths the data with a window of 2*step + 1"""
+    data = cf[3]  # pull the data from cf
+    ucrt = cf[4]
     start_idx = step
     end_idx = len(data) - step
     val = np.zeros(end_idx - start_idx)
+    err = np.zeros(end_idx - start_idx)
     for i in range(start_idx, end_idx):
         val[i-start_idx] = np.mean(data[i-step:i+step+1])
-
-    return val
+        srt = np.sort(data[i-step:i+step+1])
+        rng = (srt[-2] - srt[1])/2  # take the second smallest and
+                                    # largest as the range
+        err[i-start_idx] = aiq(np.array([ucrt[i], rng]))  # aiq with error on anomaly
+    
+    return [val, err]
 
 
 def adjust_dates_to_smoothed_range(start, end, step):
@@ -518,7 +528,7 @@ is the data, idx is a Boolean array for indexing."""
     return data
 
 
-def plot_with_inset_correlations(plotting_data, idxs, titles, corr_labels):
+def plot_idxs_with_inset_correlations(plotting_data, idxs, titles, corr_labels):
     fig = plt.figure(figsize=(8, 8))
     for index, pos in enumerate(idxs):
         p = index + 1
@@ -550,6 +560,161 @@ def plot_with_inset_correlations(plotting_data, idxs, titles, corr_labels):
             ax1.tick_params(axis='both', which='both', bottom=False, top=False,
                             left=False, right=False, labelsize='small')
 
+
+def plot_with_inset_correlations(plotting_data, corr_labels):
+    """plotting_data[0] will be barred, plotting_data[1] will be a line"""
+    fig, ax = plt.subplots(figsize=(6,4))
+    ax.bar(np.arange(0, len(plotting_data[0])), plotting_data[0])
+    ax.set_xlim([0, len(plotting_data[0])])
+    ax.set_ylim([-1.5, 1.5])
+    ax.set_ylabel(r'$x/\mu - 1$')
+    ax1 = ax.twinx()
+    ax1.plot(plotting_data[1])
+    ax1.set_ylim([-2.75, 2.75])
+    ax1.set_ylabel('ONI 3-monthly anomalies ($^{\circ}$C)')
+    plt.legend(corr_labels)
+    
+    corrs = np.corrcoef(plotting_data)
+
+    in_ax = inset_axes(ax, 0.5, 0.5, loc=4)
+    in_ax.matshow(corrs)
+    for (i, j), z in np.ndenumerate(corrs):
+        in_ax.text(j, i, '{:0.1f}'.format(z), ha='center',
+                 va='center', color='white')
+        plt.xticks([0, 1])
+        plt.yticks([0, 1])
+        in_ax.set_xticklabels(corr_labels)
+        in_ax.set_yticklabels(corr_labels)
+        in_ax.tick_params(axis='both', which='both', bottom=False, top=False,
+                        left=False, right=False, labelsize='small')
+        plt.subplots_adjust(left=0.2, right=0.8)
+
+
+def plot_three_with_inset_correlations(plotting_data, corr_labels):
+    """plotting_data[0] will be barred, plotting_data[[1,2]] will be a line"""
+    fig, ax = plt.subplots(figsize=(12, 6))
+    ax.bar(np.arange(0, len(plotting_data[0])), plotting_data[0],
+           label=corr_labels[0], color='k', fill=False, alpha=None)
+    ax.set_xlim([0, len(plotting_data[0])])
+    ax.set_ylim([-1.25, 1.25])
+    ax.set_ylabel(r'$x/\mu - 1$')
+    ax1 = ax.twinx()
+    ax1.plot(plotting_data[1], label=corr_labels[1], color='b')
+    ax1.plot(plotting_data[2], label=corr_labels[2], color='r')
+    ax1.set_ylim([-1.75, 2.75])
+    ax1.set_ylabel('SST anomalies ($^{\circ}$C)')
+    # ax.set_xticks(x_labels[0])
+    # ax1.set_xticks(x_labels[0])
+    # ax.set_xticklabels(x_labels[1])
+    # ax1.set_xticklabels(x_labels[1])
+    
+    # ask matplotlib for the plotted objects and their labels
+    lines, labels = ax.get_legend_handles_labels()
+    lines2, labels2 = ax1.get_legend_handles_labels()
+    ax1.legend(lines + lines2, labels + labels2)
+    
+    corrs = np.corrcoef(plotting_data)
+
+    in_ax = inset_axes(ax, 0.75, 0.75, loc=4)
+    in_ax.matshow(corrs)
+    for (i, j), z in np.ndenumerate(corrs):
+        in_ax.text(j, i, '{:0.1f}'.format(z), ha='center',
+                 va='center', color='white')
+        plt.xticks([0, 1, 2])
+        plt.yticks([0, 1, 2])
+        in_ax.set_xticklabels(corr_labels)
+        in_ax.set_yticklabels(corr_labels)
+        in_ax.tick_params(axis='both', which='both', bottom=False, top=False,
+                        left=False, right=False, labelsize='small')
+        plt.subplots_adjust(left=0.2, right=0.8)
+
+
+def plot_three_with_one_barred(plotting_data, corr_labels):
+    """plotting_data[0] will be barred, plotting_data[[1,2]] will be a line"""
+    n = len(plotting_data[0])
+    nind = np.arange(n)
+    nx = nind+0.5
+    fig, ax = plt.subplots(figsize=(10.5, 6))
+    ax.bar(nind, plotting_data[0], label=corr_labels[0])
+    ax.set_xlim([0, n])
+    ax.set_ylim([-1.25, 1.25])
+    ax.set_ylabel(r'CF anomaly $x_i/\mu - 1$')
+    ax1 = ax.twinx()
+    ax1.plot(nx, plotting_data[1], label=corr_labels[1], color='r')
+    ax1.plot(nx, plotting_data[2], label=corr_labels[2], color='g')
+    ax1.set_ylim([-1.75, 2.75])
+    ax1.set_ylabel('SST anomalies ($^{\circ}$C)')
+
+    # ask matplotlib for the plotted objects and their labels
+    lines, labels = ax.get_legend_handles_labels()
+    lines2, labels2 = ax1.get_legend_handles_labels()
+    ax1.legend(lines + lines2, labels + labels2)
+
+    # ax.set_xticks(np.linspace(0, len(plotting_data[0], 11.5))*len(plotting_data[0]))
+    # ax1.set_xticks(np.linspace(0, len(plotting_data[0], 11.5))*len(plotting_data[0]))
+    # ax.set_xticklabels(x_labels)
+    # ax1.set_xticklabels(x_labels)
+
+
+def plot_three_with_one_errorbars(plotting_data, corr_labels):
+    """plotting_data[0] will be errorbars, plotting_data[[1,2]] will be a line"""
+    n = len(plotting_data[0][0])
+    nind = np.arange(n)
+    nx = nind+0.5
+    fig, ax = plt.subplots(figsize=(10.5, 6))
+    ax.errorbar(nind, plotting_data[0][0], plotting_data[0][1],
+                 label=corr_labels[0])
+    ax.set_xlim([0, n])
+    ax.set_ylim([-1.25, 1.25])
+    ax.set_ylabel(r'CF anomaly $x_i/\mu - 1$')
+    ax.axhline(linewidth=1, color='k')
+    ax1 = ax.twinx()
+    ax1.plot(plotting_data[1], label=corr_labels[1], color='r')
+    ax1.plot(plotting_data[2], label=corr_labels[2], color='g')
+    ax1.set_ylim([-2.75, 2.75])
+    ax1.set_ylabel('SST anomalies ($^{\circ}$C)')
+
+    # ask matplotlib for the plotted objects and their labels
+    lines, labels = ax.get_legend_handles_labels()
+    lines2, labels2 = ax1.get_legend_handles_labels()
+    ax1.legend(lines + lines2, labels + labels2)
+
+
+def plot_three_with_one_fill_between(plotting_data, corr_labels, x_labels, month_step):
+    """plotting_data[0] will be errorbars, plotting_data[[1,2]] will be a line"""
+    n = len(plotting_data[0][0])
+    nind = np.arange(n)
+    nx = nind+0.5
+    fig, ax = plt.subplots(figsize=(12, 6))
+    ax.plot(plotting_data[0][0], label=corr_labels[0])
+    ax.fill_between(nind, plotting_data[0][0] + plotting_data[0][1],
+                    plotting_data[0][0] - plotting_data[0][1], alpha=0.25)
+    ax.set_xlim([0, n])
+    ax.set_ylim([-1.25, 1.25])
+    ax.set_ylabel(r'CF anomaly $x_i/\mu - 1$')
+    ax1 = ax.twinx()
+    ax1.plot(plotting_data[1], label=corr_labels[1], color='g')
+    ax1.plot(plotting_data[2], label=corr_labels[2], color='r')
+    ax1.set_ylim([-2.75, 2.75])
+    ax1.set_ylabel('SST anomalies ($^{\circ}$C)')
+
+    # ask matplotlib for the plotted objects and their labels
+    lines, labels = ax.get_legend_handles_labels()
+    lines2, labels2 = ax1.get_legend_handles_labels()
+    ax1.legend(lines + lines2, labels + labels2)
+
+    # now set x ticks
+    x_tick_range = len(plotting_data[0][0][::month_step])
+    ax.set_xticks(np.linspace(ax.get_xbound()[0], ax.get_xbound()[1], x_tick_range))
+    ax.minorticks_off()
+    ax1.set_xticks(np.linspace(ax1.get_xbound()[0], ax1.get_xbound()[1], x_tick_range))
+    ax1.minorticks_off()
+    ax.set_xticklabels([])
+    ax1.set_xticklabels(x_labels)
+    ax.set_xlabel('Month')
+    ax1.set_xlabel('Month')    
+    
+
 def shift_dates(start, end, months):
     """Shifts a date by a given amount. Useful for shifting ONI."""
     shifted_start = start
@@ -568,6 +733,73 @@ def shift_dates(start, end, months):
         print('Warning: date outside rainfall data range')
 
     return (shifted_start, shifted_end)
+
+
+def swio_three_monthly_means(swio_datetime, swio_anoms):
+    vals = []
+    err = []
+    year = []
+    month = []
+    start_month = add_month(swio_datetime[0])  # start a month in
+    end_month = subtract_month(swio_datetime[-1])  # finish a month early
+    curr_month = start_month
+    while curr_month < end_month:
+        prev_month = subtract_month(curr_month)
+        next_month = add_month(curr_month)
+        args = np.zeros(len(swio_datetime), dtype=bool)
+        for i, x in enumerate(swio_datetime):
+            args[i] = ((x.year == curr_month.year)&(x.month == curr_month.month) or
+                       (x.year == next_month.year)&(x.month == next_month.month) or
+                       (x.year == prev_month.year)&(x.month == prev_month.month))
+
+        vals.append(np.mean(swio_anoms[args]))
+        err.append(np.std(swio_anoms[args]))
+        year.append(curr_month.year)
+        month.append(curr_month.month)
+    
+        curr_month = add_month(curr_month)
+
+    return [year, month, vals, err]
+
+
+def load_swio(fname, key):
+    dataset = Dataset(fname)
+    swio_time = np.asarray(dataset.variables['WEDCEN2'])  # time in days since 1/1/1900
+    swio_anoms = np.asarray(dataset.variables[key])
+    # convert swio_time to month and year
+    init_date = datetime.datetime.strptime('111900', '%d%m%Y')
+    start_delta = datetime.timedelta(days=swio_time[0])
+    start_date = init_date + start_delta
+    swio_datetime = [start_date + i*datetime.timedelta(days=7)
+                     for i in range(0, len(swio_time))]
+
+    return [swio_datetime, swio_anoms]
+
+
+def narrow_swio(swio_tmm, start, end):
+    years = np.array(swio_tmm[0])
+    months = np.array(swio_tmm[1])
+    start_idx = int(np.argwhere((years == start.year)&(months == start.month)))
+    end_idx = int(np.argwhere((years == end.year)&(months == end.month)))
+    span = slice(start_idx, end_idx)
+    
+    return [x[span] for x in swio_tmm]
+
+
+def month_and_year_labels(month_labels, year_labels, month_step):
+    # now convert from number to letter
+    month_letter = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+                    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+    x_labels = [month_letter[x-1] for x in month_labels]
+    count = 0
+    for i in range(0, len(month_labels)):
+        if month_labels[i] == month_labels[0] + month_step:
+            x_labels[i] += '\n' + str(year_labels[count])
+            count += 1
+
+    return x_labels
+
+
 # start = datetime.datetime.strptime('200901','%Y%M')
 # end = datetime.datetime.strptime('201801', '%Y%M')
 # region = 'capetown'
@@ -721,4 +953,5 @@ def shift_dates(start, end, months):
 # # y0,y1 = ax.get_ylim()
 # # ax.set_aspect((x1-x0)/(y1-y0))
 # # plt.tight_layout()
+
 
