@@ -14,3 +14,12 @@ code/include/*
 # Those dumb mac dirs
 code/__MACOSX/
 code/__pycache__/
+report/*.pdf
+report/*.log
+report/*.bbl
+report/*.fls
+report/*.out
+report/*.aux
+report/*.blg
+report/*latexmk
+code/data*

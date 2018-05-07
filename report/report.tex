@@ -1,0 +1,45 @@
+\documentclass[12pt]{article}
+
+\usepackage{amsmath}
+\usepackage{hyperref}
+
+\usepackage{multicol}
+\setlength{\columnsep}{0.5cm}
+\setlength{\parskip}{0pt}
+
+\usepackage[a4paper, total={7in,8in}]{geometry}
+
+\usepackage{natbib}
+\bibliographystyle{unsrtnat}
+\setcitestyle{authoryear}
+
+\newcommand{\elnino}[0]{\emph{El Ni\~no}}
+\newcommand{\enso}[0]{\emph{ENSO}}
+\newcommand{\nina}[0]{\emph{La Ni\~na}}
+
+% TODO A better title. Something witty and fun.
+\title{\elnino{} and Africa}
+\author{Luke Conaboy and Mark G. Skilbeck}
+\date{}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+  An abstract.
+\end{abstract}
+
+\begin{multicols}{2}
+
+\input{introduction}
+\input{method}
+%% \input{results}
+%% \input{discussion}
+%% \input{future}
+
+\end{multicols}
+
+\cite{*}
+\bibliography{refs}
+
+\end{document}
