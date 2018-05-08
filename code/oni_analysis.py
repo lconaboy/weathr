@@ -6,9 +6,12 @@ from coverage_analysis_functions import *
 from mpl_toolkits.axes_grid1.inset_locator import inset_axes
 import pandas as pd
 from netCDF4 import Dataset
+import scipy.stats
+
+"""Mark: to use this, just replace cf with ndvi data."""
 
 regions = ['capetown', 'eastafrica']
-east_or_south = 0  # 0 for south, 1 for east
+east_or_south = 1  # 0 for south, 1 for east
 region = regions[east_or_south]
 start = datetime.datetime.strptime('20081','%Y%m')
 end = datetime.datetime.strptime('201712','%Y%m')
@@ -25,6 +28,10 @@ swio_datetime, swio_anoms = load_swio('swio.nc', 'SWIO')
 wtio_datetime, wtio_anoms = load_swio('wtio.nc', 'WTIO')
 swio_tmm = swio_three_monthly_means(swio_datetime, swio_anoms)
 wtio_tmm = swio_three_monthly_means(wtio_datetime, wtio_anoms)
+
+# load DMI
+dmi_datetime, dmi_anoms = load_swio('dmi.nc', 'DMI')
+dmi_tmm = swio_three_monthly_means(dmi_datetime, dmi_anoms)
 
 # # now rainfall
 # fname = 'eth_rainfall_1991_2015.txt'
@@ -61,7 +68,8 @@ narrowed_swio = narrow_swio(swio_tmm, add_month(new_start),
                             subtract_month(new_end))
 narrowed_wtio = narrow_swio(wtio_tmm, add_month(new_start),
                             subtract_month(new_end))
-
+narrowed_dmi = narrow_swio(dmi_tmm, add_month(new_start),
+                           subtract_month(new_end))
 narrowed_io = [[narrowed_swio, narrowed_wtio], ['SWIO', 'WTIO']]
 
 # titles = ['All', 'El Nino', 'La Nina']
@@ -85,15 +93,57 @@ year_labels = np.arange(min(narrowed_io[0][east_or_south][0]),
 
 
 x_labels = month_and_year_labels(month_labels, year_labels, month_step)
-corr_labels = ['CF', 'ONI', narrowed_io[1][east_or_south]]
-plotting_data = [cf_anoms_smoothed, np.array(oni_anoms[-1]),
+# first plot the SWIO/WTIO and DMI (Indian Ocean)
+corr_labels = ['CF', 'DMI', narrowed_io[1][east_or_south]]
+# plotting_data = [cf_anoms_smoothed, np.array(oni_anoms[-1]),
+#                 np.array(narrowed_io[0][east_or_south][2])]
+plotting_data = [cf_anoms_smoothed, np.array(narrowed_dmi[2]),
                  np.array(narrowed_io[0][east_or_south][2])]
 # plot_three_with_inset_correlations(plotting_data, corr_labels)
-
-# plot_three_with_one_barred(plotting_data, corr_labels)
 plot_three_with_one_fill_between(plotting_data, corr_labels, x_labels, month_step)
 plt.title('{}'.format(region_to_string(region)))
-plt.axhline(linewidth=1, color='k')
+plt.axhline(linewidth=0.75, color='k')
+plt.axhline(y=0.5, linewidth=0.75, color='k', linestyle='dashed')
+plt.axhline(y=-0.5, linewidth=0.75, color='k', linestyle='dashed')
+plt.savefig(figure_dir + 'dmi_' + narrowed_io[1][east_or_south] +
+            '_{}_{}window'.format(region, 2*step+1))
+
+# now plot the ONI (El Nino)
+corr_labels = ['CF', 'ONI']
+plotting_data = [cf_anoms_smoothed, np.array(oni_anoms[-1])]
+plot_two_with_one_fill_between(plotting_data, corr_labels, x_labels, month_step)
+plt.title('{}'.format(region_to_string(region)))
+plt.axhline(linewidth=0.75, color='k')
+plt.axhline(y=0.5, linewidth=0.75, color='k', linestyle='dashed')
+plt.axhline(y=-0.5, linewidth=0.75, color='k', linestyle='dashed')
 plt.savefig(figure_dir + 'oni_' + narrowed_io[1][east_or_south] +
             '_{}_{}window'.format(region, 2*step+1))
+
+
+fig, axes = plt.subplots(2, 3, figsize=(12, 8), sharex=False, sharey=False)
+titles = ['EN', 'LN', 'Neutral']
+pos = [en, ln, ~en&~ln]
+for idx, ax in enumerate(axes.ravel()[0:3]):
+    ax.set_title(titles[idx])
+    x = cf_anoms_smoothed[0][pos[idx]]
+    histo = ax.hist(x)
+for idx, ax in enumerate(axes.ravel()[3:6]):
+    x = cf_anoms_smoothed[0][pos[idx]]
+    kernel = stats.gaussian_kde(x)
+    histo = np.histogram(x)
+    prob = np.zeros(len(histo[1])-1)
+    for i in range(0, len(histo[1])-1):
+        x_range = np.linspace(histo[1][i], histo[1][i+1], 100)
+        y = kernel(x_range)
+        area = np.trapz(y, x_range)
+        prob[i] = area
+    f_exp = sum(histo[0])*prob
+    chi_s = stats.chisquare(histo[0], f_exp)
+    ax.plot(np.linspace(min(x), max(x)),
+            kernel(np.linspace(min(x), max(x))))
+    ax.text(0.6, 0.75, r'$\chi^2={:3f}$'.format(chi_s[0]), transform=ax.transAxes)
+    ax.set_xlabel(r'CF$_{\sigma}$')
+
+plt.suptitle(r'{} $n={}$'.format(region_to_string(region), sum(histo[0])))
+plt.savefig('hist_with_pdf_and_chi{}'.format(region))
 plt.show()
