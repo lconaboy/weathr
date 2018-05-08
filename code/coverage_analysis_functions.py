@@ -691,7 +691,7 @@ def plot_three_with_one_fill_between(plotting_data, corr_labels, x_labels, month
                     plotting_data[0][0] - plotting_data[0][1], alpha=0.25)
     ax.set_xlim([0, n])
     ax.set_ylim([-1.25, 1.25])
-    ax.set_ylabel(r'CF anomaly $x_i/\mu - 1$')
+    ax.set_ylabel(r'CF$_{\sigma}$')
     ax1 = ax.twinx()
     ax1.plot(plotting_data[1], label=corr_labels[1], color='g')
     ax1.plot(plotting_data[2], label=corr_labels[2], color='r')
@@ -713,7 +713,40 @@ def plot_three_with_one_fill_between(plotting_data, corr_labels, x_labels, month
     ax1.set_xticklabels(x_labels)
     ax.set_xlabel('Month')
     ax1.set_xlabel('Month')    
-    
+
+
+def plot_two_with_one_fill_between(plotting_data, corr_labels, x_labels, month_step):
+    """plotting_data[0] will be errorbars, plotting_data[1] will be a line"""
+    n = len(plotting_data[0][0])
+    nind = np.arange(n)
+    nx = nind+0.5
+    fig, ax = plt.subplots(figsize=(12, 6))
+    ax.plot(plotting_data[0][0], label=corr_labels[0])
+    ax.fill_between(nind, plotting_data[0][0] + plotting_data[0][1],
+                    plotting_data[0][0] - plotting_data[0][1], alpha=0.25)
+    ax.set_xlim([0, n])
+    ax.set_ylim([-1.25, 1.25])
+    ax.set_ylabel(r'CF$_{\sigma}$')
+    ax1 = ax.twinx()
+    ax1.plot(plotting_data[1], label=corr_labels[1], color='r')
+    ax1.set_ylim([-2.75, 2.75])
+    ax1.set_ylabel('SST anomalies ($^{\circ}$C)')
+
+    # ask matplotlib for the plotted objects and their labels
+    lines, labels = ax.get_legend_handles_labels()
+    lines2, labels2 = ax1.get_legend_handles_labels()
+    ax1.legend(lines + lines2, labels + labels2)
+
+    # now set x ticks
+    x_tick_range = len(plotting_data[0][0][::month_step])
+    ax.set_xticks(np.linspace(ax.get_xbound()[0], ax.get_xbound()[1], x_tick_range))
+    ax.minorticks_off()
+    ax1.set_xticks(np.linspace(ax1.get_xbound()[0], ax1.get_xbound()[1], x_tick_range))
+    ax1.minorticks_off()
+    ax.set_xticklabels([])
+    ax1.set_xticklabels(x_labels)
+    ax.set_xlabel('Month')
+    ax1.set_xlabel('Month')    
 
 def shift_dates(start, end, months):
     """Shifts a date by a given amount. Useful for shifting ONI."""
