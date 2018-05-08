@@ -120,29 +120,35 @@ plt.savefig(figure_dir + 'oni_' + narrowed_io[1][east_or_south] +
             '_{}_{}window'.format(region, 2*step+1))
 
 
-fig, axes = plt.subplots(2, 3, figsize=(12, 8), sharex=False, sharey=False)
-titles = ['EN', 'LN', 'Neutral']
-pos = [en, ln, ~en&~ln]
-for idx, ax in enumerate(axes.ravel()[0:3]):
-    ax.set_title(titles[idx])
-    x = cf_anoms_smoothed[0][pos[idx]]
-    histo = ax.hist(x)
-for idx, ax in enumerate(axes.ravel()[3:6]):
-    x = cf_anoms_smoothed[0][pos[idx]]
-    kernel = stats.gaussian_kde(x)
-    histo = np.histogram(x)
-    prob = np.zeros(len(histo[1])-1)
-    for i in range(0, len(histo[1])-1):
-        x_range = np.linspace(histo[1][i], histo[1][i+1], 100)
-        y = kernel(x_range)
-        area = np.trapz(y, x_range)
-        prob[i] = area
-    f_exp = sum(histo[0])*prob
-    chi_s = stats.chisquare(histo[0], f_exp)
-    ax.plot(np.linspace(min(x), max(x)),
-            kernel(np.linspace(min(x), max(x))))
-    ax.text(0.6, 0.75, r'$\chi^2={:3f}$'.format(chi_s[0]), transform=ax.transAxes)
-    ax.set_xlabel(r'CF$_{\sigma}$')
+plt.figure()
+plt.hist((cf_anoms_smoothed[0][~en&~ln], cf_anoms_smoothed[0][en],
+          cf_anoms_smoothed[0][ln]))
+plt.legend([r'Neutral', 'El Ni$\{~}$no', 'La Ni$\{~}$na'])
+plt.show()
+
+# fig, axes = plt.subplots(2, 3, figsize=(12, 8), sharex=False, sharey=False)
+# titles = ['EN', 'LN', 'Neutral']
+# pos = [en, ln, ~en&~ln]
+# for idx, ax in enumerate(axes.ravel()[0:3]):
+#     ax.set_title(titles[idx])
+#     x = cf_anoms_smoothed[0][pos[idx]]
+#     histo = ax.hist(x)
+# for idx, ax in enumerate(axes.ravel()[3:6]):
+#     x = cf_anoms_smoothed[0][pos[idx]]
+#     kernel = stats.gaussian_kde(x)
+#     histo = np.histogram(x)
+#     prob = np.zeros(len(histo[1])-1)
+#     for i in range(0, len(histo[1])-1):
+#         x_range = np.linspace(histo[1][i], histo[1][i+1], 100)
+#         y = kernel(x_range)
+#         area = np.trapz(y, x_range)
+#         prob[i] = area
+#     f_exp = sum(histo[0])*prob
+#     chi_s = stats.chisquare(histo[0], f_exp)
+#     ax.plot(np.linspace(min(x), max(x)),
+#             kernel(np.linspace(min(x), max(x))))
+#     ax.text(0.6, 0.75, r'$\chi^2={:3f}$'.format(chi_s[0]), transform=ax.transAxes)
+#     ax.set_xlabel(r'CF$_{\sigma}$')
 
 plt.suptitle(r'{} $n={}$'.format(region_to_string(region), sum(histo[0])))
 plt.savefig('hist_with_pdf_and_chi{}'.format(region))
