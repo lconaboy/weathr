@@ -479,22 +479,37 @@ an error when indexed as if it did.
         return [data[0], data[1], diffs, anoms]
 
 
-def smooth_data_with_window(cf, step):
+def smooth_data_with_window(cf, step, err=True):
     """Smooths the data with a window of 2*step + 1"""
-    data = cf[3]  # pull the data from cf
-    ucrt = cf[4]
-    start_idx = step
-    end_idx = len(data) - step
-    val = np.zeros(end_idx - start_idx)
-    err = np.zeros(end_idx - start_idx)
-    for i in range(start_idx, end_idx):
-        val[i-start_idx] = np.mean(data[i-step:i+step+1])
-        srt = np.sort(data[i-step:i+step+1])
-        rng = (srt[-2] - srt[1])/2  # take the second smallest and
-                                    # largest as the range
-        err[i-start_idx] = aiq(np.array([ucrt[i], rng]))  # aiq with error on anomaly
+    if err:
+        data = cf[3]  # pull the data from cf
+        ucrt = cf[4]
+        start_idx = step
+        end_idx = len(data) - step
+        val = np.zeros(end_idx - start_idx)
+        err = np.zeros(end_idx - start_idx)
+        for i in range(start_idx, end_idx):
+            val[i-start_idx] = np.mean(data[i-step:i+step+1])
+            srt = np.sort(data[i-step:i+step+1])
+            rng = (srt[-2] - srt[1])/2  # take the second smallest and
+            # largest as the range
+            err[i-start_idx] = aiq(np.array([ucrt[i], rng]))  # aiq
+                                                              # with
+                                                              # error
+                                                              # on
+                                                              # anomaly
     
-    return [val, err]
+        return [val, err]
+
+    else:
+        data = cf[3]  # pull the data from cf
+        start_idx = step
+        end_idx = len(data) - step
+        val = np.zeros(end_idx - start_idx)
+        for i in range(start_idx, end_idx):
+            val[i-start_idx] = np.mean(data[i-step:i+step+1])
+
+        return val
 
 
 def adjust_dates_to_smoothed_range(start, end, step):
