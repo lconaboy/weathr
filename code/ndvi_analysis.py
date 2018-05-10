@@ -123,7 +123,7 @@ def fit_sine_to_ndvi_means(region):
 
     return leastsq(optimize_func, [guess_std, guess_phase, guess_mean])[0]
 
-def plot_ndvi_anomalies(region, smooth=6):
+def ndvi_anomalies(region, smooth=6):
     mask = (1 - image_region(land_mask, weathr_regions[region])).astype(bool)
     path = ndvi_dir + ndvi_fmt
 
@@ -142,19 +142,106 @@ def plot_ndvi_anomalies(region, smooth=6):
     # anom_fit_smoothed = np.convolve(anom_fit, np.ones((smooth,))/smooth, mode='valid')
 
     anom_mean = monthlys / np.tile(avgs, 10) - 1
-    anom_mean_smoothed = np.convolve(anom_mean, np.ones((smooth,))/smooth, mode='valid')
+    anom_mean_smoothed = np.convolve(anom_mean, np.ones((smooth,))/smooth, mode='same')
+
+    return anom_mean_smoothed, anom_mean
+
+def plot_ndvi_anomalies(region, smooth=6):
+    # mask = (1 - image_region(land_mask, weathr_regions[region])).astype(bool)
+    # path = ndvi_dir + ndvi_fmt
+
+    # avgs = ndvi_monthly_means(region)
+
+    # fnames = sorted(glob.glob(ndvi_dir + ndvi_fmt.format('*', '*', region) + '.npy'))
+    # monthlys = np.dstack([np.mean(np.load(fname)[mask]) for fname in fnames]).ravel()
+
+    anom_mean_smoothed, anom_mean = ndvi_anomalies(region, smooth=smooth)
 
     plt.figure(figsize=(10.5,6))
     plt.bar(np.arange(len(anom_mean_smoothed)), anom_mean_smoothed, label='Anomaly from dataset mean')
     # plt.bar(np.arange(len(anom_fit_smoothed)), anom_fit_smoothed, label='Difference from fitted sine wave')
     # plt.ylim([0.2, np.max(monthlys) + 0.005])
-    plt.xlim(0, len(monthlys))
+    plt.xlim(0, len(anom_mean_smoothed))
     plt.xticks(np.arange(0, 10)*12, np.arange(2008, 2018), rotation=45)
     plt.title('{}-month smoothed NDVI anomalies for {} 2008-2018'.format(smooth, region_to_string(region)))
     plt.xlabel('Month')
     plt.ylabel(r'NDVI anomaly $x_i/\mu - 1$')
     plt.legend()
     plt.savefig(figure_dir + 'ndvi_anomalies_{}_smoothed_{}_months.png'.format(region, smooth))
+
+    return None
+
+# Reproduced here from coverage_analysis_functions.py without permission.
+def plot_two_with_one_fill_between(plotting_data, corr_labels, x_labels, month_step):
+    """plotting_data[0] will be errorbars, plotting_data[1] will be a line"""
+    n = len(plotting_data[0][0])
+    nind = np.arange(n)
+    nx = nind+0.5
+    fig, ax = plt.subplots(figsize=(12, 6))
+    ax.plot(plotting_data[0][0], label=corr_labels[0])
+    ax.fill_between(nind, plotting_data[0][0] + plotting_data[0][1],
+                    plotting_data[0][0] - plotting_data[0][1], alpha=0.25)
+    ax.set_xlim([0, n])
+    ax.set_ylim([-0.2, 0.2])
+    ax.set_ylabel(r'NDVI$_{\sigma}$')
+    ax1 = ax.twinx()
+    ax1.plot(plotting_data[1], label=corr_labels[1], color='r')
+    ax1.set_ylim([-2.75, 2.75])
+    ax1.set_ylabel('SST anomalies ($^{\circ}$C)')
+
+    # ask matplotlib for the plotted objects and their labels
+    lines, labels = ax.get_legend_handles_labels()
+    lines2, labels2 = ax1.get_legend_handles_labels()
+    ax1.legend(lines + lines2, labels + labels2)
+
+    # now set x ticks
+    x_tick_range = len(plotting_data[0][0][::month_step])
+    ax.set_xticks(np.linspace(ax.get_xbound()[0], ax.get_xbound()[1], x_tick_range))
+    ax.minorticks_off()
+    ax1.set_xticks(np.linspace(ax1.get_xbound()[0], ax1.get_xbound()[1], x_tick_range))
+    ax1.minorticks_off()
+    ax.set_xticklabels([])
+    ax1.set_xticklabels(x_labels)
+    ax.set_xlabel('Month')
+    ax1.set_xlabel('Month')
+
+    return None
+
+
+def plot_ndvi_with_oni(region, smooth=6):
+    from coverage_analysis_functions import (nino_range,
+                                             consecutive_anomalies,
+                                             month_and_year_labels)
+    # Load ONI
+    start = datetime.date(2008, 1, 1)
+    end = datetime.date(2018, 1, 1)
+    # Columns are: year, month, anomaly
+    nino = nino_range('detrend.nino34.ascii.txt', start, end)
+    # Find 3-month anomaly excess
+    tmm = np.convolve(nino[:, 2], np.ones((3,))/3, mode='same')
+    en = np.zeros_like(tmm, dtype=bool)
+    ln = np.zeros_like(tmm, dtype=bool)
+    for i in np.arange(len(tmm)):
+        if np.all(tmm[i:(i+5)] >= 0.5):  en[i:(i+5)] = True
+        if np.all(tmm[i:(i+5)] <= -0.5): ln[i:(i+5)] = True
+
+    corr_labels = ['NDVI', 'ONI']
+    plotting_data = [[ndvi_anomalies(region, smooth=smooth)[0],
+                      np.zeros_like(ndvi_anomalies(region, smooth=smooth)[0])],
+                     tmm]
+    month_step = 4
+    x_labels = month_and_year_labels(np.tile([1, 5, 9], 10), np.arange(2008, 2018), 4)    
+    plot_two_with_one_fill_between(plotting_data, corr_labels, x_labels, month_step)
+
+    plt.title('{}'.format(region_to_string(region)))
+    plt.axhline(linewidth=0.75, color='k')
+    plt.axhline(y=0.5, linewidth=0.75, color='k', linestyle='dashed')
+    plt.axhline(y=-0.5, linewidth=0.75, color='k', linestyle='dashed')
+    plt.savefig(figure_dir + 'ndvi_oni_{}_smoothed_{}.png'.format(region, smooth))
+    plt.show()
+
+    return None
+
 
 def do_analysis():
     regions = ('capetown', 'eastafrica')
@@ -166,7 +253,10 @@ def do_analysis():
 
         for smooth in smoothings:
             plot_ndvi_anomalies(region, smooth=smooth)
+            plot_ndvi_with_oni(region, smooth=smooth)
             plt.close()
+
+    return None
 
 # e.g usage
 # for year in np.arange(2013, 2018):
