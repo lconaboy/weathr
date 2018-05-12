@@ -11,7 +11,7 @@ import scipy.stats
 """Mark: to use this, just replace cf with ndvi data."""
 
 regions = ['capetown', 'eastafrica']
-east_or_south = 1  # 0 for south, 1 for east
+east_or_south = 0  # 0 for south, 1 for east
 region = regions[east_or_south]
 start = datetime.datetime.strptime('20081','%Y%m')
 end = datetime.datetime.strptime('201712','%Y%m')
@@ -83,18 +83,22 @@ year_labels = np.arange(min(narrowed_io[0][east_or_south][0]),
 
 x_labels = month_and_year_labels(month_labels, year_labels, month_step)
 # first plot the SWIO/WTIO and DMI (Indian Ocean)
-corr_labels = ['CF', 'DMI', narrowed_io[1][east_or_south]]
+# plot both ONI and DMI
+# corr_labels = ['CF', 'ONI', 'DMI']
 # plotting_data = [cf_anoms_smoothed, np.array(oni_anoms[-1]),
-#                 np.array(narrowed_io[0][east_or_south][2])]
+#                  np.array(narrowed_dmi[2])]
+# plot DMI and sst anomalies
+corr_labels = ['CF', 'DMI', narrowed_io[1][east_or_south]]
 plotting_data = [cf_anoms_smoothed, np.array(narrowed_dmi[2]),
                  np.array(narrowed_io[0][east_or_south][2])]
+
 # plot_three_with_inset_correlations(plotting_data, corr_labels)
 plot_three_with_one_fill_between(plotting_data, corr_labels, x_labels, month_step)
 plt.title('{}'.format(region_to_string(region)))
 plt.axhline(linewidth=1, color='k')
 plt.axhline(y=0.5, linewidth=1, color='k', linestyle='dashed')
 plt.axhline(y=-0.5, linewidth=1, color='k', linestyle='dashed')
-plt.savefig(figure_dir + 'cf_dmi_{}_{}window'.format(region, 2*step+1))
+plt.savefig(figure_dir + 'cf_oni_dmi_{}_{}window'.format(region, 2*step+1))
 
 # now plot the ONI (El Nino)
 corr_labels = ['CF', 'ONI']
