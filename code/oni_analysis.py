@@ -11,7 +11,7 @@ import scipy.stats
 """Mark: to use this, just replace cf with ndvi data."""
 
 regions = ['capetown', 'eastafrica']
-east_or_south = 0  # 0 for south, 1 for east
+east_or_south = 1  # 0 for south, 1 for east
 region = regions[east_or_south]
 start = datetime.datetime.strptime('20081','%Y%m')
 end = datetime.datetime.strptime('201712','%Y%m')
@@ -91,22 +91,20 @@ plotting_data = [cf_anoms_smoothed, np.array(narrowed_dmi[2]),
 # plot_three_with_inset_correlations(plotting_data, corr_labels)
 plot_three_with_one_fill_between(plotting_data, corr_labels, x_labels, month_step)
 plt.title('{}'.format(region_to_string(region)))
-plt.axhline(linewidth=0.75, color='k')
-plt.axhline(y=0.5, linewidth=0.75, color='k', linestyle='dashed')
-plt.axhline(y=-0.5, linewidth=0.75, color='k', linestyle='dashed')
-# plt.savefig(figure_dir + 'dmi_' + narrowed_io[1][east_or_south] +
-#            '_{}_{}window'.format(region, 2*step+1))
+plt.axhline(linewidth=1, color='k')
+plt.axhline(y=0.5, linewidth=1, color='k', linestyle='dashed')
+plt.axhline(y=-0.5, linewidth=1, color='k', linestyle='dashed')
+plt.savefig(figure_dir + 'cf_dmi_{}_{}window'.format(region, 2*step+1))
 
 # now plot the ONI (El Nino)
 corr_labels = ['CF', 'ONI']
 plotting_data = [cf_anoms_smoothed, np.array(oni_anoms[-1])]
 plot_two_with_one_fill_between(plotting_data, corr_labels, x_labels, month_step)
 plt.title('{}'.format(region_to_string(region)))
-plt.axhline(linewidth=0.75, color='k')
-plt.axhline(y=0.5, linewidth=0.75, color='k', linestyle='dashed')
-plt.axhline(y=-0.5, linewidth=0.75, color='k', linestyle='dashed')
-# plt.savefig(figure_dir + 'oni_' + narrowed_io[1][east_or_south] +
-#            '_{}_{}window'.format(region, 2*step+1))
+plt.axhline(linewidth=1, color='k')
+plt.axhline(y=0.5, linewidth=1, color='k', linestyle='dashed')
+plt.axhline(y=-0.5, linewidth=1, color='k', linestyle='dashed')
+plt.savefig(figure_dir + 'cf_oni_{}_{}m'.format(region, 2*step+1))
 
 
 plt.figure(figsize=(4,4))
@@ -115,7 +113,7 @@ plt.hist((cf_anoms_smoothed[0][~en&~ln], cf_anoms_smoothed[0][en],
 plt.legend([r'Neutral', r'El Ni$\mathrm{\tilde{n}}$o', r'La Ni$\mathrm{\tilde{n}}$a'])
 plt.title(region_to_string(region))
 plt.xlabel(r'CF$_{\sigma}$')
-# plt.savefig(figure_dir + 'cf_anoms_hist_' + region + 'oni_shift)
+plt.savefig(figure_dir + 'cf_anoms_hist_' + region)
 
 # now rainfall
 end_rainfall = datetime.datetime.strptime('201512','%Y%m')
@@ -144,12 +142,12 @@ def plot_rainfall_and_cloud(cf_anoms_smoothed, rf_anoms_smoothed, legends, x_lab
     fig, ax1 = plt.subplots(figsize=(5.2, 5))
     plt.axhline(linewidth=1, color='k')
     ax1.plot(cf_anoms_smoothed[0], label=legends[0])
-    ax1.set_ylim([-0.6, 0.6])
+    ax1.set_ylim([-0.8, 0.8])
     ax1.set_ylabel(legends[0]+r'$_{\sigma}$')
     ax2 = ax1.twinx()
     ax2.plot(rf_anoms_smoothed, label=legends[1], color='r')
     ax2.set_ylabel(legends[1]+r'$_{\sigma}$')
-    ax2.set_ylim([-0.8, 0.8])
+    ax2.set_ylim([-0.6, 0.6])
     lines1, labels1 = ax1.get_legend_handles_labels()
     lines2, labels2 = ax2.get_legend_handles_labels()
     ax1.legend(lines1 + lines2, labels1 + labels2, loc=2)
@@ -160,6 +158,6 @@ def plot_rainfall_and_cloud(cf_anoms_smoothed, rf_anoms_smoothed, legends, x_lab
     ax2.set_xlabel('Months')
     plt.title(region_to_string(region))
     plt.tight_layout()
-    plt.savefig('rf_cf_anomalies_{}'.format(region))
+    plt.savefig(figure_dir + 'rf_cf_anomalies_{}'.format(region))
 
 plot_rainfall_and_cloud(cf_anoms_smoothed, rf_anoms_smoothed, legends, x_labels)
