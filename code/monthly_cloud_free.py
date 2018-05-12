@@ -8,8 +8,10 @@ from PIL import Image
 from skimage import filters
 from scipy.signal import medfilt
 from util import *
-from cloud_free import threshold, cloud_free
+from cloud_free import threshold, cloud_free, variable_threshold
 
+cf_dir = 'data/cf/'
+thr_dir = 'data/thr/'
 
 def images_monthly_masked(fnames, dnames, y, m, rgn):
     fnames = np.array(fnames)  # array for logical idxing
@@ -27,7 +29,7 @@ def images_yearly_masked(fnames, dnames, y, rgn):
     return images_masked
 
 # year of data to look at
-years = [2017]
+years = [2014]
 bands = ('vis6', 'vis8', 'nir')  # band to look at
 region = 'capetown'
 
@@ -39,24 +41,25 @@ for band in bands:
     fnames = glob.glob(paths[1])  # filenames
 
     thr = np.zeros(shape=(slice_d(weathr_regions[region][0]),
-                          slice_d(weathr_regions[region][1]),
-                          len(years)))
+                          slice_d(weathr_regions[region][1])))
+
     vals = np.zeros(shape=(slice_d(weathr_regions[region][0]),
-                           slice_d(weathr_regions[region][1]),
-                           len(months)))
+                           slice_d(weathr_regions[region][1])))
 
     for idx, year in enumerate(years):
         images_masked = images_yearly_masked(fnames, dnames, year,
                                              weathr_regions[region])
-        thr = threshold(images_masked)
+#        thr = threshold(images_masked)
+        thr = variable_threshold(images_masked)
 
-        fname = '{}_{}_{}_thr'.format(year, band, region)
+#        fname = thr_dir + '{}_{}_{}_thr'.format(year, band, region)
+        fname = thr_dir + '{}_{}_{}_vthr'.format(year, band, region)
         np.save(fname, thr)
-        
-        # for jdx, month in enumerate(months):
-        #     images_masked = images_monthly_masked(fnames, dnames,
-        #                             year, month, weathr_regions[region])
-        #     vals[:, :, jdx] = cloud_free(images_masked, thr[:, :, idx])
 
-        #     fname = '{}_{}_{}_{}_cf'.format(year, month, band, region)
-        #     np.save(fname, vals)
+        for jdx, month in enumerate(months):
+            images_masked = images_monthly_masked(fnames, dnames,
+                                    year, month, weathr_regions[region])
+            vals = cloud_free(images_masked, thr)
+
+            fname = cf_dir + '{}_{}_{}_{}_cf'.format(year, month, band, region)
+            np.save(fname, vals)
