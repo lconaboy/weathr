@@ -172,18 +172,19 @@ def false_colour(rfn, gfn, bfn):
 
     return fcol
 
-def false_colour_npy(rfn, gfn, bfn, month):
+def false_colour_npy(rfn, gfn, bfn):
     r = np.load(rfn)
     g = np.load(gfn)
     b = np.load(bfn)
 
     br = np.max([r,g,b])
+    print(br)
     
     fcol = np.zeros(shape=(r.shape[0], r.shape[1], 3))
 
-    fcol[:, :, 0] = r[:, :, month]/br
-    fcol[:, :, 1] = g[:, :, month]/br
-    fcol[:, :, 2] = b[:, :, month]/br
+    fcol[:, :, 0] = r/br
+    fcol[:, :, 1] = g/br
+    fcol[:, :, 2] = b/br
 
     return fcol
 
