@@ -44,7 +44,7 @@ new_start, new_end = adjust_dates_to_smoothed_range(start, end, step-1)
 # new_start, new_end = shift_dates(new_start, new_end, shift)
 nino = nino_range('detrend.nino34.ascii.txt', new_start, new_end)
 # pick out consecutive anomalies
-oni_anoms = consecutive_anomalies(nino, new_start, new_end)
+oni_anoms = consecutive_anomalies(nino)
 en = np.array(oni_anoms[2])
 ln = np.array(oni_anoms[3])
 tot = np.ones(shape=oni_anoms[2].shape, dtype=bool)  # idxs for all data

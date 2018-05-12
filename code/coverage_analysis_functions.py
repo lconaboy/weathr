@@ -62,7 +62,7 @@ def to_idx(nino, arg):
     return idxs
 
 
-def consecutive_anomalies(nino, start, end):
+def consecutive_anomalies(nino):
     """Takes the Nino 3.4 anomaly data (text file) where the first column
     is YR data, second is M data and final is ANOM data. Converts to
     ONI anomalies, which are where 3-month running means of the Nino
