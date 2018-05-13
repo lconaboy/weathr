@@ -90,7 +90,8 @@ def plot_ndvi_monthly_and_means(region):
     monthlys = np.dstack([np.mean(np.load(fname)[mask]) for fname in fnames]).ravel()
 
     plt.figure(figsize=(10.5,6))
-    plt.bar(np.arange(len(monthlys)), monthlys, label='Monthly NDVI')
+    # plt.bar(np.arange(len(monthlys)), monthlys, label='Monthly NDVI')
+    plt.plot(monthlys, label='Monthly NDVI')
     plt.plot(np.tile(avgs, 10), c='r', label='Average monthly NDVI for whole dataset')
     plt.ylim([np.min(monthlys)-0.05*np.min(monthlys), np.max(monthlys) + 0.05*np.max(monthlys)])
     plt.xlim(0, len(monthlys))
@@ -158,7 +159,8 @@ def plot_ndvi_anomalies(region, smooth=6):
     anom_mean_smoothed, anom_mean = ndvi_anomalies(region, smooth=smooth)
 
     plt.figure(figsize=(10.5,6))
-    plt.bar(np.arange(len(anom_mean_smoothed)), anom_mean_smoothed, label='Anomaly from dataset mean')
+    # plt.bar(np.arange(len(anom_mean_smoothed)), anom_mean_smoothed, label='Anomaly from dataset mean')
+    plt.plot(anom_mean_smoothed, label='Anomaly from dataset mean')
     # plt.bar(np.arange(len(anom_fit_smoothed)), anom_fit_smoothed, label='Difference from fitted sine wave')
     # plt.ylim([0.2, np.max(monthlys) + 0.005])
     plt.xlim(0, len(anom_mean_smoothed))
@@ -207,6 +209,50 @@ def plot_two_with_one_fill_between(plotting_data, corr_labels, x_labels, month_s
 
     return None
 
+def plot_ndvi_with_dmi(region, smooth=6):
+    from coverage_analysis_functions import (nino_range,
+                                             consecutive_anomalies,
+                                             month_and_year_labels,
+                                             load_swio, narrow_swio,
+                                             swio_three_monthly_means,
+                                             subtract_month, add_month)
+
+    start_date = datetime.datetime.strptime('20081','%Y%m')
+    end_date = datetime.datetime.strptime('20181','%Y%m')
+
+    dmi_datetime, dmi_anoms = np.array(load_swio('dmi.nc', 'DMI'))
+    narrowed_dmi_datetime = dmi_datetime[((dmi_datetime > start_date) & (dmi_datetime < end_date))]
+    narrowed_dmi = dmi_anoms[((dmi_datetime > start_date) & (dmi_datetime < end_date))]
+    # DMI comes with multiple values per month, so the following takes
+    # all values for a particular month and averages them. List
+    # comprehensions for the win. This would not work as expected if
+    # there were some months without data, but hopefully that isn't
+    # the case here.
+    narrowed_dmi = np.array([
+        np.mean(narrowed_dmi[[((d.year == year) & (d.month == month)) for d in narrowed_dmi_datetime]])
+        for year in np.arange(2008, 2018)
+        for month in np.arange(1, 13)])
+    # dmi_tmm = swio_three_monthly_means(dmi_datetime, dmi_anoms)
+    dmi_tmm = np.convolve(narrowed_dmi, np.ones((3,))/3, mode='same')
+
+    corr_labels = ['NDVI', 'DMI']
+    plotting_data = [[ndvi_anomalies(region, smooth=smooth)[0],
+                      np.zeros_like(ndvi_anomalies(region, smooth=smooth)[0])],
+                     dmi_tmm]
+
+    month_step = 4
+    x_labels = month_and_year_labels(np.tile([1, 5, 9], 10), np.arange(2008, 2018), 4)
+
+    plot_two_with_one_fill_between(plotting_data, corr_labels, x_labels, month_step)
+
+    plt.title('{}'.format(region_to_string(region)))
+    plt.axhline(linewidth=0.75, color='k')
+    plt.axhline(y=0.5, linewidth=0.75, color='k', linestyle='dashed')
+    plt.axhline(y=-0.5, linewidth=0.75, color='k', linestyle='dashed')
+    plt.savefig(figure_dir + 'ndvi_dmi_{}_smoothed_{}.png'.format(region, smooth))
+    # plt.show()
+
+    return None
 
 def plot_ndvi_with_oni(region, smooth=6):
     from coverage_analysis_functions import (nino_range,
@@ -238,14 +284,14 @@ def plot_ndvi_with_oni(region, smooth=6):
     plt.axhline(y=0.5, linewidth=0.75, color='k', linestyle='dashed')
     plt.axhline(y=-0.5, linewidth=0.75, color='k', linestyle='dashed')
     plt.savefig(figure_dir + 'ndvi_oni_{}_smoothed_{}.png'.format(region, smooth))
-    plt.show()
+    # plt.show()
 
     return None
 
 
 def do_analysis():
     regions = ('capetown', 'eastafrica')
-    smoothings = (3, 6, 12)
+    smoothings = (3, 5, 6, 12)
 
     for region in regions:
         plot_ndvi_monthly_and_means(region)
@@ -254,6 +300,7 @@ def do_analysis():
         for smooth in smoothings:
             plot_ndvi_anomalies(region, smooth=smooth)
             plot_ndvi_with_oni(region, smooth=smooth)
+            plot_ndvi_with_dmi(region, smooth=smooth)
             plt.close()
 
     return None
