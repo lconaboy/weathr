@@ -207,41 +207,6 @@ def plot_two_with_one_fill_between(plotting_data, corr_labels, x_labels, month_s
 
     return None
 
-def plot_ndvi_with_dmi(region, smooth=6):
-    from coverage_analysis_functions import (nino_range,
-                                             consecutive_anomalies,
-                                             month_and_year_labels,
-                                             load_swio, narrow_swio,
-                                             swio_three_monthly_means,
-                                             subtract_month, add_month)
-
-    start_date = datetime.datetime.strptime('20081','%Y%m')
-    end_date = datetime.datetime.strptime('20181','%Y%m')
-
-    dmi_datetime, dmi_anoms = np.array(load_swio('dmi.nc', 'DMI'))
-    narrowed_dmi = dmi_anoms[(np.argwhere(dmi_datetime > start_date)) &
-                             (np.argwhere(dmi_datetime < end_date))]
-    # dmi_tmm = swio_three_monthly_means(dmi_datetime, dmi_anoms)
-    dmi_tmm = np.convolve(dmi_anoms[3], np.ones((3,))/3, mode='same')
-
-    corr_labels = ['NDVI', 'DMI']
-    plotting_data = [[ndvi_anomalies(region, smooth=smooth)[0],
-                      np.zeros_like(ndvi_anomalies(region, smooth=smooth)[0])],
-                     dmi_tmm]
-
-    month_step = 4
-    x_labels = month_and_year_labels(np.tile([1, 5, 9], 10), np.arange(2008, 2018), 4)
-
-    plot_two_with_one_fill_between(plotting_data, corr_labels, x_labels, month_step)
-
-    plt.title('{}'.format(region_to_string(region)))
-    plt.axhline(linewidth=0.75, color='k')
-    plt.axhline(y=0.5, linewidth=0.75, color='k', linestyle='dashed')
-    plt.axhline(y=-0.5, linewidth=0.75, color='k', linestyle='dashed')
-    # plt.savefig(figure_dir + 'ndvi_oni_{}_smoothed_{}.png'.format(region, smooth))
-    plt.show()
-
-    return None
 
 def plot_ndvi_with_oni(region, smooth=6):
     from coverage_analysis_functions import (nino_range,
@@ -289,7 +254,6 @@ def do_analysis():
         for smooth in smoothings:
             plot_ndvi_anomalies(region, smooth=smooth)
             plot_ndvi_with_oni(region, smooth=smooth)
-            plot_ndvi_with_dmi(region, smooth=smooth)
             plt.close()
 
     return None
