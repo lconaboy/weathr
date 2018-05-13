@@ -249,7 +249,7 @@ def plot_ndvi_with_dmi(region, smooth=6):
     plt.axhline(y=0.5, linewidth=0.75, color='k', linestyle='dashed')
     plt.axhline(y=-0.5, linewidth=0.75, color='k', linestyle='dashed')
     plt.savefig(figure_dir + 'ndvi_dmi_{}_smoothed_{}.png'.format(region, smooth))
-    plt.show()
+    # plt.show()
 
     return None
 
@@ -283,14 +283,14 @@ def plot_ndvi_with_oni(region, smooth=6):
     plt.axhline(y=0.5, linewidth=0.75, color='k', linestyle='dashed')
     plt.axhline(y=-0.5, linewidth=0.75, color='k', linestyle='dashed')
     plt.savefig(figure_dir + 'ndvi_oni_{}_smoothed_{}.png'.format(region, smooth))
-    plt.show()
+    # plt.show()
 
     return None
 
 
 def do_analysis():
     regions = ('capetown', 'eastafrica')
-    smoothings = (3, 6, 12)
+    smoothings = (3, 5, 6, 12)
 
     for region in regions:
         plot_ndvi_monthly_and_means(region)
