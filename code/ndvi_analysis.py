@@ -90,7 +90,8 @@ def plot_ndvi_monthly_and_means(region):
     monthlys = np.dstack([np.mean(np.load(fname)[mask]) for fname in fnames]).ravel()
 
     plt.figure(figsize=(10.5,6))
-    plt.bar(np.arange(len(monthlys)), monthlys, label='Monthly NDVI')
+    # plt.bar(np.arange(len(monthlys)), monthlys, label='Monthly NDVI')
+    plt.plot(monthlys, label='Monthly NDVI')
     plt.plot(np.tile(avgs, 10), c='r', label='Average monthly NDVI for whole dataset')
     plt.ylim([np.min(monthlys)-0.05*np.min(monthlys), np.max(monthlys) + 0.05*np.max(monthlys)])
     plt.xlim(0, len(monthlys))
@@ -158,7 +159,8 @@ def plot_ndvi_anomalies(region, smooth=6):
     anom_mean_smoothed, anom_mean = ndvi_anomalies(region, smooth=smooth)
 
     plt.figure(figsize=(10.5,6))
-    plt.bar(np.arange(len(anom_mean_smoothed)), anom_mean_smoothed, label='Anomaly from dataset mean')
+    # plt.bar(np.arange(len(anom_mean_smoothed)), anom_mean_smoothed, label='Anomaly from dataset mean')
+    plt.plot(anom_mean_smoothed, label='Anomaly from dataset mean')
     # plt.bar(np.arange(len(anom_fit_smoothed)), anom_fit_smoothed, label='Difference from fitted sine wave')
     # plt.ylim([0.2, np.max(monthlys) + 0.005])
     plt.xlim(0, len(anom_mean_smoothed))
