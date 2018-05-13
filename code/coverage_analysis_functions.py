@@ -39,7 +39,8 @@ def subtract_month(start):
 
 def load_month(date, region):
     """x[0] is the cloud mask, x[1] is [mean cloud fraction, standard deviation]"""
-    return np.load('{}_{}_multiband_{}_cloud.npy'.format(date.month, date.year, region))
+    return np.load('data/cloud/{}_{}_multiband_{}_cloud.npy'.format(date.month,
+                                                                    date.year, region))
 
 
 def to_idx(nino, arg):
@@ -124,7 +125,8 @@ def consecutive_anomalies(nino):
 
 def load_month_from_anoms(month, year, region):
     """x[0] is the cloud mask, x[1] is [mean cloud fraction, standard deviation]"""
-    return np.load('{}_{}_multiband_{}_cloud.npy'.format(month, year, region))
+    return np.load('data/cloud/{}_{}_multiband_{}_cloud.npy'.format(month,
+                                                                    year, region))
 
 
 def load_seasonal(seas, region, frac):
