@@ -229,8 +229,7 @@ def plot_ndvi_with_dmi(region, smooth=6):
     # there were some months without data, but hopefully that isn't
     # the case here.
     narrowed_dmi = np.array([
-        np.mean(narrowed_dmi[list(map(lambda d: ((d.year == year) & (d.month == month)),
-                                      narrowed_dmi_datetime))])
+        np.mean(narrowed_dmi[[((d.year == year) & (d.month == month)) for d in narrowed_dmi_datetime]])
         for year in np.arange(2008, 2018)
         for month in np.arange(1, 13)])
     # dmi_tmm = swio_three_monthly_means(dmi_datetime, dmi_anoms)
