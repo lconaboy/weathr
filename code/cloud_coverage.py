@@ -4,79 +4,163 @@ from PIL import Image
 from glob import glob
 from util import *
 
-def cloud_coverage(fnames, dnames, y, thr, rgn):
-    months = np.arange(1,13)
-    fnames = np.array(fnames)  # for logical idxing
-    # number of land pixels is the same each time
-    n_land_pix = np.sum(land_mask == 0)
 
-    monthly_fraction = np.zeros(len(set(months)))
-    monthly_fraction_sig = np.zeros(len(set(months)))
+def split_region(w_region, direction):
+    x = w_region[0]
+    y = w_region[1]
 
-    for m in months:
-        images_masked = images_monthly_masked(fnames, dnames, y, m, rgn)
-        cloud_fraction = np.zeros(images_masked.shape[2])
+    north = [slice(x.start, x.start + slice_d(x)//2), y]
+    south = [slice(x.start + slice_d(x)//2, x.stop), y]
+    east = [x, slice(y.start, y.start + slice_d(y)//2)]
+    west = [x, slice(y.start + slice_d(y)//2, y.stop)]
 
-        for j in range(0, images_masked.shape[2]):
-            cloud_pix = images_masked[:, :, j] > thr[:, :, m-1]
-            n_cloud_pix = np.sum(cloud_pix)
-            cloud_fraction[j] = n_cloud_pix/n_land_pix
+    # raw slices (i.e. slice(0, n)) for thresholds
+    north_raw = [slice(0, slice_d(north[0]), None),
+                 slice(0, slice_d(north[1]), None),]
+    south_raw = [slice(slice_d(south[0]), 2*slice_d(south[0]), None),
+                 slice(0, slice_d(south[1]), None),]
+    
+    east_raw = [slice(0, slice_d(east[0]), None),
+                slice(slice_d(east[1]), 2*slice_d(east[1]), None)]
+    west_raw = [slice(0, slice_d(west[0]), None),
+                slice(0, slice_d(west[1]), None)]
 
-        monthly_fraction[m-1] = np.mean(cloud_fraction)
-        monthly_fraction_sig[m-1] = np.std(cloud_fraction)
+    if direction == 'n': return [north, north_raw]
+    if direction == 's': return [south, south_raw]
+    if direction == 'e': return [east, east_raw]
+    if direction == 'w': return [west, west_raw]
 
-    return (monthly_fraction, monthly_fraction_sig)
 
+def cloud_coverage(region, y, m, direction=None):
+    """Multiband cloud coverage algorithm. Now can split regions into north 'n', 
+    south 's', east 'e' and west 'w'."""
+    if not direction:
+        # bands for multiband
+        bands = ('vis6','vis8')
+        # initialise land pixel constants
+        n_land_pix = np.sum(image_region(land_mask,
+                                         weathr_regions[region]) == 0)  # count
+        i_land_pix = image_region(land_mask, weathr_regions[region]) == 0  # indices
 
-y = 2008
-band = 'vis8'
+        dnames = np.array(parse_data_datetime(path_to_weathr_data(bands[0])[0],
+                                              bands[0]))
+        # image shape
+        xshape = slice_d(weathr_regions[region][0])  # image x length
+        yshape = slice_d(weathr_regions[region][1])  # image y length
+        idxs = sep_months(dnames, y, m)  # need indexes to work out
+        # number of days in month
+        zshape = sum(np.array(idxs)==True)  # number of days
+        # preallocate
+        img = np.zeros(shape=(xshape, yshape, zshape, len(bands)))  # images
+        thr = np.zeros(shape=(xshape, yshape, len(bands)))  # thresholds
+        cld = np.zeros(shape=(xshape, yshape, zshape))  # cloud masks
+        cov = np.zeros(zshape)  # coverage
 
-# need to convert to array for logical indexing
-fnames = np.array(glob.glob(path_to_weathr_data(band)[1]))
-dnames = parse_data_datetime(path_to_weathr_data(band)[0], band)
+        # now load all of the images and thresholds that we will need
+        for idx, band in enumerate(bands):
+            # first, load thresholds
+            thr[:, :, idx] = np.load('data/thr/{}_{}_{}_thr.npy'.format(y, band, region))
 
-thr = np.load('vis8_2017_thr.npy')
+            # now for the images
+            # get full list datetime names and convert to array
+            dnames = np.array(parse_data_datetime(path_to_weathr_data(band)[0],
+                                                  band))
+            # pick out relevant months
+            dnames = dnames[sep_months(dnames, y, m)]
+            # convert back to filenames
+            fnames = parse_data_string(dnames, path_to_weathr_data(band)[0],
+                                       band)
+            # load
+            tmp = load_images_with_region(fnames, weathr_regions[region])  # images
+            img[:, :, :, idx] = tmp
 
-cloud = cloud_coverage(fnames, dnames, y, thr, weathr_regions['capetown'])
+        # now for multiband cloud coverage -- would vectorising this make it
+        # faster? is it worth my precious time?
+        for jdx in range(0, zshape):
+            # initialise for comparisons
+            arr = np.zeros(shape=(xshape, yshape, len(bands)), dtype=bool)
+            for kdx in range(0, len(bands)):
+                # compare the image for that day with the threshold in the
+                # relevant band
+                arr[:, :, kdx] = img[:, :, jdx, kdx] > thr[:, :, kdx]
 
-monthly = cloud[0]
-monthly_sig = cloud[1]
+            # numpy sums return Boolean values
+            # (i.e. np.sum([True, True]) = True)
+            cld[:, :, jdx] = np.sum(arr, axis=2, dtype=bool)  # mask
+            cov[jdx] = sum(cld[:,:,jdx][i_land_pix])/n_land_pix  # fraction
 
-monthly_fn = 'cc_monthly_' + str(y) + '_' + band + '_newdata'
+        # using builtin sum over the month returns a heatmap
+        # of cloud coverage
+        cld = cld.sum(2)
+        cov = np.array([np.mean(cov), np.std(cov)])
 
-np.save(monthly_fn, np.array([monthly, monthly_sig]))
+        np.save('./data/cloud/{}_{}_multiband_{}_cloud'.format(m, y, region),
+                [cld, cov])
+        print('Calculated cloud coverage for {}/{}'.format(m, y), end='\r')
 
-# plt.figure(figsize=(6, 4))
-# plt.plot(daily, color='#A93226')
-# plt.title('20' + year + ' - ' + band)
-# plt.legend(['Daily'])
-# plt.xlabel('Day')
-# plt.ylabel('Cloud Fraction')
-# plt.savefig(daily_fn)
-# plt.show()
+    else:
+        # bands for multiband
+        bands = ('vis6','vis8')
+        # split region into direction
+        w_region, w_region_thr = split_region(weathr_regions[region], direction)
+        
+        # initialise land pixel constants
+        n_land_pix = np.sum(image_region(land_mask, w_region) == 0)  # count
+        i_land_pix = image_region(land_mask, w_region) == 0  # indices
 
-# plt.figure()
-# plt.plot(monthly, color='#229954')
-# plt.title('20' + year + ' - ' + band)
-# plt.xlabel('Month')
-# plt.ylabel('Cloud Fraction')
-# plt.legend(['Monthly'])
-# plt.savefig(month_fn)
-# plt.show()
+        dnames = np.array(parse_data_datetime(path_to_weathr_data(bands[0])[0],
+                                              bands[0]))
+        # image shape
+        xshape = slice_d(w_region[0])  # image x length
+        yshape = slice_d(w_region[1])  # image y length
+        idxs = sep_months(dnames, y, m)  # need indexes to work out
+        # number of days in month
+        zshape = sum(np.array(idxs)==True)  # number of days
+        # preallocate
+        img = np.zeros(shape=(xshape, yshape, zshape, len(bands)))  # images
+        thr = np.zeros(shape=(xshape, yshape, len(bands)))  # thresholds
+        cld = np.zeros(shape=(xshape, yshape, zshape))  # cloud masks
+        cov = np.zeros(zshape)  # coverage
 
-# new = np.load('cc_monthly_2017_vis8_newdata.npy')
-# old = np.load('cc_monthly_2008_vis8_newdata.npy')
-# plt.figure()
-# plt.plot(new[0], color='r')
-# plt.plot(new[1], color='b')
-# #plt.errorbar(np.arange(1,13), new[0], new[1], color='r')
-# #plt.errorbar(np.arange(1,13), old[0], old[1], color='b')
-# plt.xlabel('Month')
-# plt.ylabel('Cloud Fraction')
-# plt.ylim([0, 0.15])
-# plt.xlim([0,11])
-# plt.legend(['2017', '2008'])
-# plt.title('VIS8 Monthly Cloud Fraction')
-# plt.tight_layout()
-# plt.savefig('cc_monthly_0817_vis8_newdata')
-# plt.show()
+        # now load all of the images and thresholds that we will need
+        for idx, band in enumerate(bands):
+            # first, load thresholds and slice to new region
+            thr[:, :, idx] = np.load('data/thr/{}_{}_{}_thr.npy'.format(y, band,
+                                                            region))[w_region_thr]
+
+            # now for the images
+            # get full list datetime names and convert to array
+            dnames = np.array(parse_data_datetime(path_to_weathr_data(band)[0],
+                                                  band))
+            # pick out relevant months
+            dnames = dnames[sep_months(dnames, y, m)]
+            # convert back to filenames
+            fnames = parse_data_string(dnames, path_to_weathr_data(band)[0],
+                                       band)
+            # load
+            tmp = load_images_with_region(fnames, w_region)  # images
+            img[:, :, :, idx] = tmp
+
+        # now for multiband cloud coverage -- would vectorising this make it
+        # faster? is it worth my precious time?
+        for jdx in range(0, zshape):
+            # initialise for comparisons
+            arr = np.zeros(shape=(xshape, yshape, len(bands)), dtype=bool)
+            for kdx in range(0, len(bands)):
+                # compare the image for that day with the threshold in the
+                # relevant band
+                arr[:, :, kdx] = img[:, :, jdx, kdx] > thr[:, :, kdx]
+
+            # numpy sums return Boolean values
+            # (i.e. np.sum([True, True]) = True)
+            cld[:, :, jdx] = np.sum(arr, axis=2, dtype=bool)  # mask
+            cov[jdx] = sum(cld[:,:,jdx][i_land_pix])/n_land_pix  # fraction
+
+        # using builtin sum over the month returns a heatmap
+        # of cloud coverage
+        cld = cld.sum(2)
+        cov = np.array([np.mean(cov), np.std(cov)])
+
+        np.save('./data/cloud/{}_{}_multiband_{}_{}_cloud'.format(m, y,
+                                                    region, direction), [cld, cov])
+        print('Calculated cloud coverage for {}/{}'.format(m, y), end='\r')
