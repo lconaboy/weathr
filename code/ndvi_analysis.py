@@ -161,6 +161,10 @@ def plot_ndvi_anomalies(region, smooth=6):
     plt.figure(figsize=(10.5,6))
     # plt.bar(np.arange(len(anom_mean_smoothed)), anom_mean_smoothed, label='Anomaly from dataset mean')
     plt.plot(anom_mean_smoothed, label='Anomaly from dataset mean')
+    plt.fill_between(np.arange(len(anom_mean_smoothed)), anom_mean_smoothed, 0, color='olive',
+                     where=anom_mean_smoothed>=0, interpolate=True)
+    plt.fill_between(np.arange(len(anom_mean_smoothed)), anom_mean_smoothed, 0, color='brown',
+                     where=anom_mean_smoothed<0, interpolate=True)
     # plt.bar(np.arange(len(anom_fit_smoothed)), anom_fit_smoothed, label='Difference from fitted sine wave')
     # plt.ylim([0.2, np.max(monthlys) + 0.005])
     plt.xlim(0, len(anom_mean_smoothed))
