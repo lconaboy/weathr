@@ -99,7 +99,11 @@ def path_to_weathr_data(band):
 
 def region_to_string(region):
     trans = {'capetown': 'South Africa',  # This is dumb. Should really stop calling it capetown.
+             'capetown_w': 'Western South Africa',
+             'capetown_e': 'Eastern South Africa',
              'eastafrica': 'East Africa',
+             'eastafrica_n': 'Northern East Africa',
+             'eastafrica_s': 'Southern East Africa',
              'egypt': 'Egypt',
              'africa': 'Africa'
     }
