@@ -1,4 +1,4 @@
-\documentclass[12pt]{article}
+\documentclass[12pt, twocolumn, x11names]{article}
 
 \usepackage{amsmath}
 \usepackage{hyperref}
@@ -8,7 +8,7 @@
 \captionsetup[figure]{font=small}
 
 
-\usepackage{multicol}
+% \usepackage{multicol}
 \setlength{\columnsep}{0.5cm}
 \setlength{\parskip}{0pt}
 
@@ -34,17 +34,20 @@
   An abstract.
 \end{abstract}
 
-\begin{multicols}{2}
+% \begin{multicols}{2}
 
 \input{introduction}
+\input{data}
 \input{method}
 %% \input{results}
 %% \input{discussion}
 %% \input{future}
 
-\end{multicols}
+% \end{multicols}
 
 \cite{*}
+\onecolumn{
 \bibliography{refs}
+}
 
 \end{document}

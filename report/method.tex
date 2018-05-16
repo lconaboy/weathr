@@ -1,46 +1,78 @@
 \section{Method}
 
-Here we will discuss our implementation of cloud coverage analysis,
-NDVI analysis, with use of beautiful flow charts. We should illustrate
-the effectiveness of our analysis on test data.
+In this section we discuss the way in which we process and analyse the data we
+obtain from EUMETSAT. First we detail the process of thresholding, which we use
+to distinguish between cloud and land pixels. Then, we explain how these
+thresholds are used to create useful data products from the raw data.
 
-\subsection{Thresholds}
-Perhaps the most essential part of processing the EUMETSAT images is the ability
-to differentiate between cloud and land. In order to do this, we rely on the
-fact that clouds have a much higher reflectance than areas of land (notable
-exceptions to this are snow, ice and salt pans). On a clear day any given pixel
-should have a value that corresponds to that pixel's ``true'' value, with some
-small variation contributed by shadows cast by nearby clouds, the variation in
-\emph{solar zenith angle} throughout the year, and atmospheric interference
-effects. On a cloudy day a pixel's value will be systematically pulled towards
-higher than ``true'' values. It follows then that the distribution of a pixel's
-value will be bimodal, with the lower peak corresponding to the ``true'' ground
-value, and the large peak corresponding to cloudy values.
+\subsection{Thresholding}
+% part about skewing unnecessary?
+The most essential part of processing the EUMETSAT images is the ability to
+differentiate between cloud and land. Clouds have a much higher reflectance than
+land (notable exceptions to this are snow, ice and salt pans) -- if mistakenly
+identified as land pixels, they will erroneously skew the value of those pixels
+to higher values. On a clear day any given pixel should have a value that
+corresponds to that pixel's ``true'' value, with some small variation
+contributed by shadows cast by nearby clouds, the variation in \emph{solar
+  zenith angle} throughout the year, and atmospheric interference effects. On a
+cloudy day a pixel's value will be systematically pulled towards higher than
+``true'' values. It follows then that the distribution of a pixel's value will
+be bimodal, with the lower peak corresponding to the ``true'' ground value, and
+the large peak corresponding to cloudy values.
 
-The task is now one of producing thresholds that reliably separate the two
-peaks. Otsu's method \cite{gonzalez2008} separates pixels into two groups, or
+The task is then one of producing thresholds that reliably separate the two
+peaks. Otsu's method \citep{gonzalez2008} separates pixels into two groups, or
 \emph{classes}, by maximising the variance between these classes, making it an
 optimum method for thresholding \footnote{We have made use of \texttt{scipy}'s
   Otsu thresholding implementation.}. An example of Otsu thresholding at work is
 shown in Figure \ref{fig:otsu} for a random pixel.
-\begin{center}
-    \includegraphics[width=\linewidth]{figures/otsu_bimodal.pdf}
-    \captionof{figure}{The histogram of pixel values for a random pixel. Shown
-      by the red line is the threshold calculated using Otsu's method -- it can
-      be seen how well this method separates the two peaks.}
+\begin{figure}
+  \centering
+    \includegraphics[width=0.8\linewidth]{figures/otsu_bimodal.pdf}
+    \caption{The histogram of pixel values for a random pixel. Shown by the
+      vertical line is the threshold calculated using Otsu's method -- it can be
+      seen how well this method separates the two peaks.}
     \label{fig:otsu}
-\end{center}
-Now that we have the method for calculating the threshold of a single pixel all
-that remains is to apply it to the entire image, the process for doing so is
-detialed in Figure \ref{fig:thr_fc}.
-% how do I put tikz in?
-%% \begin{center}
-%%   \input{threshold_flowchart.tikz}
-%%   \captionof{figure}{Flowchart for calculating threshold values.}
-%%   \label{fig:thr_fc}
-%% \end{center}
+\end{figure}
+All pixels with a value below the threshold will be identified as land and all
+pixels with a value greater than or eequal to the threshold will be identified
+as cloud. Now that we have the method for calculating the threshold of a single
+pixel all that remains is to apply it to the entire image, the process for doing
+so is detailed in Figure \ref{fig:thr_fc}.
+\begin{figure}[t!]
+  \centering
+  \includegraphics{threshold_flowchart.pdf}
+  \caption{Flowchart for calculating threshold values.}
+  \label{fig:thr_fc}
+\end{figure}
 
+\subsection{Cloud coverage}
+Using the thresholds calculated by the method in Figure \ref{fig:thr_fc} we
+produce daily cloud masks, which are arrays of the same size as the input image
+containing with values of 1 for cloud pixels and 0 for land pixels. The number
+of cloud pixels $n_{\mathrm{cloud}}$ for a given day, then, are found by summing
+the cloud mask. Cloud coverage is calculated as the ratio of cloud pixels to
+total land pixels in the image $N$
+\begin{equation}
+  \mathrm{CF} = \frac{n_{\mathrm{cloud}}}{N} \,,
+  \label{eq:cloud_frac}
+\end{equation}
+where $N$ is found by summing over all of the land pixels in the land mask for
+the given region.
 
+\subsection{Vegetation}
+% mark you know more about NDVI and calibration so you may want to flesh this
+% section out e.g. calibrations
+Green vegetation has a distinctive spectral response to electromganetic
+radiation. Radiation in the near-infrared is reflected while the chlorophyll in
+leaves absorbs strongly in the red. Hence we determine vegetation coverage using
+the normalised difference vegetation index (NDVI) defined as
+\begin{equation}
+  \mathrm{NDVI} = \frac{\rho_{\mathrm{NIR}}-\rho_{\mathrm{R}}}{\rho_{\mathrm{NIR}}+\rho_{\mathrm{R}}}
+  \label{eq:ndvi}
+\end{equation}
+where $\rho_{\mathrm{NIR}}$ and $\rho_{\mathrm{R}}$ are the reflectaces in the
+near-infrared and red bands respectively \citep{tucker1979}.
 %% Local Variables:
 %% fill-column: 80
 %% End:
