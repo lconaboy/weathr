@@ -415,6 +415,27 @@ a list of lists in the format [YEAR, MONTH, DATA, ERR]."""
     return [year, month, data, err]
 
 
+def load_cloud_mask_period(start, end, region):
+    """Loads all the cloud fraction for a given period and region. Returns
+a list of lists in the format [YEAR, MONTH, DATA, ERR]."""
+    date = start
+    # initialise
+    year = []
+    month = []
+    data = []
+    # load the data
+    while date < end:
+        tmp = load_month(date, region)[0]  # [1] for cloud fraction
+        
+        year.append(date.year)
+        month.append(date.month)
+        data.append(tmp)
+        
+        date = add_month(date)
+
+    return [year, month, data]
+
+
 def yearly_mean(data, err=True):
     """Input data is of the form [[YEAR], [MONTH], [DATA], [ERR]] so need
 to index. Returns yearly mean across months. The err argument allows
