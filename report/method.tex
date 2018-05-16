@@ -1,30 +1,28 @@
 \section{Method}
 
-In this section we discuss the way in which we process and analyse the data we obtain from EUMETSAT. First we detail the process of thresholding, which we use to distinguish between cloud and land pixels. Then, we explain how these thresholds are used to calculate cloud coverage and
+In this section we discuss the way in which we process and analyse the data we obtain from EUMETSAT. First we detail the process of thresholding, which we use to distinguish between cloud and land pixels. Then, we explain how these thresholds are used to create useful data products from the raw data.
 
 \subsection{Thresholding}
 % part about skewing unnecessary?
 The most essential part of processing the EUMETSAT images is the ability to
 differentiate between cloud and land. Clouds have a much higher reflectance than
-land -- if mistakenly identified as land pixels, they will erroneously skew the
-value of those pixels to higher values. However we can exploit the fact that
-clouds have a much higher reflectance than areas of land (notable
-  exceptions to this are snow, ice and salt pans) in order to differentiate
-them. It follows that the distribution of values for a single pixel over a large
-enough number of days will be bimodal, the peak at the smaller value
-corresponding to land pixels and the peak at the larger value corresponding to
-cloudy pixels. The task is now one of producing thresholds that reliably
-separate the two peaks. Otsu's method \citep{gonzalez2008} separates pixels into
-two groups, or \emph{classes}, by maximising the variance between these classes,
-making it an optimum method for thresholding \footnote{We have made use of
-  \texttt{scipy}'s Otsu thresholding implementation.}. An example of Otsu
-thresholding at work is shown in Figure \ref{fig:otsu} for a random pixel.
+land (notable exceptions to this are snow, ice and salt pans) -- if mistakenly
+identified as land pixels, they will erroneously skew the value of those pixels
+to higher values. Taking a large enough number of days, it follows that the
+distribution of values for a single pixel over will be bimodal, the peak at the
+smaller value corresponding to land pixels and the peak at the larger value
+corresponding to cloudy pixels. The task is now one of producing thresholds that
+reliably separate the two peaks. Otsu's method \citep{gonzalez2008} separates
+pixels into two groups, or \emph{classes}, by maximising the variance between
+these classes, making it an optimum method for thresholding \footnote{We have
+  made use of \texttt{scipy}'s Otsu thresholding implementation.}. An example of
+Otsu thresholding at work is shown in Figure \ref{fig:otsu} for a random pixel.
 \begin{figure}
   \centering
-    \includegraphics[width=\linewidth]{figures/otsu_bimodal.pdf}
-    \caption{The histogram of pixel values for a random pixel. Shown
-      by the vertical line is the threshold calculated using Otsu's method -- it can
-      be seen how well this method separates the two peaks.}
+    \includegraphics[width=0.8\linewidth]{figures/otsu_bimodal.pdf}
+    \caption{The histogram of pixel values for a random pixel. Shown by the
+      vertical line is the threshold calculated using Otsu's method -- it can be
+      seen how well this method separates the two peaks.}
     \label{fig:otsu}
 \end{figure}
 All pixels with a value below the threshold will be identified as land and all
@@ -53,7 +51,19 @@ total land pixels in the image $N$
 where $N$ is found by summing over all of the land pixels in the land mask for
 the given region.
 
-\subsection{NDVI}
+\subsection{Vegetation}
+% mark you know more about NDVI and calibration so you may want to flesh this
+% section out e.g. calibrations
+Green vegetation has a distinctive spectral response to electromganetic
+radiation. Radiation in the near-infrared is reflected while the chlorophyll in
+leaves absorbs strongly in the red. Hence we determine vegetation coverage using
+the normalised difference vegetation index (NDVI) defined as
+\begin{equation}
+  \mathrm{NDVI} = \frac{\rho_{\mathrm{NIR}}-\rho_{\mathrm{R}}}{\rho_{\mathrm{NIR}}+\rho_{\mathrm{R}}}
+  \label{eq:ndvi}
+\end{equation}
+where $\rho_{\mathrm{NIR}}$ and $\rho_{\mathrm{R}}$ are the reflectaces in the
+near-infrared and red bands respectively \citep{tucker1979}.
 %% Local Variables:
 %% fill-column: 80
 %% End:
