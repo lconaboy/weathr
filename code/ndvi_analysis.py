@@ -52,17 +52,20 @@ def calibration_comparison(year, month, region):
 
     import matplotlib.pyplot as plt
     import matplotlib.colors as clr
-    cmap = clr.LinearSegmentedColormap.from_list('', ['red', 'white', 'darkgreen'])
+    cmap = clr.LinearSegmentedColormap.from_list('', ['saddlebrown', 'white', 'olivedrab'])
+    cmap = discrete_cmap(19, cmap)
     f, (ax1, ax2) = plt.subplots(1, 2, sharey=True, figsize=(10,4.5), dpi=150)
     ax1.set_title('Uncalibrated NDVI for {} {}, {}'.format(region_to_string(region), month, year))
     ax1.axis('off')
-    plot1 = ax1.imshow(ndvi_uncal, cmap=cmap, vmin=-np.max(ndvi_uncal), vmax=np.max(ndvi_uncal))
+    plot1 = ax1.imshow(ndvi_uncal, cmap=cmap, vmin=-np.max(ndvi_uncal),
+                       vmax=np.max(ndvi_uncal), origin='lower', interpolation='nearest')
     ax2.set_title('Calibrated NDVI for {} {}, {}'.format(region_to_string(region), month, year))
     ax2.axis('off')
-    plot2 = ax2.imshow(ndvi_cal, cmap=cmap, vmin=-np.max(ndvi_cal), vmax=np.max(ndvi_cal))
+    plot2 = ax2.imshow(ndvi_cal, cmap=cmap, vmin=-np.max(ndvi_cal),
+                       vmax=np.max(ndvi_cal), origin='lower', interpolation='nearest')
     f.subplots_adjust(right=0.8)
     cb_ax = f.add_axes([0.85, 0.15, 0.05, 0.7])
-    f.colorbar(plot2, cax=cb_ax)
+    f.colorbar(plot2, cax=cb_ax, )
     plt.savefig(figure_dir + 'ndvi_calibration_comparision.pdf')
 
     return None
@@ -283,15 +286,36 @@ def plot_ndvi_with_oni(region, smooth=6):
     x_labels = month_and_year_labels(np.tile([1, 5, 9], 10), np.arange(2008, 2018), 4)    
     plot_two_with_one_fill_between(plotting_data, corr_labels, x_labels, month_step)
 
-    plt.title('{}'.format(region_to_string(region)))
+    plt.title('{} NDVI smoothed {}-months'.format(region_to_string(region), smooth))
     plt.axhline(linewidth=0.75, color='k')
     plt.axhline(y=0.5, linewidth=0.75, color='k', linestyle='dashed')
     plt.axhline(y=-0.5, linewidth=0.75, color='k', linestyle='dashed')
-    plt.savefig(figure_dir + 'ndvi_oni_{}_smoothed_{}.png'.format(region, smooth))
-    # plt.show()
+    # plt.savefig(figure_dir + 'ndvi_oni_{}_smoothed_{}.png'.format(region, smooth))
+    plt.show()
 
     return None
 
+def plot_ndvi_distributions(region):
+    fig, axs = plt.subplots(4, 3, sharey=True, figsize=(8.27,11.69))
+    for ax, month in zip(axs.ravel(), np.arange(1, 13)):
+        m = '{:02d}'.format(month)
+        mask = (1 - image_region(land_mask, weathr_regions[region])).astype(bool);
+        fnames = sorted(glob.glob(ndvi_dir + ndvi_fmt.format('*', m, region) + '.npy'));
+        monthlys = np.dstack([np.mean(np.load(fname)[mask]) for fname in fnames]).ravel();
+        ax.set_title(m)
+        ax.vlines(np.mean(monthlys), 0, 1, transform=ax.get_xaxis_transform(),
+                  color='r', label='mean')
+        ax.vlines(np.median(monthlys), 0, 1, transform=ax.get_xaxis_transform(),
+                  color='k', label='median')
+        ax.hist(monthlys, bins=6); 
+
+    axs[3, 0].legend()
+    axs[3, 0].set_xlabel('NDVI')
+    axs[3, 0].set_ylabel('Count')
+    plt.suptitle('NDVI distribution for months in range 2008-2017')
+    plt.savefig(figure_dir + 'ndvi_distributions_{}.pdf'.format(region))
+
+    return None
 
 def do_analysis():
     regions = ('capetown', 'eastafrica')
