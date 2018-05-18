@@ -11,6 +11,7 @@ from PIL import Image
 
 
 def discrete_cmap(N, base_cmap=None):
+    # From https://gist.github.com/jakevdp/91077b0cae40f8f8244a
     """Create an N-bin discrete colormap from the specified input map"""
 
     # Note that if base_cmap is a string or None, you can simply do
