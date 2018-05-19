@@ -1,4 +1,59 @@
 \section{Data}
+% are all the acronyms too long?
+% TODO diurnal (?)
+% TODO regions
+% TODO figure for regions
+% TODO SST anomalies
+% TODO rainfall data
+\begin{table}
+  \centering
+  \resizebox{0.85\linewidth}{!}{%
+  \begin{tabular}{ l c c c }
+    \toprule
+    Channel & $\lambda_{\mathrm{cen}}$ ($\mu$m) & $\lambda_{\mathrm{min}}$ ($\mu$m) & $\lambda_{\mathrm{max}}$ ($\mu$m) \\
+    \midrule
+    VIS0.6  & 0.64                    & 0.56                    & 0.71                    \\
+    VIS0.8  & 0.81                    & 0.74                    & 0.88                    \\
+    NIR1.6  & 1.64                    & 1.50                    & 1.78                    \\
+    \bottomrule
+  \end{tabular}}
+  \caption{Spectral characteristics of the three SEVIRI channels used
+    in our work. Shown are the central, minimum and maximum
+    wavelengths for the three spectral bands that we use.}
+  \label{tab:seviri}
+\end{table}
 
-Here we should include a short section describing the data we have,
-where we got it from and any interesting things to do with it.
+This work mainly comprises of analysing data products that we have
+produced using raw data from the European Organisation for the
+Exploitation of Meteorological Satellites
+(EUMETSAT) \footnote{\url{https://www.eumetsat.int}}. In particular,
+we have utilised the Meteosat Second Generation (MSG) series of
+meterological satellites, which provide continous observations of the
+full disk of the Earth via the Spinning Enhanced Visible and Infrared
+Imager (SEVIRI) \citep{schmetz2002}. MSG makes observations every 15
+minutes in 12 spectral bands, returning images $3712 \times 3712$ pixels in
+size. Not all of the 12 available bands are useful for our
+investigation -- the spectral responses of the three bands that we use
+are detailed in Table \ref{tab:seviri}.
+
+\begin{table}
+  \centering
+  \resizebox{\linewidth}{!}{%
+  \begin{tabular}{ l c c c c }
+    \toprule
+    \multirow{2}{*}{Region} &
+    \multicolumn{2}{c}{Latitude (deg)} &
+    \multicolumn{2}{c}{Longitude (deg)} \\
+                 & {North} & {South} & {East} & {West}    \\
+    \midrule
+    South Africa & $-21.501$ & $-35.659$ & 33.193 & 14.728  \\
+    East Africa  & 10.085    & 1.615     & 46.071 & 34.518  \\
+    \bottomrule
+  \end{tabular}}
+  \caption{The coordinates that define our regions of interest. North
+    (East) and South (West) correspond to the most northern (eastern)
+    and southern (western) lines of latitude (longitude),
+    respectively. All values in decimal degrees.}
+\end{table}
+
+
