@@ -83,22 +83,24 @@ year_labels = np.arange(min(narrowed_io[0][east_or_south][0]),
 
 x_labels = month_and_year_labels(month_labels, year_labels, month_step)
 # first plot the SWIO/WTIO and DMI (Indian Ocean)
-# plot both ONI and DMI
-# corr_labels = ['CF', 'ONI', 'DMI']
-# plotting_data = [cf_anoms_smoothed, np.array(oni_anoms[-1]),
-#                  np.array(narrowed_dmi[2])]
-# plot DMI and sst anomalies
-corr_labels = ['CF', 'DMI', narrowed_io[1][east_or_south]]
-plotting_data = [cf_anoms_smoothed, np.array(narrowed_dmi[2]),
+# plot both ONI and relevant IO SST anomalies (SWIO/WTIO)
+# corr_labels = ['CF', 'ONI', narrowed_io[1][east_or_south]]
+corr_labels = ['CF', 'ONI (neutral)', 'ONI (event)', narrowed_io[1][east_or_south]]
+plotting_data = [cf_anoms_smoothed, np.array(oni_anoms[-1]),
                  np.array(narrowed_io[0][east_or_south][2])]
+# plot DMI and sst anomalies
+# corr_labels = ['CF', 'DMI', narrowed_io[1][east_or_south]]
+# plotting_data = [cf_anoms_smoothed, np.array(narrowed_dmi[2]),
+#                 np.array(narrowed_io[0][east_or_south][2])]
 
 # plot_three_with_inset_correlations(plotting_data, corr_labels)
-plot_three_with_one_fill_between(plotting_data, corr_labels, x_labels, month_step)
+# plot_three_with_one_fill_between(plotting_data, corr_labels, x_labels, month_step)
+plot_three_fb_ds(plotting_data, [en, ln], corr_labels, x_labels, month_step)
 plt.title('{}'.format(region_to_string(region)))
 plt.axhline(linewidth=1, color='k')
 plt.axhline(y=0.5, linewidth=1, color='k', linestyle='dashed')
 plt.axhline(y=-0.5, linewidth=1, color='k', linestyle='dashed')
-plt.savefig(figure_dir + 'cf_oni_dmi_{}_{}window'.format(region, 2*step+1))
+#plt.savefig(figure_dir + 'cf_oni_dmi_{}_{}window'.format(region, 2*step+1))
 
 # now plot the ONI (El Nino)
 corr_labels = ['CF', 'ONI']
@@ -108,7 +110,7 @@ plt.title('{}'.format(region_to_string(region)))
 plt.axhline(linewidth=1, color='k')
 plt.axhline(y=0.5, linewidth=1, color='k', linestyle='dashed')
 plt.axhline(y=-0.5, linewidth=1, color='k', linestyle='dashed')
-plt.savefig(figure_dir + 'cf_oni_{}_{}m'.format(region, 2*step+1))
+#plt.savefig(figure_dir + 'cf_oni_{}_{}m'.format(region, 2*step+1))
 
 
 plt.figure(figsize=(4,4))
@@ -117,7 +119,7 @@ plt.hist((cf_anoms_smoothed[0][~en&~ln], cf_anoms_smoothed[0][en],
 plt.legend([r'Neutral', r'El Ni$\mathrm{\tilde{n}}$o', r'La Ni$\mathrm{\tilde{n}}$a'])
 plt.title(region_to_string(region))
 plt.xlabel(r'CF$_{\sigma}$')
-plt.savefig(figure_dir + 'cf_anoms_hist_' + region)
+#plt.savefig(figure_dir + 'cf_anoms_hist_' + region)
 
 # now rainfall
 end_rainfall = datetime.datetime.strptime('201512','%Y%m')
@@ -142,7 +144,8 @@ month_labels = cf_anoms[1][::month_step]
 year_labels = np.arange(min(cf_anoms[0]), max(cf_anoms[0])+1)
 x_labels = month_and_year_labels(month_labels, year_labels, month_step)
 
-def plot_rainfall_and_cloud(cf_anoms_smoothed, rf_anoms_smoothed, legends, x_labels):
+def plot_rainfall_and_cloud_two_y(cf_anoms_smoothed, rf_anoms_smoothed, legends,
+                                  x_labels):
     fig, ax1 = plt.subplots(figsize=(5.2, 5))
     plt.axhline(linewidth=1, color='k')
     ax1.plot(cf_anoms_smoothed[0], label=legends[0])
@@ -162,6 +165,21 @@ def plot_rainfall_and_cloud(cf_anoms_smoothed, rf_anoms_smoothed, legends, x_lab
     ax2.set_xlabel('Months')
     plt.title(region_to_string(region))
     plt.tight_layout()
-    plt.savefig(figure_dir + 'rf_cf_anomalies_{}'.format(region))
+ #   plt.savefig(figure_dir + 'rf_cf_anomalies_{}'.format(region))
+
+def plot_rainfall_and_cloud(cf_anoms_smoothed, rf_anoms_smoothed, legends, x_labels):
+    fig, ax1 = plt.subplots(figsize=(5, 5))
+    plt.axhline(linewidth=1, color='k')
+    ax1.plot(cf_anoms_smoothed[0], label=legends[0]+r'$_{\sigma}$')
+    ax1.set_ylim([-0.8, 0.8])
+    ax1.set_ylabel(r'$x_{\sigma}$')
+    ax1.plot(rf_anoms_smoothed, label=legends[1]+r'$_{\sigma}$', color='r')
+    ax1.legend()
+    ax1.set_xticks(np.linspace(ax1.get_xbound()[0], ax1.get_xbound()[1], len(x_labels)))
+    ax1.set_xticklabels(x_labels)
+    ax1.set_xlabel('Months')
+    plt.title(region_to_string(region))
+    plt.tight_layout()
+#    plt.savefig(figure_dir + 'rf_cf_anomalies_{}'.format(region))
 
 plot_rainfall_and_cloud(cf_anoms_smoothed, rf_anoms_smoothed, legends, x_labels)
