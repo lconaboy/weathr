@@ -39,7 +39,7 @@ def subtract_month(start):
 
 def load_month(date, region):
     """x[0] is the cloud mask, x[1] is [mean cloud fraction, standard deviation]"""
-    return np.load('data/cloud/{}_{}_multiband_{}_cloud.npy'.format(date.month,
+    return np.load('data/cloud/{}_{}_multiband_{}_med_cloud.npy'.format(date.month,
                                                                     date.year, region))
 
 
@@ -731,8 +731,8 @@ def plot_three_with_one_fill_between(plotting_data, corr_labels, x_labels, month
     ax.set_ylim([-1.25, 1.25])
     ax.set_ylabel(r'CF$_{\sigma}$')
     ax1 = ax.twinx()
-    ax1.plot(plotting_data[1], label=corr_labels[1], color='g')
-    ax1.plot(plotting_data[2], label=corr_labels[2], color='r')
+    ax1.plot(plotting_data[1], label=corr_labels[1], color='r')
+    ax1.plot(plotting_data[2], label=corr_labels[2], color='g')
     ax1.set_ylim([-2.75, 2.75])
     ax1.set_ylabel('SST anomalies ($^{\circ}$C)')
 
@@ -869,6 +869,49 @@ def month_and_year_labels(month_labels, year_labels, month_step):
             count += 1
 
     return x_labels
+
+
+def plot_three_fb_ds(plotting_data, idxs, corr_labels, x_labels, month_step):
+    """plotting_data[0] will be fill between, plotting_data[[1,2]] will be a line.
+    plotting_data[1] should be ONI and will be plotted solid at points defined by idxs and dashed elswhere. idxs[0] should be El Nino indices, idxs[1] La Nina. corr_labels should now include entries for ONI (neutral) and ONI (event)."""
+    n = len(plotting_data[0][0])
+    nind = np.arange(n)
+    nx = nind+0.5
+    fig, ax = plt.subplots(figsize=(12, 6))
+    ax.plot(plotting_data[0][0], label=corr_labels[0])
+    ax.fill_between(nind, plotting_data[0][0] + plotting_data[0][1],
+                    plotting_data[0][0] - plotting_data[0][1], alpha=0.25)
+    ax.set_xlim([0, n])
+    ax.set_ylim([-1.25, 1.25])
+    ax.set_ylabel(r'CF$_{\sigma}$')
+    ax1 = ax.twinx()
+    # plot all th
+    neu = replace_with_nans(plotting_data[1], np.logical_or(idxs[0], idxs[1]))
+    enso = replace_with_nans(plotting_data[1], np.logical_and(~idxs[0], ~idxs[1]))
+    # plot dashed curve underneath solid curve for continuity 
+    ax1.plot(plotting_data[1], color='r', label=corr_labels[1],
+             linestyle='dashed', alpha=0.75)
+    ax1.plot(enso, label=corr_labels[2], color='r', linestyle='solid')
+#    ax1.plot(neu, label=corr_labels[2], color='r', linestyle='dashed')
+    ax1.plot(plotting_data[2], label=corr_labels[3], color='g')
+    ax1.set_ylim([-2.75, 2.75])
+    ax1.set_ylabel('SST anomalies ($^{\circ}$C)')
+
+    # ask matplotlib for the plotted objects and their labels
+    lines, labels = ax.get_legend_handles_labels()
+    lines2, labels2 = ax1.get_legend_handles_labels()
+    ax1.legend(lines + lines2, labels + labels2)
+
+    # now set x ticks
+    x_tick_range = len(plotting_data[0][0][::month_step])
+    ax.set_xticks(np.linspace(ax.get_xbound()[0], ax.get_xbound()[1], x_tick_range))
+    ax.minorticks_off()
+    ax1.set_xticks(np.linspace(ax1.get_xbound()[0], ax1.get_xbound()[1], x_tick_range))
+    ax1.minorticks_off()
+    ax.set_xticklabels([])
+    ax1.set_xticklabels(x_labels)
+    ax.set_xlabel('Month')
+    ax1.set_xlabel('Month')    
 
 
 # start = datetime.datetime.strptime('200901','%Y%M')
