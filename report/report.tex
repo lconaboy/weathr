@@ -17,9 +17,19 @@
 
 \usepackage[a4paper, total={7in,8in}]{geometry}
 
-\usepackage{natbib}
-\bibliographystyle{unsrtnat}
-\setcitestyle{authoryear}
+% bibliography tings
+\usepackage[maxcitenames=3, maxbibnames=3, style=nature, backend=biber, natbib=true]{biblatex}
+\addbibresource{refs.bib}
+%% \bibliographystyle{unsrtnat}
+%% \setcitestyle{authoryear}
+\AtEveryBibitem{\clearfield{month}}
+\AtEveryBibitem{\clearfield{day}}
+\AtEveryBibitem{\clearfield{isbn}}
+\AtEveryBibitem{\clearfield{issn}}
+\AtEveryBibitem{\clearfield{doi}}
+\AtEveryBibitem{\clearfield{url}}
+\AtEveryBibitem{\clearfield{eprint}}
+
 
 \newcommand{\elnino}[0]{\emph{El Ni\~no}}
 \newcommand{\enso}[0]{\emph{ENSO}}
@@ -48,9 +58,8 @@
 
 % \end{multicols}
 
-\cite{*}
 \onecolumn{
-\bibliography{refs}
+\printbibliography
 }
 
 \end{document}
