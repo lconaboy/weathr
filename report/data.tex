@@ -1,7 +1,6 @@
 \section{Data}
-% are all the acronyms too long?
-% TODO diurnal (?)
-% TODO regions
+% are all the acronyms too much?
+% TODO time and diurnal (?)
 % TODO figure for regions
 % TODO SST anomalies
 % TODO rainfall data
@@ -30,11 +29,14 @@ Exploitation of Meteorological Satellites
 we have utilised the Meteosat Second Generation (MSG) series of
 meterological satellites, which provide continous observations of the
 full disk of the Earth via the Spinning Enhanced Visible and Infrared
-Imager (SEVIRI) \citep{schmetz2002}. MSG makes observations every 15
-minutes in 12 spectral bands, returning images $3712 \times 3712$ pixels in
-size. Not all of the 12 available bands are useful for our
+Imager (SEVIRI) \citep{schmetz2002}. MSG is in an equatorial
+geostationary orbit fixed at $0^{\circ}$ longitude and makes observations
+every 15 minutes in 12 spectral bands, returning images $3712 \times 3712$
+pixels in size. Not all of the 12 available bands are useful for our
 investigation -- the spectral responses of the three bands that we use
-are detailed in Table \ref{tab:seviri}.
+are detailed in Table \ref{tab:seviri}. For consistency, we use data
+collected at 12:00 each day, since this is the time when land is the
+most illuminated.
 
 \begin{table}
   \centering
@@ -44,16 +46,33 @@ are detailed in Table \ref{tab:seviri}.
     \multirow{2}{*}{Region} &
     \multicolumn{2}{c}{Latitude (deg)} &
     \multicolumn{2}{c}{Longitude (deg)} \\
-                 & {North} & {South} & {East} & {West}    \\
+                 & {Top} & {Bottom} & {Left} & {Right}    \\
     \midrule
-    South Africa & $-21.501$ & $-35.659$ & 33.193 & 14.728  \\
-    East Africa  & 10.085    & 1.615     & 46.071 & 34.518  \\
+    South Africa & $-21.501$ & $-35.659$ & 14.728 & 33.193 \\
+    East Africa  & 10.085    & 1.615     & 34.518 & 46.071 \\
     \bottomrule
   \end{tabular}}
-  \caption{The coordinates that define our regions of interest. North
-    (East) and South (West) correspond to the most northern (eastern)
-    and southern (western) lines of latitude (longitude),
-    respectively. All values in decimal degrees.}
+  \caption{The coordinates that define our regions of interest. Top
+    (Left) and Bottom (Right) correspond to the most northern
+    (eastern) and southern (western) latitudes (longitudes) of the
+    boxes defining the regions, respectively. All values in decimal
+    degrees.}
+  \label{tab:regions}
 \end{table}
 
-
+The full Earth image as collected by EUMETSAT is not terribly useful
+in its original form for two reasons:
+\begin{itemize}
+  \item{it is quite a large
+    image and so memory considerations alone make processing the whole
+    image a difficult task;}
+  \item{any effect that \elnino\ has on African climate is likely to be
+    quite localised and, at the very least, we expect the trends to be
+    reversed on either side of the equator.}
+\end{itemize}
+To address these challenges, we have defined two regions of interest
+(selected after \cite{anyamba1996, anyamba2002}) in southern and
+eastern Africa. The exact boundaries of these regions are listed in
+Table \ref{tab:regions}. In addition, since we will be investigating
+vegetation coverage, we restrict our study to continental areas using
+the land mask provided by EUMETSAT.
