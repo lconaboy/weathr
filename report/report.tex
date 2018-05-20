@@ -18,6 +18,7 @@
 \usepackage[a4paper, total={7in,8in}]{geometry}
 
 % bibliography tings
+% TODO: find a nice author-year bibstyle
 \usepackage[maxcitenames=3, maxbibnames=3, style=nature, backend=biber, natbib=true]{biblatex}
 \addbibresource{refs.bib}
 %% \bibliographystyle{unsrtnat}
@@ -41,13 +42,14 @@
 \date{}
 
 \begin{document}
-\maketitle
-
-\begin{abstract}
-  An abstract.
-\end{abstract}
-
-% \begin{multicols}{2}
+\twocolumn[
+  \begin{@twocolumnfalse}
+    \maketitle
+    \begin{abstract}
+      This is driving me to abstraction
+    \end{abstract}
+  \end{@twocolumnfalse}
+]
 
 \input{introduction}
 \input{data}
@@ -56,10 +58,6 @@
 %% \input{discussion}
 %% \input{future}
 
-% \end{multicols}
-
-\onecolumn{
-\printbibliography
-}
+\onecolumn{\printbibliography}
 
 \end{document}
