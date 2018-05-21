@@ -2,7 +2,6 @@
 % are all the acronyms too much?
 % TODO time and diurnal (?)
 % TODO figure for regions
-% TODO SST anomalies
 % TODO rainfall data
 \begin{table}
   \centering
@@ -76,3 +75,28 @@ eastern Africa. The exact boundaries of these regions are listed in
 Table \ref{tab:regions}. In addition, since we will be investigating
 vegetation coverage, we restrict our study to continental areas using
 the land mask provided by EUMETSAT.
+
+We also make use of data provided from other sources. For sea surface
+temperature (SST) anomalies, we use the time series anomalies provided
+by the National Oceanic and Atmospheric Administration
+(NOAA) \footnote{\url{https://stateoftheocean.osmc.noaa.gov/}}. NOAA
+provide SST anomalies for the Indian Ocean (IO) in the South Western
+(SWIO) and Western Tropical (WTIO) regions, as well as Ni{\~n}o 3.4
+SST anomalies. SWIO and WTIO anomalies are smoothed by taking three
+month means, and the SWIO anomalies are compared to the data for South
+Africa while the WTIO anomalies are compared to East Africa. We use
+the anomalies in this way because each IO region is in close proximity
+to its corresponding continental region, so it is reasonable to expect
+that the anomalies may directly impact the continental climate. The
+Ni{\~n}o 3.4 anomalies can be processed into the Oceanic Ni{\~n}o
+Index (ONI) by smoothing with three monthly means, much in the same
+way as the IO anomalies. \elnino\ events are then said to occur when
+the ONI surpasses $0.5^{\circ}$C for at least five consecutive three
+monthly periods. \nina\ conditions are present when the ONI falls
+below $-0.5^{\circ}$C for the same time conditions.
+
+The final tool in our complement of climate measures is rainfall
+data. This is provided by the World
+Bank \footnote{\url{http://www.worldbank.org/}} and we use it to
+examine the extent to which cloud coverage is useful as a proxy
+measure for rainfall.
