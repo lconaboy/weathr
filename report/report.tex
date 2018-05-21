@@ -19,17 +19,17 @@
 
 % bibliography tings
 % TODO: find a nice author-year bibstyle
-\usepackage[maxcitenames=3, maxbibnames=3, style=nature, backend=biber, natbib=true]{biblatex}
-\addbibresource{refs.bib}
-%% \bibliographystyle{unsrtnat}
-%% \setcitestyle{authoryear}
-\AtEveryBibitem{\clearfield{month}}
-\AtEveryBibitem{\clearfield{day}}
-\AtEveryBibitem{\clearfield{isbn}}
-\AtEveryBibitem{\clearfield{issn}}
-\AtEveryBibitem{\clearfield{doi}}
-\AtEveryBibitem{\clearfield{url}}
-\AtEveryBibitem{\clearfield{eprint}}
+\usepackage{natbib}
+\bibliographystyle{ametsoc2014}
+%% \usepackage[maxcitenames=3, maxbibnames=3, style=ametsoc2014, backend=biber, natbib=true]{biblatex}
+%% %% \setcitestyle{authoryear}
+%% \AtEveryBibitem{\clearfield{month}}
+%% \AtEveryBibitem{\clearfield{day}}
+%% \AtEveryBibitem{\clearfield{isbn}}
+%% \AtEveryBibitem{\clearfield{issn}}
+%% \AtEveryBibitem{\clearfield{doi}}
+%% \AtEveryBibitem{\clearfield{url}}
+%% \AtEveryBibitem{\clearfield{eprint}}
 
 
 \newcommand{\elnino}[0]{\emph{El Ni\~no}}
@@ -58,6 +58,6 @@
 %% \input{discussion}
 %% \input{future}
 
-\onecolumn{\printbibliography}
+\bibliography{refs}
 
 \end{document}
