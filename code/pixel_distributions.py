@@ -29,7 +29,7 @@ titles = ['VIS6', 'VIS8', 'NIR']
 for ax, title in zip(axs[0], titles):
     ax.set_title(title)
 
-plt.suptitle('Pixel value distributions in all bands')
+plt.suptitle('Pixel value distributions in all bands', y=0.94)
 plt.savefig(figure_dir + 'pixel_distributions.pdf')
 
 # Now let's look at statistics in VIS6 and VIS8, so that we can
@@ -75,7 +75,6 @@ for title, ax in zip(titles, axs):
 
 axs[0][0].legend()
 
-plt.suptitle('Pixel values distributions with statistics, in VIS6 and VIS8')
+plt.suptitle('Pixel values distributions with statistics, in VIS6 and VIS8', y=0.94)
 plt.savefig(figure_dir + 'pixel_distributions_stats.pdf')
-
 
