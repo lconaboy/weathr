@@ -79,7 +79,7 @@ def pixel_dist_for_region(region='capetown'):
 
     # Now let's look at the distribution when we include *every* pixel in
     # the (masked) image
-    fig, axes = plt.subplots(3, 1, figsize=(8, 12), sharex=True)
+    fig, axes = plt.subplots(1, 3, figsize=(12, 8), sharex=True)
     titles = ['VIS6', 'VIS8', 'NIR']
     mask = (1 - image_region(land_mask, weathr_regions[region])).astype(bool)
 
