@@ -11,7 +11,7 @@ import scipy.stats
 """Mark: to use this, just replace cf with ndvi data."""
 
 regions = ['capetown', 'eastafrica']
-east_or_south = 1  # 0 for south, 1 for east
+east_or_south = 0  # 0 for south, 1 for east
 region = regions[east_or_south]
 start = datetime.datetime.strptime('20081','%Y%m')
 end = datetime.datetime.strptime('201712','%Y%m')
@@ -100,7 +100,7 @@ plt.title('{}'.format(region_to_string(region)))
 plt.axhline(linewidth=1, color='k')
 plt.axhline(y=0.5, linewidth=1, color='k', linestyle='dashed')
 plt.axhline(y=-0.5, linewidth=1, color='k', linestyle='dashed')
-#plt.savefig(figure_dir + 'cf_oni_dmi_{}_{}window'.format(region, 2*step+1))
+plt.savefig(figure_dir + 'cf_oni_io_{}_{}window_median'.format(region, 2*step+1))
 
 # now plot the ONI (El Nino)
 corr_labels = ['CF', 'ONI']
