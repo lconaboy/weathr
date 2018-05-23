@@ -11,7 +11,7 @@ import scipy.stats
 """Mark: to use this, just replace cf with ndvi data."""
 
 regions = ['capetown', 'eastafrica']
-east_or_south = 0  # 0 for south, 1 for east
+east_or_south = 1  # 0 for south, 1 for east
 region = regions[east_or_south]
 start = datetime.datetime.strptime('20081','%Y%m')
 end = datetime.datetime.strptime('201712','%Y%m')
