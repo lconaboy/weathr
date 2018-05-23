@@ -6,6 +6,7 @@
 \usepackage{tikz}
 \usepackage{booktabs}
 \usepackage{caption}
+\usepackage{epigraph}
 \usepackage{multirow}
 \captionsetup[figure]{font=small}
 \captionsetup[table]{font=small}
@@ -42,6 +43,7 @@
 \date{}
 
 \begin{document}
+
 \twocolumn[
   \begin{@twocolumnfalse}
     \maketitle
@@ -50,6 +52,14 @@
     \end{abstract}
   \end{@twocolumnfalse}
 ]
+
+  \clearpage
+
+  \vspace*{\fill}
+  \setlength\epigraphwidth{.8\textwidth}
+  \epigraph{\Huge I bless the rains down in Africa}{--- Africa, Toto}
+
+  \clearpage
 
 \input{introduction}
 \input{data}
