@@ -83,14 +83,44 @@ def pixel_dist_for_region(region='capetown'):
     titles = ['VIS6', 'VIS8', 'NIR']
     mask = (1 - image_region(land_mask, weathr_regions[region])).astype(bool)
 
-    for img, axis, title in zip([vis6, vis8, nir], axes, titles):
-        axis.hist(img[mask].ravel(), bins=30)
+    for img, otsu, axis, title in zip([vis6, vis8, nir], [otsu_vis6, otsu_vis8, otsu_nir], axes, titles):
+        n, bins, hist = axis.hist(img[mask].ravel(), bins=30, normed=True, color='lightblue')
+        axis.set_ylim(0, np.max(n) * 1.1)
         axis.set_title(title)
-    # BTW, why didn't we just define the land mask to be the above in
-    # util.py? That way we wouldn't have to constantly write 1 - land_mask. Dumb!
+
+        # All those pixels over all days that are below their
+        # corresponding Otsu threshold, and are also land pixels.
+        # This is pure magic.
+        img_otsu = img[(img <= otsu[..., np.newaxis]) & mask[..., np.newaxis]]
+        # Also some magic. TODO better comment.
+        otsu = threshold(img[mask].reshape((1, 1, -1)))[0, 0]
+        axis.vlines(otsu, 0, 1, transform=axis.get_xaxis_transform(), label='Otsu', color='k')
+
+        mean = np.mean(img[mask].ravel())
+        axis.vlines(mean, 0, 1, transform=axis.get_xaxis_transform(), label='Mean', color='r')
+
+        mean_otsu = np.mean(img_otsu)
+        axis.vlines(mean_otsu, 0, 1, transform=axis.get_xaxis_transform(),
+                    label='Mean < Otsu', color='g')
+
+        median = np.median(img[mask].ravel())
+        axis.vlines(median, 0, 1, transform=axis.get_xaxis_transform(), color='b')
+
+        if title == 'NIR': continue
+
+        (μ, σ) = norm.fit(img_otsu)
+        fit = normpdf(np.arange(255), μ, σ)
+        axis.plot(np.arange(255), fit, '--', linewidth=2, label='Gaussian fit < Otsu')
+
+        axis.set_xlim(0, 255)
+        axis.text(0.95, 0.05, "$\sigma = {:.2f}$ \n $\mu = {:.2f}$".format(σ, μ),
+                  transform=axis.transAxes, horizontalalignment='right')
+        # BTW, why didn't we just define the land mask to be the above in
+        # util.py? That way we wouldn't have to constantly write 1 - land_mask. Dumb!
+
+    axes[0].legend()
 
     plt.savefig(figure_dir + 'pixel_distributions_all_pixels_{}.pdf'.format(region))
-
 
 # If running as script; i.e. not being run via import pixel_distributions
 if __name__ == '__main__':
