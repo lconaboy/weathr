@@ -18,7 +18,7 @@ mask = (1 - image_region(land_mask, weathr_regions[region])).astype(bool)
 for m in ['01', '07']:
     for y in range(2008, 2018):
         ctmp = np.load('multiband_cf_dist_{}_{}.npy'.format(int(m), y))
-        ntmp = np.load(ndvi_dir + ndvi_fmt.format(y, m, region))[mask]
+#        ntmp = np.load(ndvi_dir + ndvi_fmt.format(y, m, region))[mask]
 
     vals.append(ctmp.ravel())
 #    vals.append(ntmp.ravel())
