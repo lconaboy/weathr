@@ -6,7 +6,7 @@ from coverage_analysis_functions import *
 from ndvi_spatial_analysis_functions import *
 import matplotlib.animation as animation
 
-region = 'eastafrica'
+region = 'capetown'
 
 mean = ndvi_monthly_spatial_medians(region)
 
@@ -45,9 +45,11 @@ titles = [['DJF', 'JJA'], ['Neutral', 'El Nino', 'La Nina']]
 for col, season in enumerate(seasons):
     for row, idx in enumerate(idxs):
 
-        tmp_idx = (np.array(months)==season)&idx
-        tmp_anoms = anoms[tmp_idx]
-        im = axes[row][col].imshow(np.median(tmp_anoms, axis=0), cm1, vmin=-0.75,
+        tmp_idx = np.argwhere((np.array(months)==season)&idx).ravel()
+        tmp_vals = np.array([anoms[tmp_idx-1], anoms[tmp_idx],
+                             anoms[tmp_idx+1]])
+        tmp_anoms = np.mean(tmp_vals, axis=0)
+        im = axes[row][col].imshow(np.mean(tmp_anoms, axis=0), cm1, vmin=-0.75,
                                    vmax=0.75)
         axes[row][col].imshow(outline, cmap=cm2)
         axes[row][col].set_title(titles[0][col] + ' ' + titles[1][row])

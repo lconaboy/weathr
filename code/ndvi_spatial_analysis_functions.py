@@ -67,8 +67,8 @@ whether the data are smoothed"""
         for idx, fname in enumerate(fnames):
             month = int(fname[17:19])  # convert month in fname to usable number
             monthly = np.load(fname)
-            anoms[idx, :, :] = np.divide((monthly - mean[month-1]), mean[month-1],
-                                         where=(mask==1),
+            anoms[idx, :, :] = np.divide((monthly - mean[month-1]),
+                                         mean[month-1], where=(mask==1),
                                          out=np.zeros(monthly.shape))
             months.append(month)
             years.append(fname[13:17])
