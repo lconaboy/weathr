@@ -6,7 +6,7 @@ from coverage_analysis_functions import *
 from ndvi_spatial_analysis_functions import *
 import matplotlib.animation as animation
 
-region = 'capetown'
+region = 'eastafrica'
 
 mean = ndvi_monthly_spatial_medians(region)
 
@@ -57,8 +57,9 @@ for col, season in enumerate(seasons):
 cbaxes = fig.add_axes([0.25, 0.05, 0.5, 0.01])
 cb = plt.colorbar(im, cax=cbaxes, orientation="horizontal", extend='both')
 cb.set_label(r'NDVI$_{\sigma}$')
-plt.suptitle(region_to_string(region))
-plt.savefig('ndvi_spatial_seasonal_anomalies_{}'.format(region))
+fig.suptitle(region_to_string(region))
+fig.tight_layout(pad=7.0, w_pad=0.5, h_pad=1.75)
+plt.savefig(figure_dir + 'ndvi_spatial_seasonal_anomalies_{}'.format(region))
 plt.show()
 
 
