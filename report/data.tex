@@ -129,11 +129,46 @@ careful when comparing the two.
 
 The \emph{MSG} satellites perform callibration using an on-board
 \emph{black-body} source. For each of the channels, two values are
-calculated:
+calculated for every image:
 \begin{enumerate}
 \item \emph{Cal\_Offset}: the radiance value for a pixel count of
   zero; and
 \item \emph{Cal\_Slope}: how radiance varies with pixel count.
 \end{enumerate}
+This calibration data is provided by EUMETSAT in separate header files
+(\emph{LRIT} and \emph{HRIT}). The obscure software \texttt{xrit2pic}
+was used to read in these header files so that we may pull out the
+above calibration values.
 
-blah
+On the constancy of \emph{Cal\_Offset} and \emph{Cal\_Slope} over time
+\ref{TODO} has the note (emphasis added) ``The data is ... kept
+constant for an image but is likely to be updated from one image to
+the next (\textbf{although it expected to vary only slowly}).''
+Indeed, upon inspection the calibration values were not observed to
+change over a period of time. While this was not tested over the
+entirety of the data, we decided in the interest of time the above
+quote was evidence enough that we could, at this time, take as
+constant the calibration values. Thus we chose for the calibration
+values those shown in Table \ref{tab:calibration}.
+
+\begin{table}
+  \centering
+  \resizebox{0.6\linewidth}{!}{%
+  \begin{tabular}{ l c c }
+    \toprule
+    Channel & \emph{Cal\_Offset} & \emph{Cal\_Slope} \\
+    \midrule
+    VIS0.6 & 1 & 1 \\
+    VIS0.8 & 1 & 1 \\
+    NIR    & 1 & 1 \\
+    \bottomrule
+  \end{tabular}}
+  \label{tab:calibration}
+\end{table}
+
+%% Calibration of pixel value to physical radiance value is then
+%% performed with the calculation
+%% \begin{align}
+%%   \textrm{Physical Units} = \textrm{Cal\_Offset} \textm{Cal\_Slope} \times
+%%   \textrm{Pixel Count}
+%% \end{align}
