@@ -11,8 +11,8 @@ def split_region(w_region, direction):
 
     north = [slice(x.start, x.start + slice_d(x)//2), y]
     south = [slice(x.start + slice_d(x)//2, x.stop), y]
-    east = [x, slice(y.start, y.start + slice_d(y)//2)]
-    west = [x, slice(y.start + slice_d(y)//2, y.stop)]
+    east = [x, slice(y.start + slice_d(y)//2, y.stop)]
+    west = [x, slice(y.start, y.start + slice_d(y)//2)]
 
     # raw slices (i.e. slice(0, n)) for thresholds
     north_raw = [slice(0, slice_d(north[0]), None),
@@ -89,13 +89,30 @@ def cloud_coverage(region, y, m, direction=None):
             cld[:, :, jdx] = np.sum(arr, axis=2, dtype=bool)  # mask
             cov[jdx] = sum(cld[:,:,jdx][i_land_pix])/n_land_pix  # fraction
 
+        # # lets av a look at the distribution then
+        # plt.figure()
+        # plt.hist(cov, histtype='step', color='k')
+        # plt.title('Cloud fraction distribution {}/{}'.format(m, y))
+        # plt.xlabel('CF')
+        # plt.axvline(np.median(cov), color='r')
+        # plt.axvline(np.median(cov)+abs(np.diff(np.percentile(cov, [75, 25])))/2,
+        #             color='r', linestyle='dashed')
+        # plt.axvline(np.mean(cov), color='b')
+        # plt.axvline(np.mean(cov)+np.std(cov), color='b', linestyle='dashed')
+        # plt.legend(['Median', 'Median + IQR/2', 'Mean', r'Mean + $\sigma$'])
+        # plt.savefig('../diary/multiband_cf_dist_{}'.format(m))
+        
         # using builtin sum over the month returns a heatmap
         # of cloud coverage
         cld = cld.sum(2)
-        cov = np.array([np.mean(cov), np.std(cov)])
 
-        np.save('./data/cloud/{}_{}_multiband_{}_cloud'.format(m, y, region),
-                [cld, cov])
+        # cov = np.array([np.mean(cov), np.std(cov)])
+        # now using the median and IQR/2 to calculate errors on cloud fraction, after
+        # looking at the distribution of cloud coverage this seems most appropriate
+        cov = np.array([np.median(cov), abs(np.diff(np.percentile(cov, [75, 25])))/2])
+
+        np.save('./data/cloud/{}_{}_multiband_{}_med_cloud'.format(m, y, region),
+               [cld, cov])
         print('Calculated cloud coverage for {}/{}'.format(m, y), end='\r')
 
     else:
@@ -159,8 +176,15 @@ def cloud_coverage(region, y, m, direction=None):
         # using builtin sum over the month returns a heatmap
         # of cloud coverage
         cld = cld.sum(2)
-        cov = np.array([np.mean(cov), np.std(cov)])
+        # cov = np.array([np.mean(cov), np.std(cov)])
 
-        np.save('./data/cloud/{}_{}_multiband_{}_{}_cloud'.format(m, y,
-                                                    region, direction), [cld, cov])
+        # now using the median and IQR/2 to calculate errors on cloud
+        # fraction, after looking at the distribution of cloud
+        # coverage this seems most appropriate
+        cov = np.array([np.median(cov), abs(np.diff(np.percentile(cov, [75, 25])))/2])
+
+        np.save('./data/cloud/{}_{}_multiband_{}_med_cloud'.format(m, y, w_region),
+               [cld, cov])
         print('Calculated cloud coverage for {}/{}'.format(m, y), end='\r')
+
+

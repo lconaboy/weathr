@@ -1,14 +1,21 @@
 \documentclass[12pt, twocolumn, x11names]{article}
 
 \usepackage{amsmath}
-\usepackage{hyperref}
+\usepackage[draft]{hyperref}
 \usepackage{graphicx}
 \usepackage{tikz}
 \usepackage{booktabs}
 \usepackage{caption}
+\usepackage{subcaption}
+\usepackage{epigraph}
 \usepackage{multirow}
 \captionsetup[figure]{font=small}
 \captionsetup[table]{font=small}
+\captionsetup[subfigure]{font=scriptsize}
+
+%% \usepackage{sectsty}
+%% \subsectionfont{\normalfont \itshape}
+%% \subsubsectionfont{\normalfont \itshape}
 
 
 % \usepackage{multicol}
@@ -18,17 +25,18 @@
 \usepackage[a4paper, total={7in,8in}]{geometry}
 
 % bibliography tings
-\usepackage[maxcitenames=3, maxbibnames=3, style=nature, backend=biber, natbib=true]{biblatex}
-\addbibresource{refs.bib}
-%% \bibliographystyle{unsrtnat}
+% TODO: find a nice author-year bibstyle
+\usepackage{natbib}
+\bibliographystyle{ametsoc2014}
+%\usepackage[maxcitenames=3, maxbibnames=3, style=ametsoc2014.bst, backend=biber, natbib=true]{biblatex}
 %% \setcitestyle{authoryear}
-\AtEveryBibitem{\clearfield{month}}
-\AtEveryBibitem{\clearfield{day}}
-\AtEveryBibitem{\clearfield{isbn}}
-\AtEveryBibitem{\clearfield{issn}}
-\AtEveryBibitem{\clearfield{doi}}
-\AtEveryBibitem{\clearfield{url}}
-\AtEveryBibitem{\clearfield{eprint}}
+%% \AtEveryBibitem{\clearfield{month}}
+%% \AtEveryBibitem{\clearfield{day}}
+%% \AtEveryBibitem{\clearfield{isbn}}
+%% \AtEveryBibitem{\clearfield{issn}}
+%% \AtEveryBibitem{\clearfield{doi}}
+%% \AtEveryBibitem{\clearfield{url}}
+%% \AtEveryBibitem{\clearfield{eprint}}
 
 
 \newcommand{\elnino}[0]{\emph{El Ni\~no}}
@@ -41,25 +49,31 @@
 \date{}
 
 \begin{document}
-\maketitle
 
-\begin{abstract}
-  An abstract.
-\end{abstract}
+\twocolumn[
+  \begin{@twocolumnfalse}
+    \maketitle
+    \begin{abstract}
+      This is driving me to abstraction
+    \end{abstract}
+  \end{@twocolumnfalse}
+]
 
-% \begin{multicols}{2}
+  \clearpage
+
+  \vspace*{\fill}
+  \setlength\epigraphwidth{.8\textwidth}
+  \epigraph{\Huge I bless the rains down in Africa}{--- Africa, Toto}
+
+  \clearpage
 
 \input{introduction}
 \input{data}
 \input{method}
-%% \input{results}
+\input{results}
 %% \input{discussion}
 %% \input{future}
 
-% \end{multicols}
-
-\onecolumn{
-\printbibliography
-}
+\onecolumn{\bibliography{refs}}
 
 \end{document}

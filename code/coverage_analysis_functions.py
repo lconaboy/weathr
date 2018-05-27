@@ -895,7 +895,7 @@ def plot_three_fb_ds(plotting_data, idxs, corr_labels, x_labels, month_step):
 #    ax1.plot(neu, label=corr_labels[2], color='r', linestyle='dashed')
     ax1.plot(plotting_data[2], label=corr_labels[3], color='g')
     ax1.set_ylim([-2.75, 2.75])
-    ax1.set_ylabel('SST anomalies ($^{\circ}$C)')
+    ax1.set_ylabel('SSTA ($^{\circ}$C)')
 
     # ask matplotlib for the plotted objects and their labels
     lines, labels = ax.get_legend_handles_labels()

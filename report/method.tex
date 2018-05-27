@@ -1,5 +1,4 @@
 \section{Method}
-
 In this section we discuss the way in which we process and analyse the data we
 obtain from EUMETSAT. First we detail the process of thresholding, which we use
 to distinguish between cloud and land pixels. Then, we explain how these
@@ -35,7 +34,7 @@ shown in Figure \ref{fig:otsu} for a random pixel.
     \label{fig:otsu}
 \end{figure}
 All pixels with a value below the threshold will be identified as land and all
-pixels with a value greater than or eequal to the threshold will be identified
+pixels with a value greater than or equal to the threshold will be identified
 as cloud. Now that we have the method for calculating the threshold of a single
 pixel all that remains is to apply it to the entire image, the process for doing
 so is detailed in Figure \ref{fig:thr_fc}.
@@ -63,7 +62,7 @@ the given region.
 \subsection{Vegetation}
 % mark you know more about NDVI and calibration so you may want to flesh this
 % section out e.g. calibrations
-Green vegetation has a distinctive spectral response to electromganetic
+Green vegetation has a distinctive spectral response to electromagnetic
 radiation. Radiation in the near-infrared is reflected while the chlorophyll in
 leaves absorbs strongly in the red. Hence we determine vegetation coverage using
 the normalised difference vegetation index (NDVI) defined as
@@ -71,8 +70,30 @@ the normalised difference vegetation index (NDVI) defined as
   \mathrm{NDVI} = \frac{\rho_{\mathrm{NIR}}-\rho_{\mathrm{R}}}{\rho_{\mathrm{NIR}}+\rho_{\mathrm{R}}}
   \label{eq:ndvi}
 \end{equation}
-where $\rho_{\mathrm{NIR}}$ and $\rho_{\mathrm{R}}$ are the reflectaces in the
+where $\rho_{\mathrm{NIR}}$ and $\rho_{\mathrm{R}}$ are the reflectances in the
 near-infrared and red bands respectively \citep{tucker1979}.
+
+\subsection{Analysis}
+In order to make useful comparisons with our data products, we need some method
+of determining whether a measurement is anomalously large or small. Weather data
+are inherently noisy over day-to-day timescales, so first we reduce the data by
+taking monthly averages. Once we have monthly measurements, we can turn these
+into anomalies which tell us how different a particular measurement is from the
+average for that time of year. If $x_{i}$ is the measurement (e.g. NDVI) for a
+particular month and year then we define the anomaly as
+\begin{equation}
+  x_{i\sigma}=\frac{x_{i}-\tilde{x}_m}{\tilde{x}_m}
+  \label{eq:anoms}
+\end{equation}
+where $\tilde{x}_m$ is the median value for that month. The $\tilde{x}_m$ are
+defined by calculating the median for each month across the all of the available
+years.
+
+Weather patterns like the ENSO vary over a few months or longer, so we are
+interested in signals of a similar timescale. To be confident that what were
+observing is relevant, and not just transient, we smooth the monthly anomalies using a five month moving average. Smoothing is done in an efficient way by using convolution \citep{gorry1990}.
+
+
 %% Local Variables:
 %% fill-column: 80
 %% End:
