@@ -108,3 +108,32 @@ data. This is provided by the World
 Bank \footnote{\url{http://www.worldbank.org/}} and we use it to
 examine the extent to which cloud coverage is useful as a proxy
 measure for rainfall.
+
+\subsection{Calibration}
+
+The images we are processing are provided by \emph{EUMETSAT} as
+\emph{PNG} data, where each pixel may take a value in the range
+$\left[0, 255\right]$ as is common for PNG data. Ideally, the data
+would be provided in the units of \emph{radiance}
+(Wm$^{-2}$sr$^{-1}$(cm$^{-1}$)$^{-1}$) being a measure of the amount
+of incident light received by the sensor. Howevever, the pixel values
+are \emph{not} expressed in physical values: they are instead the
+pixel \emph{count}, representing how often a particular element of the
+satellite's sensor (charge-coupled device, or CCD) was
+activated. While this value is useful and intuitive for diagrammatic
+uses, the sensors response to incident light is not constant over the
+various spectral bands being observed. As is described in Section
+\ref{TODO}, our \emph{NDVI} analysis will use data from two different
+bands (namely \emph{VIS8} and \emph{VIS6}) and so we have to be
+careful when comparing the two.
+
+The \emph{MSG} satellites perform callibration using an on-board
+\emph{black-body} source. For each of the channels, two values are
+calculated:
+\begin{enumerate}
+\item \emph{Cal\_Offset}: the radiance value for a pixel count of
+  zero; and
+\item \emph{Cal\_Slope}: how radiance varies with pixel count.
+\end{enumerate}
+
+blah
