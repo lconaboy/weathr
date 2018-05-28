@@ -90,12 +90,21 @@ near-infrared and red bands respectively \citep{tucker1979}.
 
 \subsection{Analysis}
 In order to make useful comparisons with our data products, we need some method
-of determining whether a measurement is anomalously large or small. Weather data
-are inherently noisy over day-to-day timescales, so first we reduce the data by
-taking monthly averages. Once we have monthly measurements, we can turn these
-into anomalies which tell us how different a particular measurement is from the
-average for that time of year. If $x_{i}$ is the measurement (e.g. NDVI) for a
-particular month and year then we define the anomaly as
+of determining whether a measurement is anomalously large or small in comparison
+to some baseline value. The baseline value will generally be a year-long
+average, though occasionally the median is a better choice where outliers exist
+in the data. 
+
+Weather data are inherently noisy over day-to-day timescales, so first we smooth
+the data by taking monthly averages. As can be seen \ref{fig:smoothcomp}, the CF
+varies rapidly day-to-day and so obscures any underlying features in the
+data. Smoothing that data by averaging over a larger period reduces the daily
+variation, leaving the larger trends visible. 
+
+Once we have monthly measurements, we can then calculate the anomalies which
+tell us how different a particular measurement is from the average for that time
+of year. If $x_{i}$ is the measurement (e.g. NDVI) for a particular month and
+year then we define the anomaly as
 \begin{equation}
   x_{i\sigma}=\frac{x_{i}-\tilde{x}_m}{\tilde{x}_m}
   \label{eq:anoms}
@@ -106,7 +115,13 @@ years.
 
 Weather patterns like the ENSO vary over a few months or longer, so we are
 interested in signals of a similar timescale. To be confident that what were
-observing is relevant, and not just transient, we smooth the monthly anomalies using a five month moving average. Smoothing is done in an efficient way by using convolution \citep{gorry1990}.
+observing is relevant, and not just transient, we smooth the monthly anomalies
+using a five month moving average. Smoothing is done in an efficient way by
+using convolution \citep{gorry1990}.
+
+The particular choices for baselines and smoothing parameters in each of our
+analyses will be described and justified in more detail in the respective
+sections.
 
 
 %% Local Variables:
