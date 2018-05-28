@@ -36,8 +36,11 @@ shown in Figure \ref{fig:otsu} for a random pixel.
     \label{fig:otsu}
 \end{figure}
 All pixels with a value below the threshold will be identified as land and all
-pixels with a value greater than or equal to the threshold will be identified
-as cloud. Now that we have the method for calculating the threshold of a single
+pixels with a value greater than or equal to the threshold will be identified as
+cloud. Please refer to Section \label{sec:disc:thresh} for a discussion of
+suitable we determined Otsu's method to be in identifying cloud.
+
+Now that we have the method for calculating the threshold of a single
 pixel all that remains is to apply it to the entire image, the process for doing
 so is detailed in Figure \ref{fig:thr_fc}.
 \begin{figure}[t!]
