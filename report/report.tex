@@ -13,9 +13,10 @@
 \captionsetup[table]{font=small}
 \captionsetup[subfigure]{font=scriptsize}
 
-%% \usepackage{sectsty}
-%% \subsectionfont{\normalfont \itshape}
-%% \subsubsectionfont{\normalfont \itshape}
+\usepackage{sectsty}
+\sectionfont{\bfseries \normalsize \uppercase}
+\subsectionfont{\normalsize}
+\subsubsectionfont{\normalsize \normalfont \itshape}
 
 
 % \usepackage{multicol}
@@ -63,7 +64,7 @@
 
   \vspace*{\fill}
   \setlength\epigraphwidth{.8\textwidth}
-  \epigraph{\Huge I bless the rains down in Africa}{--- Africa, Toto}
+  \epigraph{\Huge I bless the rains down in Africa}{--- \emph{Africa}, Toto}
 
   \clearpage
 
@@ -71,9 +72,9 @@
 \input{data}
 \input{method}
 \input{results}
-%% \input{discussion}
+\input{discussion}
 %% \input{future}
 
-\bibliography{refs}
+\onecolumn{\bibliography{refs}}
 
 \end{document}
