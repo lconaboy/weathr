@@ -10,19 +10,21 @@ The most essential part of processing the EUMETSAT images is the ability to
 differentiate between cloud and land. Clouds have a much higher reflectance than
 land (notable exceptions to this are snow, ice and salt pans) -- if mistakenly
 identified as land pixels, they will erroneously skew the value of those pixels
-to higher values. On a clear day any given pixel should have a value that
-corresponds to that pixel's ``true'' value, with some small variation
-contributed by shadows cast by nearby clouds, the variation in \emph{solar
-  zenith angle} throughout the year, and atmospheric interference effects. On a
-cloudy day a pixel's value will be systematically pulled towards higher than
-``true'' values. It follows then that the distribution of a pixel's value will
-be bimodal, with the lower peak corresponding to the ``true'' ground value, and
-the large peak corresponding to cloudy values.
+to higher values.
+
+On a clear day any given pixel should have a value that corresponds to that
+pixel's ``true'' value (hereafter the \emph{ground} value), with some small
+variation contributed by shadows cast by nearby clouds, the variation in
+\emph{solar zenith angle} throughout the year, and atmospheric interference
+effects. On a cloudy day a pixel's value will be systematically pulled towards
+higher than ground values. It follows then that the distribution of a pixel's
+value will be bimodal, with the lower peak corresponding to the ground value,
+and the large peak corresponding to cloudy values.
 
 The task is then one of producing thresholds that reliably separate the two
 peaks. Otsu's method \citep{gonzalez2008} separates pixels into two groups, or
 \emph{classes}, by maximising the variance between these classes, making it an
-optimum method for thresholding \footnote{We have made use of \texttt{scipy}'s
+optimum method for thresholding\footnote{We have made use of \texttt{scipy}'s
   Otsu thresholding implementation.}. An example of Otsu thresholding at work is
 shown in Figure \ref{fig:otsu} for a random pixel.
 \begin{figure}
@@ -34,8 +36,11 @@ shown in Figure \ref{fig:otsu} for a random pixel.
     \label{fig:otsu}
 \end{figure}
 All pixels with a value below the threshold will be identified as land and all
-pixels with a value greater than or equal to the threshold will be identified
-as cloud. Now that we have the method for calculating the threshold of a single
+pixels with a value greater than or equal to the threshold will be identified as
+cloud. Please refer to Section \ref{sec:disc:thresh} for a discussion of
+suitable we determined Otsu's method to be in identifying cloud.
+
+Now that we have the method for calculating the threshold of a single
 pixel all that remains is to apply it to the entire image, the process for doing
 so is detailed in Figure \ref{fig:thr_fc}.
 \begin{figure}[t!]
