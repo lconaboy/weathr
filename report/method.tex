@@ -70,24 +70,21 @@ the given region.
   \centering
   \includegraphics[width=0.75\textwidth]{figures/ndvi_calibration_comparison.pdf}
   \caption{Comparison between NDVI calculated for uncalibrated data (shon left),
-    and calibrated data (shown right).}
+    and calibrated data (shown right). The uncalibrated NDVI shows a wider range
+    of values, with large areas where NDVI is close to zero (in which case
+    $\rho_{\textrm{NIR}}\approx\rho_{\textrm{R}}$), and some regions where NDVI is
+    negative. The calibrated NDVI shows neither of these traits, and so we can
+    see how using uncalibrated NDVI would lead to erroneous conclusions.}
   \label{fig:calibrationcomp}
 \end{figure*}
 
-As described in \ref{sec:data:calib} the raw data in the PNG files are
+As described in Section \ref{sec:data:calib} the raw data in the PNG files are
 \emph{pixel count} data, \emph{not} radiance data. Before any NDVI calculations
-are performed we must calibrate each data channel, so that we have radiance data
-which is required for NDVI. The calibration data is listed in Table
+are performed we must calibrate each data channel, so that we have the radiance
+data which is required for NDVI. The calibration data is listed in Table
 \ref{tab:calibration}. As a matter of interest, a visual comparison of NDVI with
-and without calibration is show in Figure 
+and without calibration is show in Figure \ref{fig:calibrationcomp}.
 
-
-% mark you know more about NDVI and calibration so you may want to flesh this
-% section out e.g. calibrations
-Green vegetation has a distinctive spectral response to electromagnetic
-radiation. Radiation in the near-infrared is reflected while the chlorophyll in
-leaves absorbs strongly in the red. Hence we determine vegetation coverage using
-the normalised difference vegetation index (NDVI) defined as
 \begin{equation}
   \mathrm{NDVI} = \frac{\rho_{\mathrm{NIR}}-\rho_{\mathrm{R}}}{\rho_{\mathrm{NIR}}+\rho_{\mathrm{R}}}
   \label{eq:ndvi}
@@ -97,12 +94,21 @@ near-infrared and red bands respectively \citep{tucker1979}.
 
 \subsection{Analysis}
 In order to make useful comparisons with our data products, we need some method
-of determining whether a measurement is anomalously large or small. Weather data
-are inherently noisy over day-to-day timescales, so first we reduce the data by
-taking monthly averages. Once we have monthly measurements, we can turn these
-into anomalies which tell us how different a particular measurement is from the
-average for that time of year. If $x_{i}$ is the measurement (e.g. NDVI) for a
-particular month and year then we define the anomaly as
+of determining whether a measurement is anomalously large or small in comparison
+to some baseline value. The baseline value will generally be a year-long
+average, though occasionally the median is a better choice where outliers exist
+in the data. 
+
+Weather data are inherently noisy over day-to-day timescales, so first we smooth
+the data by taking monthly averages. As can be seen \ref{fig:smoothcomp}, the CF
+varies rapidly day-to-day and so obscures any underlying features in the
+data. Smoothing that data by averaging over a larger period reduces the daily
+variation, leaving the larger trends visible. 
+
+Once we have baseline measurements, we can then calculate the anomalies which
+tell us how different a particular measurement is from the average for that time
+of year. If $x_{i}$ is the measurement (e.g. NDVI) for a particular month and
+year then we define the anomaly as
 \begin{equation}
   x_{i\sigma}=\frac{x_{i}-\tilde{x}_m}{\tilde{x}_m}
   \label{eq:anoms}
@@ -113,7 +119,13 @@ years.
 
 Weather patterns like the ENSO vary over a few months or longer, so we are
 interested in signals of a similar timescale. To be confident that what were
-observing is relevant, and not just transient, we smooth the monthly anomalies using a five month moving average. Smoothing is done in an efficient way by using convolution \citep{gorry1990}.
+observing is relevant, and not just transient, we smooth the monthly anomalies
+using a five month moving average. Smoothing is done in an efficient way by
+using convolution \citep{gorry1990}.
+
+The particular choices for baselines and smoothing parameters in each of our
+analyses will be described and justified in more detail in the respective
+sections.
 
 
 %% Local Variables:

@@ -46,27 +46,26 @@ saved as numpy array into configured threshold_dir and threshold_fmt."""
     return None
 
 def calibration_comparison(year, month, region):
+    from ndvi_spatial_analysis_functions import colourmaps
     # Try load NDVI data
     ndvi_uncal = np.load(ndvi_dir + ndvi_fmt.format(year, month, region) + "_uncalibrated.npy")
     ndvi_cal   = np.load(ndvi_dir + ndvi_fmt.format(year, month, region) + ".npy")
 
     import matplotlib.pyplot as plt
-    import matplotlib.colors as clr
-    cmap = clr.LinearSegmentedColormap.from_list('', ['saddlebrown', 'white', 'olivedrab'])
-    cmap = discrete_cmap(19, cmap)
+    cmap = colourmaps(15)[0]
     f, (ax1, ax2) = plt.subplots(1, 2, sharey=True, figsize=(10,4.5), dpi=150)
-    ax1.set_title('Uncalibrated NDVI for {} {}, {}'.format(region_to_string(region), month, year))
+    # ax1.set_title('Uncalibrated NDVI for {} {}, {}'.format(region_to_string(region), month, year))
     ax1.axis('off')
     plot1 = ax1.imshow(ndvi_uncal, cmap=cmap, vmin=-np.max(ndvi_uncal),
                        vmax=np.max(ndvi_uncal), origin='lower', interpolation='nearest')
-    ax2.set_title('Calibrated NDVI for {} {}, {}'.format(region_to_string(region), month, year))
+    # ax2.set_title('Calibrated NDVI for {} {}, {}'.format(region_to_string(region), month, year))
     ax2.axis('off')
     plot2 = ax2.imshow(ndvi_cal, cmap=cmap, vmin=-np.max(ndvi_cal),
                        vmax=np.max(ndvi_cal), origin='lower', interpolation='nearest')
     f.subplots_adjust(right=0.8)
-    cb_ax = f.add_axes([0.85, 0.15, 0.05, 0.7])
-    f.colorbar(plot2, cax=cb_ax, )
-    plt.savefig(figure_dir + 'ndvi_calibration_comparision.pdf')
+    cb_ax = f.add_axes([0.85, 0.15, 0.025, 0.7])
+    f.colorbar(plot2, cax=cb_ax, orientation='vertical', extend='both').set_label('NDVI')
+    plt.savefig(figure_dir + 'ndvi_calibration_comparison.pdf')
 
     return None
 
