@@ -175,7 +175,12 @@ the calibration values those shown in Table \ref{tab:calibration}.
 
 Calibration of pixel value to physical radiance value is then
 performed with the calculation
-\begin{align}
-  \textrm{Radiance} = \textrm{Cal\_Offset} + \textrm{Cal\_Slope} \times
-  \textrm{Pixel Count} \label{eqn:calibration}
-\end{align}
+\begin{equation}
+    \textrm{R}_{i,\textrm{channel}} = \textrm{CO}_\textrm{channel} +
+    \textrm{CS}_\textrm{channel} \times
+    \textrm{PC}_i \label{eqn:calibration}
+\end{equation}
+where R$_{i,\textrm{channel}}$ is the calibrated radiance value for
+pixel $i$ in the channel, CO$_\textrm{channel}$ and
+CS$_\textrm{channel}$ are the calibration offset and slope
+respectively, and PC$_i$ is the pixel count for pixel $i$.
