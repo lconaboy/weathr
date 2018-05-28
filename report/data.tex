@@ -184,3 +184,22 @@ where R$_{i,\textrm{channel}}$ is the calibrated radiance value for
 pixel $i$ in the channel, CO$_\textrm{channel}$ and
 CS$_\textrm{channel}$ are the calibration offset and slope
 respectively, and PC$_i$ is the pixel count for pixel $i$.
+
+\subsection{Bands used in NDVI}
+
+While the particular choice of central wavelength differs between
+publications, the bands used in NDVI calculations are often described
+in literature is \emph{near infrared} (NIR) and \emph{red} (R)
+bands. We note here that this may lead to confusion. For example, we
+have three visual bands available for our investigation shown in Table
+\ref{tab:seviri}. Na{\"i}vely we may then expect that NDVI
+calculations are to be performed with the NIR band corresponding to a
+central wavelength of $1.64\mu$m (NIR in Table \ref{tab:seviri}), and R
+corresponding to a central wavelength of $0.81\mu$m (VIS0.8 in Table
+\ref{tab:seviri}). However, \cite{msgndvi2015} instead adopts for NIR
+a value of $0.81\mu$m (VIS0.8 in Table \ref{tab:seviri}), and for R a
+value of $0.64\mu$m (VIS0.6 in Table \ref{tab:seviri}).
+
+So it should be kept in mind that wherever in the following NDVI
+analysis we refer to ``NIR'' we are infact using the data for
+``VIS0.8''; and likewise ``R'' refers to the data for ``VIS0.6''.
