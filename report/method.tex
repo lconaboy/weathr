@@ -10,14 +10,16 @@ The most essential part of processing the EUMETSAT images is the ability to
 differentiate between cloud and land. Clouds have a much higher reflectance than
 land (notable exceptions to this are snow, ice and salt pans) -- if mistakenly
 identified as land pixels, they will erroneously skew the value of those pixels
-to higher values. On a clear day any given pixel should have a value that
-corresponds to that pixel's ``true'' value, with some small variation
-contributed by shadows cast by nearby clouds, the variation in \emph{solar
-  zenith angle} throughout the year, and atmospheric interference effects. On a
-cloudy day a pixel's value will be systematically pulled towards higher than
-``true'' values. It follows then that the distribution of a pixel's value will
-be bimodal, with the lower peak corresponding to the ``true'' ground value, and
-the large peak corresponding to cloudy values.
+to higher values.
+
+On a clear day any given pixel should have a value that corresponds to that
+pixel's ``true'' value (hereafter the \emph{ground} value), with some small
+variation contributed by shadows cast by nearby clouds, the variation in
+\emph{solar zenith angle} throughout the year, and atmospheric interference
+effects. On a cloudy day a pixel's value will be systematically pulled towards
+higher than ground values. It follows then that the distribution of a pixel's
+value will be bimodal, with the lower peak corresponding to the ground value,
+and the large peak corresponding to cloudy values.
 
 The task is then one of producing thresholds that reliably separate the two
 peaks. Otsu's method \citep{gonzalez2008} separates pixels into two groups, or
