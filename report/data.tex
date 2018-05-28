@@ -172,9 +172,9 @@ values those shown in Table \ref{tab:calibration}.
   \label{tab:calibration}
 \end{table}
 
-%% Calibration of pixel value to physical radiance value is then
-%% performed with the calculation
-%% \begin{align}
-%%   \textrm{Physical Units} = \textrm{Cal\_Offset} \textm{Cal\_Slope} \times
-%%   \textrm{Pixel Count}
-%% \end{align}
+Calibration of pixel value to physical radiance value is then
+performed with the calculation
+\begin{align}
+  \textrm{Radiance} = \textrm{Cal\_Offset} + \textrm{Cal\_Slope} \times
+  \textrm{Pixel Count} \label{eqn:calibration}
+\end{align}
