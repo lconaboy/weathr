@@ -65,6 +65,23 @@ where $N$ is found by summing over all of the land pixels in the land mask for
 the given region.
 
 \subsection{Vegetation}
+
+\begin{figure*}
+  \centering
+  \includegraphics[width=0.75\textwidth]{figures/ndvi_calibration_comparison.pdf}
+  \caption{Comparison between NDVI calculated for uncalibrated data (shon left),
+    and calibrated data (shown right).}
+  \label{fig:calibrationcomp}
+\end{figure*}
+
+As described in \ref{sec:data:calib} the raw data in the PNG files are
+\emph{pixel count} data, \emph{not} radiance data. Before any NDVI calculations
+are performed we must calibrate each data channel, so that we have radiance data
+which is required for NDVI. The calibration data is listed in Table
+\ref{tab:calibration}. As a matter of interest, a visual comparison of NDVI with
+and without calibration is show in Figure 
+
+
 % mark you know more about NDVI and calibration so you may want to flesh this
 % section out e.g. calibrations
 Green vegetation has a distinctive spectral response to electromagnetic
