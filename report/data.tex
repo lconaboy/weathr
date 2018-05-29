@@ -185,6 +185,40 @@ pixel $i$ in the channel, CO$_\textrm{channel}$ and
 CS$_\textrm{channel}$ are the calibration offset and slope
 respectively, and PC$_i$ is the pixel count for pixel $i$.
 
+\subsubsection{Radiance and Reflectance}
+
+It is not \emph{strictly} true that NDVI is calculated with
+radiance. In many publications NDVI is calculated using
+\emph{reflectance}. Radiance measures the amount of light incident on
+the sensor which is necessarily subject to multiple sources of
+interference such as the Earth's atmosphere for example. It is the
+case then that we are not measuring an intrinsic property of the light
+source -- it's reflectance -- instead we are measuring a property of the
+sensor. Reflectance is the ratio of light radiated by the object to
+the light incident upon the object.
+
+The reflectance $r_{\lambda_i}$ for band $\lambda_i$ can be calculated from
+radiance $R_{\lambda_i}$ using the \emph{Bidirectional Reflectance Factor}
+formula \citep{msgbdrf2012}
+\begin{align}
+  r_{\lambda_i} &= \frac{\pi \cdot R_{\lambda_i} \cdot d^2\left(t\right)} {I_{\lambda_i} \cdot
+    \cos\left(\theta\left(t, x\right)\right)}
+\end{align}
+where $d^2\left(t\right)$ is the Earth-Sun distance (AU) at time $t$,
+$I_{\lambda_i}$ is the solar irradiance (a constant determined by
+calibration), and $\cos\left(\theta\left(t, x\right)\right)$ is the solar
+zenith angle at time $t$ and position $x$.
+
+We have elected to forgo this conversion, reasoning that
+$d^2\left(t\right)$ is \emph{roughly} constant (fractional change
+between aphelion and perihelion is ~$3\%$), and that the extent of
+Africa is approximately $30^{\circ}$N--$30^{\circ}$ and
+$15^{\circ}$W--$45^{\circ}$E. The contribution of these factors is then small
+enough that we may furtively ignore them. Less furtively
+\cite{ray1994} states ``For most of the vegetation indices \dots
+radiance, reflectance, and apparent reflectance can be used
+interchangibly.''
+
 \subsection{Bands used in NDVI}
 
 While the particular choice of central wavelength differs between
