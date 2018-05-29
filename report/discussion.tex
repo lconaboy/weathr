@@ -58,21 +58,48 @@ desert by avoiding arid regions.
   \caption{Thresholding of the image for 1/6/2008 in the VIS0.8 band.}
   \label{fig:allp}
 \end{figure*}
-Now that we have looked at the general distribution of pixels for a
-single day, it is time to explore what these distributions look like
-for a single pixel, as we use single pixels in our analysis. 
+It is useful to explore thresholding on the entire distribution, but
+more relevant to our analysis is to see how it works for single
+pixels. Figures \ref{pix_d_south} and \ref{pix_d_east} show the
+normalised pixel distributions for South Africa and East Africa, for
+three different pixels in the VIS0.6 and VIS0.8 bands. Also shown on
+the plot are various statistics of the data, including the value of
+the threshold calculated with Otsu's method, the mean of the entire
+dataset, the median of the entire dataset, the mean of the data less
+than the Otsu threshold and a Gaussian fit of the data less than the
+Otsu threshold. It can be seen from the figures, that the fitted
+Gaussian agrees fairly well with the data below the Otsu
+threshold. This indicates that our method for producing cloud masks is
+applicable -- we say that a pixel is classified as clear if it has a
+value less than the value of the `ground' pixel plus some
+uncertainty. Here, the value of the `ground' pixel is the mean and the
+uncertainty is the standard deviation of data below the threshold. It
+is also interesting to note that the median returns a similar value to
+the mean of the data below the threshold, although it does tend to
+slightly overestimate.
 \begin{figure*}
   \centering
   \includegraphics[width=\textwidth]{figures/pixel_distributions_stats_capetown}
-  \caption{South Africa}
+  \caption{Normalised pixel distributions South Africa in the VIS0.8
+    and VIS0.6 bands, for three pixels. Shown are the Otsu threshold
+    (black), the mean of the entire dataset (green), the median of the
+    entire dataset (dashed blue), the mean of the values below the
+    Otsu threshold (red) and a Gaussian fit to the data below the Otsu
+    threshold (dashed red). The key point to note is how well the
+    Gaussian fits the data below the threshold. This indicates that
+    our method of using the mean of the values below the Otsu
+    threshold to calculate a cloud free image (with the standard
+    deviation as the uncertainty) is sound. Also interesting to note
+    is how close the median is to this mean value, although it is
+    usually an overestimate.}
   \label{fig:pix_d_south}
 \end{figure*}
 
 \begin{figure*}
   \centering
   \includegraphics[width=\textwidth]{figures/pixel_distributions_stats_eastafrica}
-  \caption{East Africa}
-  \label{fig:pix_d_south}
+  \caption{As for Figure \ref{pix_d_south}, but for East Africa.}
+  \label{fig:pix_d_east}
 \end{figure*}
 
 \subsection{Cloud coverage}
@@ -84,7 +111,7 @@ uncertainty based on the standard deviation or interquartile range
 (IQR). Figure \ref{fig:cf_dist_south} shows the distribution of cloud
 fraction values within a month for South Africa, and Figure
 \ref{fig:cf_dist_east} shows the same but for East Africa. The
-interesting point here is that the distribution changes from beingg
+interesting point here is that the distribution changes from being
 skewed to looking almost normally distributed, due to the seasonal
 modulation (discussed in depth in Section
 \ref{sec:disc:rain}). Figures \ref{fig:cf_dist_south} and
@@ -203,13 +230,13 @@ with positive WTIO SSTAs ($>0.25\degc$), present since March 2009
 which become large ($>0.5\degc$) in January 2010. Comparing this
 response with that of the 2014--2016 \elnino{}, we find that the
 negative anomalies present during the growth of \elnino{} are much
-more pronou/ nced. The negative cloud anomalies persist from October
-2014 to S/eptember 2015 and are accompanied in by a dip in WTIO SSTAs
+more pronounced. The negative cloud anomalies persist from October
+2014 to September 2015 and are accompanied in by a dip in WTIO SSTAs
 from December 2014 to February 2015, whereupon the WTIO SSTAs become
 positive and remain so until June 2016. The interesting point here is
 that the cloud fraction anomalies remain negative for so long despite
 both strong ONI and WTIO SSTAs being present. \cite{parhi2016} suggest
-a mechanism for this in that troical eastern Africa is affected most
+a mechanism for this in that tropical eastern Africa is affected most
 greatly by the mature phase of \elnino{}, through warming of the
 neighbouring Indian Ocean (reflected in the positive WTIO SSTAs
 between February 2015 and June 2016). The suppression of cloud
@@ -221,7 +248,7 @@ an interesting result.
 
 Our data show no significant response to the 2008/2009 \nina{} in East
 Africa. For the both the 2010/2011 and 2011/2012 \nina{} events, the
-cloud fraction anomaies and WTIO SSTAs appear to closely follow the
+cloud fraction anomalies and WTIO SSTAs appear to closely follow the
 ONI, after a lag. Following the \nina event that begins in June 2010,
 negative cloud fraction anomalies begin to appear in October 2010
 after transitioning from the strong positive anomalies of January
@@ -259,7 +286,7 @@ able to draw some tentative conclusions:
   \item{indeed, the WTIO SSTAs follow cloud fraction anomalies very
     closely, sometimes preceding them by a month occurring in the same
     month;}
-  \item{a possible reason for the supression of cloud coverage in the
+  \item{a possible reason for the suppression of cloud coverage in the
     growth stages of the \elnino{} events could be that this phase
     usually occurs during East Africa's `dry' season, and so
     exacerbates the already present scarcity of cloud;}
