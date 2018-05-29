@@ -7,6 +7,59 @@
 \label{sec:disc}
 \subsection{Thresholding}
 \label{sec:disc:thresh}
+In Section \ref{sec:method:thr} we described our method for
+thresholding images, namely using Otsu's method. Figure \ref{fig:allp}
+is illustrative of the efficacy of this method, applying it to all
+land pixels for a single day (1/6/2008). Figure \ref{fig:allp_raw}
+shows the raw image from EUMETSAT, where cloud is clearly visible over
+western and equatorial Africa. Figure \ref{fig:allp_hist} shows the
+distribution of land pixels in Figure \ref{fig:allp_raw}. It is not
+clear whether the distribution is bimodal or log-normal, though it
+could be said that there are two peaks: one at a pixel value of $\sim50$
+and the other at a pixel value of $\sim110$. The broadness of this
+distribution is caused by taking values from the entire image, whereas
+in fact some places on the planet will be brighter in VIS0.8 than
+others. We have then applied an Otsu threshold to categorise pixels as
+`land' or `cloud', shown as white and green on the histogram. This is
+a crude way of doing things, and is only done to illustrate the
+process -- in reality, the Otsu threshold is calculated for \emph{each}
+pixel from the distribution of its values over a period of time, so
+the threshold value is more accurately scaled to that pixel. Figure
+\ref{fig:allp_im} shows the land pixels from Figure \ref{fig:allp_raw}
+where each pixels colour has been assigned according to whether it was
+categorised as `land', `cloud' or masked out. Using this very simple
+threshold manages to catch most of the cloud in western and equatorial
+Africa, although it clearly fails miserably over the Sahara. In our
+analysis we have overcome the shortcomings of the thresholding in the
+desert by avoiding arid regions.
+
+\begin{figure*}
+  \centering
+  \subcaptionbox{Raw image from
+    EUMETSAT.\label{fig:allp_raw}}
+                [0.3\textwidth]
+                {\includegraphics[width=0.3\textwidth]{figures/raw_im_all_pixels_01_06_2008_vis8}}
+  ~
+  \subcaptionbox{Histogram of the distribution of all the
+    land pixels in Figure \ref{fig:allp_raw}. Green
+    indicates where a pixel has been classified as `land'
+    and white indicates `cloud' and black corresponds to
+    masked pixels.\label{fig:allp_hist}}
+                [0.33\textwidth]
+                {\includegraphics[width=0.33\textwidth]{figures/hist_all_pixels_01_06_2008_vis8}}
+  ~
+  \subcaptionbox{The image in Figure
+    \ref{fig:allp_raw} masked and
+    thresholded, so that the colour of each
+    pixel corresponds to its classification
+    as `land', `cloud' or masked
+    out.\label{fig:allp_im}}
+                [0.3\textwidth]
+                {\includegraphics[width=0.3\textwidth]{figures/im_all_pixels_01_06_2008_vis8}}
+  \caption{Thresholding of the image for 1/6/2008 in the VIS0.8 band.}
+  \label{fig:allp}
+\end{figure*}
+
 \subsection{Cloud coverage}
 \label{sec:disc:cc}
 When calculating monthly values for cloud fraction, we have to average
@@ -16,21 +69,21 @@ uncertainty based on the standard deviation or interquartile range
 (IQR). Figure \ref{fig:cf_dist_south} shows the distribution of cloud
 fraction values within a month for South Africa, and Figure
 \ref{fig:cf_dist_east} shows the same but for East Africa. The
-interesting point here is that the distribution changes from being
+interesting point here is that the distribution changes from beingg
 skewed to looking almost normally distributed, due to the seasonal
 modulation (discussed in depth in Section
 \ref{sec:disc:rain}). Figures \ref{fig:cf_dist_south} and
 \ref{fig:cf_dist_east} show that using the mean as the average and the
-standard deviation as an estimate of uncertainty for July in South
-Africa or January in East Africa is clearly not appropriate, as they
-are skewed by the long tail. For these months the median and IQR do a
-much better job of selecting the average and its uncertainty. In
-January for South Africa (or July for East Africa) the mean and
-standard deviation could be used, but the median is still useful even
-when the data appear to be normally distributed and it is much better
-to use a statistical measure that is appropriate for all the data,
-rather than one that is suited to one part of the dataset but
-completely off for the rest.
+standard deviation as an estimate of uncertainty for July (January) in
+South Africa (East Africa) is clearly not appropriate, as they are
+skewed by the long tail. For these months the median and IQR do a much
+better job of selecting the average and its uncertainty. In January
+(July) for South Africa (East Africa) the mean and standard deviation
+could be used, but the median is still useful even when the data
+appear to be normally distributed and it is much better to use a
+statistical measure that is appropriate for all the data, rather than
+one that is suited to one part of the dataset but completely off for
+the rest.
 \begin{figure}
   \centering
   \includegraphics[width=0.8\linewidth]{figures/cf_monthly_dist_capetown}
