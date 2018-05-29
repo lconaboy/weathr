@@ -72,7 +72,10 @@ Gaussian agrees fairly well with the data below the Otsu
 threshold. This indicates that our method for producing cloud masks is
 applicable -- we say that a pixel is classified as clear if it has a
 value less than the value of the `ground' pixel plus some
-uncertainty. Here, the value of the `ground' pixel is the mean and the
+uncertainty. The normal distribution of the values around the `ground'
+value is as we expect, because some days the pixel will be in shade
+and some days there will be some wispy cloud that we are unable to
+detect. Here, the value of the `ground' pixel is the mean and the
 uncertainty is the standard deviation of data below the threshold. It
 is also interesting to note that the median returns a similar value to
 the mean of the data below the threshold, although it does tend to
@@ -85,20 +88,21 @@ slightly overestimate.
     (black), the mean of the entire dataset (green), the median of the
     entire dataset (dashed blue), the mean of the values below the
     Otsu threshold (red) and a Gaussian fit to the data below the Otsu
-    threshold (dashed red). The key point to note is how well the
-    Gaussian fits the data below the threshold. This indicates that
-    our method of using the mean of the values below the Otsu
-    threshold to calculate a cloud free image (with the standard
-    deviation as the uncertainty) is sound. Also interesting to note
-    is how close the median is to this mean value, although it is
-    usually an overestimate.}
+    threshold (dashed red). In the bottom right are the values for the
+    mean $\mu$ and standard deviation $\sigma$ of the fitted Gaussian. The
+    key point to note is how well the Gaussian fits the data below the
+    threshold. This indicates that our method of using the mean of the
+    values below the Otsu threshold to calculate a cloud free image
+    (with the standard deviation as the uncertainty) is sound. Also
+    interesting to note is how close the median is to this mean value,
+    although it is usually an overestimate.}
   \label{fig:pix_d_south}
 \end{figure*}
 
 \begin{figure*}
   \centering
   \includegraphics[width=\textwidth]{figures/pixel_distributions_stats_eastafrica}
-  \caption{As for Figure \ref{pix_d_south}, but for East Africa.}
+  \caption{As in Figure \ref{fig:pix_d_south}, but for East Africa.}
   \label{fig:pix_d_east}
 \end{figure*}
 
