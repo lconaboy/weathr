@@ -399,7 +399,7 @@ def plot_ndvi_with_oni_io(region, smooth=5):
     plt.axhline(linewidth=0.75, color='k')
     plt.axhline(y=0.5, linewidth=0.75, color='k', linestyle='dashed')
     plt.axhline(y=-0.5, linewidth=0.75, color='k', linestyle='dashed')
-    plt.savefig(figure_dir + 'ndvi_oni_io_{}_smoothed_{}.png'.format(region, smooth))
+    plt.savefig(figure_dir + 'ndvi_oni_io_{}_smoothed_{}.pdf'.format(region, smooth))
 
     return None
 
