@@ -117,9 +117,8 @@ fraction values within a month for South Africa, and Figure
 \ref{fig:cf_dist_east} shows the same but for East Africa. The
 interesting point here is that the distribution changes from being
 skewed to looking almost normally distributed, due to the seasonal
-modulation (discussed in depth in Section
-\ref{sec:disc:rain}). Figures \ref{fig:cf_dist_south} and
-\ref{fig:cf_dist_east} show that using the mean as the average and the
+modulation (discussed in depth in Section \ref{sec:disc:rain}). Figure
+\ref{fig:cf_dist} shows that using the mean as the average and the
 standard deviation as an estimate of uncertainty for July (January) in
 South Africa (East Africa) is clearly not appropriate, as they are
 skewed by the long tail. For these months the median and IQR do a much
@@ -130,31 +129,36 @@ appear to be normally distributed and it is much better to use a
 statistical measure that is appropriate for all the data, rather than
 one that is suited to one part of the dataset but completely off for
 the rest.
-\begin{figure}
+\begin{figure*}
   \centering
-  \includegraphics[width=0.8\linewidth]{figures/cf_monthly_dist_capetown}
-  \caption{Distribution of cloud fraction values for South
-    Africa. Top: distribution of all values for January, over the
+  \begin{subfigure}{0.45\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{figures/cf_monthly_dist_capetown}
+    \caption{South Africa. Note how in January the cloud fractions
+      appear to be normally distributed, while in July they are skewed
+      toward lower values. This is due to seasonal modulation, which
+      is discussed in depth in Section \ref{sec:disc:rain}.}
+    \label{fig:cf_dist_south}
+  \end{subfigure}
+  ~
+  \begin{subfigure}{0.45\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{figures/cf_monthly_dist_eastafrica}
+    \caption{East Africa. Note how the distributions are swapped
+      compared to Figure \ref{fig:cf_dist_south}. Here the values for
+      January are skewed toward lower values, while the values for
+      July look more normally distributed.}
+    \label{fig:cf_dist_east}
+  \end{subfigure}
+  \caption{Distribution of cloud fraction values for South Africa and
+    East Africa. Top: distribution of all values for January, over the
     years 2008--2017. Bottom: distribution of all values for July, for
     the same year range. Shown in solid red is the median values
     $\tilde{x}$, dashed red the median and half the interquartile
     range (IQR), solid green the mean $\mu$ and dashed green the mean
-    and one standard deviation $\sigma$. Note how in January the cloud
-    fractions appear to be normally distributed, while in July they
-    are skewed toward lower values. This is due to seasonal
-    modulation, which is discussed in depth in Section
-    \ref{sec:disc:rain}.}
-  \label{fig:cf_dist_south}
-\end{figure}
-\begin{figure}
-  \centering
-  \includegraphics[width=0.8\linewidth]{figures/cf_monthly_dist_eastafrica}
-  \caption{As for Figure \ref{fig:cf_dist_south}, but note how the
-    distributions are swapped. Here the values for January are skewed
-    toward lower values, while the values for July look more normally
-    distributed.}
-  \label{fig:cf_dist_east}
-\end{figure}
+    and one standard deviation $\sigma$.}
+  \label{fig:cf_dist}
+\end{figure*}
 
 \subsubsection{Rainfall}
 \label{sec:disc:rain}
