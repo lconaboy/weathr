@@ -101,7 +101,12 @@ def cloud_coverage(region, y, m, direction=None):
         # plt.axvline(np.mean(cov)+np.std(cov), color='b', linestyle='dashed')
         # plt.legend(['Median', 'Median + IQR/2', 'Mean', r'Mean + $\sigma$'])
         # plt.savefig('../diary/multiband_cf_dist_{}'.format(m))
-        
+
+        # # this line is for producing the distribution histograms,
+        # # delete after they have been made
+        # np.save('data/cloud/multiband_cf_dist_{}_{}_{}'.format(m, y, region),
+        #         cov)
+
         # using builtin sum over the month returns a heatmap
         # of cloud coverage
         cld = cld.sum(2)
