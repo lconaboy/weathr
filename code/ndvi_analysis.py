@@ -215,6 +215,91 @@ def plot_two_with_one_fill_between(plotting_data, corr_labels, x_labels, month_s
 
     return None
 
+def plot_three_with_one_fill_between(plotting_data, corr_labels, x_labels, month_step):
+    """plotting_data[0] will be errorbars, plotting_data[[1,2]] will be a line"""
+    n = len(plotting_data[0][0])
+    nind = np.arange(n)
+    nx = nind+0.5
+    fig, ax = plt.subplots(figsize=(12, 6))
+    ax.plot(plotting_data[0][0], label=corr_labels[0])
+    ax.fill_between(nind, plotting_data[0][0] + plotting_data[0][1],
+                    plotting_data[0][0] - plotting_data[0][1], alpha=0.25)
+    ax.set_xlim([0, n])
+    ax.set_ylim([-0.2, 0.2])
+    ax.set_ylabel(r'NDVI$_{\sigma}$')
+    ax1 = ax.twinx()
+    ax1.plot(plotting_data[1], label=corr_labels[1], color='r')
+    ax1.plot(plotting_data[2], label=corr_labels[2], color='g')
+    ax1.set_ylim([-0.2, 0.2])
+    ax1.set_ylabel('SST anomalies ($^{\circ}$C)')
+
+    # ask matplotlib for the plotted objects and their labels
+    lines, labels = ax.get_legend_handles_labels()
+    lines2, labels2 = ax1.get_legend_handles_labels()
+    ax1.legend(lines + lines2, labels + labels2)
+
+    # now set x ticks
+    x_tick_range = len(plotting_data[0][0][::month_step])
+    ax.set_xticks(np.linspace(ax.get_xbound()[0], ax.get_xbound()[1], x_tick_range))
+    ax.minorticks_off()
+    ax1.set_xticks(np.linspace(ax1.get_xbound()[0], ax1.get_xbound()[1], x_tick_range))
+    ax1.minorticks_off()
+    ax.set_xticklabels([])
+    ax1.set_xticklabels(x_labels)
+    ax.set_xlabel('Month')
+    ax1.set_xlabel('Month')
+
+def replace_with_nans(x, idx):
+    """Useful for plotting time series data not plotting certain points. x
+is the data, idx is a Boolean array for indexing."""
+    data = x.copy()
+    data[idx] = np.nan
+    return data
+
+
+def plot_three_fb_ds(plotting_data, idxs, corr_labels, x_labels, month_step):
+    """plotting_data[0] will be fill between, plotting_data[[1,2]] will be a line.
+    plotting_data[1] should be ONI and will be plotted solid at points defined by idxs and dashed elswhere. idxs[0] should be El Nino indices, idxs[1] La Nina. corr_labels should now include entries for ONI (neutral) and ONI (event)."""
+    n = len(plotting_data[0][0])
+    nind = np.arange(n)
+    nx = nind+0.5
+    fig, ax = plt.subplots(figsize=(12, 6))
+    ax.plot(plotting_data[0][0], label=corr_labels[0])
+    ax.fill_between(nind, plotting_data[0][0] + plotting_data[0][1],
+                    plotting_data[0][0] - plotting_data[0][1], alpha=0.25)
+    ax.set_xlim([0, n])
+    ax.set_ylim([-0.2, 0.2])
+    ax.set_ylabel(r'CF$_{\sigma}$')
+    ax1 = ax.twinx()
+    # plot all th
+    neu = replace_with_nans(plotting_data[1], np.logical_or(idxs[0], idxs[1]))
+    enso = replace_with_nans(plotting_data[1], np.logical_and(~idxs[0], ~idxs[1]))
+    # plot dashed curve underneath solid curve for continuity 
+    ax1.plot(plotting_data[1], color='r', label=corr_labels[1],
+             linestyle='dashed', alpha=0.75)
+    ax1.plot(enso, label=corr_labels[2], color='r', linestyle='solid')
+#    ax1.plot(neu, label=corr_labels[2], color='r', linestyle='dashed')
+    ax1.plot(plotting_data[2], label=corr_labels[3], color='g')
+    ax1.set_ylim([-2.75, 2.75])
+    ax1.set_ylabel('SSTA ($^{\circ}$C)')
+
+    # ask matplotlib for the plotted objects and their labels
+    lines, labels = ax.get_legend_handles_labels()
+    lines2, labels2 = ax1.get_legend_handles_labels()
+    ax1.legend(lines + lines2, labels + labels2)
+
+    # now set x ticks
+    x_tick_range = len(plotting_data[0][0][::month_step])
+    ax.set_xticks(np.linspace(ax.get_xbound()[0], ax.get_xbound()[1], x_tick_range))
+    ax.minorticks_off()
+    ax1.set_xticks(np.linspace(ax1.get_xbound()[0], ax1.get_xbound()[1], x_tick_range))
+    ax1.minorticks_off()
+    ax.set_xticklabels([])
+    ax1.set_xticklabels(x_labels)
+    ax.set_xlabel('Month')
+    ax1.set_xlabel('Month')    
+
+
 def plot_ndvi_with_dmi(region, smooth=6):
     from coverage_analysis_functions import (nino_range,
                                              consecutive_anomalies,
@@ -259,36 +344,51 @@ def plot_ndvi_with_dmi(region, smooth=6):
 
     return None
 
-def plot_ndvi_with_oni(region, smooth=6):
+def plot_ndvi_with_oni_io(region, smooth=5):
     from coverage_analysis_functions import (nino_range,
                                              consecutive_anomalies,
-                                             month_and_year_labels)
+                                             month_and_year_labels,
+                                             load_swio,
+                                             swio_three_monthly_means,
+                                             narrow_swio)
     # Load ONI
     start = datetime.date(2008, 1, 1)
     end = datetime.date(2018, 1, 1)
     # Columns are: year, month, anomaly
-    nino = nino_range('detrend.nino34.ascii.txt', start, end)
-    # Find 3-month anomaly excess
-    tmm = np.convolve(nino[:, 2], np.ones((3,))/3, mode='same')
-    en = np.zeros_like(tmm, dtype=bool)
-    ln = np.zeros_like(tmm, dtype=bool)
-    for i in np.arange(len(tmm)):
-        if np.all(tmm[i:(i+5)] >= 0.5):  en[i:(i+5)] = True
-        if np.all(tmm[i:(i+5)] <= -0.5): ln[i:(i+5)] = True
+    oni = nino_range('detrend.nino34.ascii.txt', start, end)
 
-    corr_labels = ['NDVI', 'ONI']
+    if region == 'capetown':
+        io_datetime, io_anoms = load_swio('swio.nc', 'SWIO')
+        io_label = 'SWIO'
+    else:
+        io_datetime, io_anoms = load_swio('wtio.nc', 'WTIO')
+        io_label = 'WTIO'
+
+    io_tmm = swio_three_monthly_means(io_datetime, io_anoms) 
+    
+    # Find 3-month anomaly excess
+    oni_tmm = np.convolve(oni[:, 2], np.ones((3,))/3, mode='same')
+    en = np.zeros_like(oni_tmm, dtype=bool)
+    ln = np.zeros_like(oni_tmm, dtype=bool)
+    for i in np.arange(len(oni_tmm)):
+        if np.all(oni_tmm[i:(i+5)] >= 0.5):  en[i:(i+5)] = True
+        if np.all(oni_tmm[i:(i+5)] <= -0.5): ln[i:(i+5)] = True
+
+    corr_labels = ['NDVI', 'ONI (neutral)', 'ONI (event)', io_label]
+    # TODO Add error data here for NDVI, using IQR.
     plotting_data = [[ndvi_anomalies(region, smooth=smooth)[0],
                       np.zeros_like(ndvi_anomalies(region, smooth=smooth)[0])],
-                     tmm]
+                     oni_tmm,
+                     io_tmm[2]]
     month_step = 4
     x_labels = month_and_year_labels(np.tile([1, 5, 9], 10), np.arange(2008, 2018), 4)    
-    plot_two_with_one_fill_between(plotting_data, corr_labels, x_labels, month_step)
+    plot_three_fb_ds(plotting_data, [en, ln], corr_labels, x_labels, month_step)
 
     plt.title('{} NDVI smoothed {}-months'.format(region_to_string(region), smooth))
     plt.axhline(linewidth=0.75, color='k')
     plt.axhline(y=0.5, linewidth=0.75, color='k', linestyle='dashed')
     plt.axhline(y=-0.5, linewidth=0.75, color='k', linestyle='dashed')
-    plt.savefig(figure_dir + 'ndvi_oni_{}_smoothed_{}.png'.format(region, smooth))
+    plt.savefig(figure_dir + 'ndvi_oni_io_{}_smoothed_{}.png'.format(region, smooth))
 
     return None
 
