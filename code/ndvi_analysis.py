@@ -269,7 +269,7 @@ def plot_three_fb_ds(plotting_data, idxs, corr_labels, x_labels, month_step):
                     plotting_data[0][0] - plotting_data[0][1], alpha=0.25)
     ax.set_xlim([0, n])
     ax.set_ylim([-0.2, 0.2])
-    ax.set_ylabel(r'CF$_{\sigma}$')
+    ax.set_ylabel(r'NDVI$_{\sigma}$')
     ax1 = ax.twinx()
     # plot all th
     neu = replace_with_nans(plotting_data[1], np.logical_or(idxs[0], idxs[1]))
@@ -297,7 +297,7 @@ def plot_three_fb_ds(plotting_data, idxs, corr_labels, x_labels, month_step):
     ax.set_xticklabels([])
     ax1.set_xticklabels(x_labels)
     ax.set_xlabel('Month')
-    ax1.set_xlabel('Month')    
+    ax1.set_xlabel('Month')
 
 
 def plot_ndvi_with_dmi(region, smooth=6):
@@ -344,6 +344,14 @@ def plot_ndvi_with_dmi(region, smooth=6):
 
     return None
 
+def ndvi_uncertainty(month, region):
+    fnames = sorted(glob.glob(ndvi_dir + ndvi_fmt.format('*', month, region) + '.npy'))
+    mask = (1 - image_region(land_mask, weathr_regions[region])).astype(bool)
+    ndvi = np.dstack([np.load(fname)[mask] for fname in fnames]).ravel()
+
+    return abs(np.diff(np.percentile(ndvi, [75, 25]))[0]/2)
+
+
 def plot_ndvi_with_oni_io(region, smooth=5):
     from coverage_analysis_functions import (nino_range,
                                              consecutive_anomalies,
@@ -374,12 +382,15 @@ def plot_ndvi_with_oni_io(region, smooth=5):
         if np.all(oni_tmm[i:(i+5)] >= 0.5):  en[i:(i+5)] = True
         if np.all(oni_tmm[i:(i+5)] <= -0.5): ln[i:(i+5)] = True
 
+    # Uncertainty is simply IQR
+    errors = np.tile([ndvi_uncertainty('{:02d}'.format(m), region)
+                      for m in np.arange(1,13)],
+                     10)
+
     corr_labels = ['NDVI', 'ONI (neutral)', 'ONI (event)', io_label]
     # TODO Add error data here for NDVI, using IQR.
-    plotting_data = [[ndvi_anomalies(region, smooth=smooth)[0],
-                      np.zeros_like(ndvi_anomalies(region, smooth=smooth)[0])],
-                     oni_tmm,
-                     io_tmm[2]]
+    plotting_data = [[ndvi_anomalies(region, smooth=smooth)[0], errors],
+                     oni_tmm, io_tmm[2]]
     month_step = 4
     x_labels = month_and_year_labels(np.tile([1, 5, 9], 10), np.arange(2008, 2018), 4)    
     plot_three_fb_ds(plotting_data, [en, ln], corr_labels, x_labels, month_step)
