@@ -223,14 +223,54 @@ account \citep{hackert2017}.
 
 \subsection{Cloud Coverage}
 \label{sec:intro:cc}
-
-Fill this out using literature reviews, etc.
+Cloud coverage calculations are an important part of climate science owing in no
+small part to their effects on human life. Clouds bring precipitation and
+precipitation brings flourishing vegetation. Prolonged periods of rainfall can,
+however, cause perilous floods which can ruin infrastructure and produce,
+endangering lives. Conversely, periods with little rainfall can cause
+catastrophic drought, such as that currently seen in Cape Town, South Africa,
+where useful water is soon expected to be completely depleted. Either way, cloud
+coverage has a major impact on human life and is deserving of careful
+observation and examination.
 
 \subsection{Normalised Difference Vegetation Index}
 \label{sec:intro:ndvi}
+%% Use \cite{yengoh2014}, \cite{bannari1995}, and lit reviews.
+Green vegetation has a distinctive spectral response to electromagnetic
+radiation. Near infra-red radiation is strongly reflected by green leaf
+surfaces, while the chlorophyll within the leaves absorbs strongly in the
+red. Figure \ref{fig:leaf_spec} shows the spectral reflectance for green vegetation, dry soil and wet soil, where the reflectance in the near infrared and absorption in the read are clearly visible.
+\begin{figure}
+  \centering
+  \includegraphics[width=0.9\linewidth]{figures/leaf_spec}
+  \caption{Spectral response of green vegetation, dry soil and wet soil. Note how green vegetation is highly absorbing in the red and highly reflecting in the infra-red. Figure taken from \cite{tucker1977}.}
+  \label{fig:leaf_spec}
+\end{figure}
+Hence we determine vegetation coverage using the normalised difference
+vegetation index (NDVI) defined as
+\begin{equation}
+  \mathrm{NDVI} = \frac{\rho_{\mathrm{NIR}}-\rho_{\mathrm{R}}}{\rho_{\mathrm{NIR}}+\rho_{\mathrm{R}}}
+  \label{eq:ndvi}
+\end{equation}
+where $\rho_{\mathrm{NIR}}$ and $\rho_{\mathrm{R}}$ are the reflectances in the
+near-infrared and red bands respectively \citep{tucker1979}.
 
-Use \cite{yengoh2014}, \cite{bannari1995}, and lit reviews.
-
+\cite{nicholson1990} found that there is a strong spatial correlation between
+NDVI values integrated over a year and average annual rainfall. The same study
+also found that, on interannual and seasonal timescales, variability in rainfall
+is mirrored in NDVI. Figure \ref{fig:ndvi_rain} shows the spatial correlation of
+rainfall and NDVI, displaying the spatial correlations described in
+\cite{nicholson1990}.
+\begin{figure}
+  \centering
+  \includegraphics[width=0.9\linewidth]{figures/ndvi_rain}
+  \caption{Left: annual integrated NDVI for East Africa averaged over 1982--1985,
+    shading indicates NDVI ${>}4$ and dotting indicates NDVI ${<}3$. Right: mean
+    annual rainfall in mm over the period 1982--1985, shading indicates rainfall
+    ${>}1000$ mm/year and dotting indicates rainfall ${<}500$ mm/year. Figure
+    taken from \cite{nicholson1990}.}
+  \label{fig:ndvi_rain}
+\end{figure}
 %% Local Variables:
 %% fill-column: 80
 %% TeX-master: "report"

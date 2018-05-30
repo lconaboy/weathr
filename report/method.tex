@@ -83,21 +83,8 @@ As described in Section \ref{sec:data:calib} the raw data in the PNG files are
 are performed we must calibrate each data channel, so that we have the radiance
 data which is required for NDVI. The calibration data is listed in Table
 \ref{tab:calibration}. As a matter of interest, a visual comparison of NDVI with
-and without calibration is show in Figure \ref{fig:calibrationcomp}.
-
-% mark you know more about NDVI and calibration so you may want to flesh this
-% section out e.g. calibrations
-Green vegetation has a distinctive spectral response to electromagnetic
-radiation. Radiation in the near-infrared is reflected while the chlorophyll in
-leaves absorbs strongly in the red. Hence we determine vegetation coverage using
-the normalised difference vegetation index (NDVI) defined as
-
-\begin{equation}
-  \mathrm{NDVI} = \frac{\rho_{\mathrm{NIR}}-\rho_{\mathrm{R}}}{\rho_{\mathrm{NIR}}+\rho_{\mathrm{R}}}
-  \label{eq:ndvi}
-\end{equation}
-where $\rho_{\mathrm{NIR}}$ and $\rho_{\mathrm{R}}$ are the reflectances in the
-near-infrared and red bands respectively \citep{tucker1979}.
+and without calibration is show in Figure \ref{fig:calibrationcomp}. With the
+calibrations complete, Equation \eqref{eq:ndvi} is used to calculate the NDVI.
 
 \subsection{Analysis}
 In order to make useful comparisons with our data products, we need some method
