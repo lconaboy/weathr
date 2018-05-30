@@ -45,6 +45,32 @@ saved as numpy array into configured threshold_dir and threshold_fmt."""
 
     return None
 
+def plot_ndvi_spatial_year_grid(year, region):
+    from ndvi_spatial_analysis_functions import colourmaps
+
+    mask = (1 - image_region(land_mask, weathr_regions[region])).astype(bool)
+    cmap = colourmaps(15)[0]
+
+    months = ['{:02d}'.format(m) for m in np.arange(1, 13)]
+
+    ndvi = np.dstack([np.load(ndvi_dir + ndvi_fmt.format(year, m, region) + ".npy")
+                      for m in months])
+
+    f, axes = plt.subplots(4, 3, figsize=(8, 12), dpi=144)
+    for ax, idx in zip(axes.ravel(), np.arange(12)):
+        ax.axis('off')
+        plot = ax.imshow(ndvi[:, :, idx], cmap=cmap, origin='lower', interpolation='nearest',
+                         vmax=0.6, vmin=-0.6)
+        ax.set_title(months[idx])
+
+    f.subplots_adjust(right=0.8)
+    cb_ax = f.add_axes([0.85, 0.25, 0.025, 0.5])
+    f.colorbar(plot, cax=cb_ax, orientation='vertical', extend='both').set_label('NDVI')
+
+    plt.suptitle('{} NDVI for {}'.format(region_to_string(region), year))
+
+    plt.savefig(figure_dir + 'ndvi_year_grid_{}_{}.pdf'.format(year, region))
+
 def calibration_comparison(year, month, region):
     from ndvi_spatial_analysis_functions import colourmaps
     # Try load NDVI data
