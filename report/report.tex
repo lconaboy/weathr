@@ -1,8 +1,8 @@
 \documentclass[12pt, twocolumn, x11names]{article}
 
 \usepackage{amsmath}
-\usepackage[draft]{hyperref}
-\usepackage[draft]{graphicx}
+\usepackage{hyperref}
+\usepackage{graphicx}
 \usepackage{tikz}
 \usepackage{booktabs}
 \usepackage{caption}
@@ -48,28 +48,66 @@
 \newcommand{\degc}{^{\circ}\mathrm{C}}
 
 % TODO A better title. Something witty and fun.
-\title{\elnino{} and Africa}
-\author{Luke Conaboy and Mark G. Skilbeck}
-\date{}
+%% \title{\elnino{} and Africa}
+%% \author{Luke Conaboy and Mark G. Skilbeck}
+%% \date{}
+
+\usepackage[pages=some]{background}
+\backgroundsetup{
+scale=1,
+color=black,
+opacity=1 ,
+angle=0,
+placement=top,
+contents={%
+  \includegraphics[width=\paperwidth,height=\paperwidth]{figures/image.png}
+  }%
+}
+
+\usepackage{geometry}
 
 \begin{document}
 
-\twocolumn[
-  \begin{@twocolumnfalse}
-    \maketitle
+%% \twocolumn[
+%%   \begin{@twocolumnfalse}
+%%     \maketitle
+%%     \begin{abstract}
+%%       This is driving me to abstraction
+%%     \end{abstract}
+%%   \end{@twocolumnfalse}
+%% ]
+
+\begin{titlepage}
+  \begin{center}
+    \includegraphics[width=0.33\textwidth]{figures/uon_logo}
+    \vspace{3cm}
+    
+    \textsf{\textbf{\Huge \elnino{} and Africa}} \\ 
+    \vspace{2cm}
+           {\Large Luke Conaboy and Mark G. Skilbeck} \\
+           \vspace{1cm}
+           {\Large\today}
+           \vspace{2cm}
     \begin{abstract}
-      This is driving me to abstraction
+      Fair.
     \end{abstract}
-  \end{@twocolumnfalse}
-]
+  \end{center}
+\end{titlepage}
 
-  \clearpage
+\newpage
+\newgeometry{left=2cm, right=5cm, bottom=1cm, top=0cm}
 
-  \vspace*{\fill}
-  \setlength\epigraphwidth{.8\textwidth}
-  \epigraph{\Huge I bless the rains down in Africa}{--- \emph{Africa}, Toto}
+\BgThispage
+\thispagestyle{empty}
 
-  \clearpage
+\vspace*{21cm}
+\setlength\epigraphwidth{.8\textwidth}
+\epigraph{\Huge I bless the rains down in Africa}{--- \emph{Africa}, Toto}
+
+\restoregeometry
+
+\clearpage
+\setcounter{page}{1}
 
 \input{introduction}
 \input{theory}
