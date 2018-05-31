@@ -1,1 +1,42 @@
 \section{Summary}
+
+Our objectives with this study were to investigate methods of
+forecasting climatological phenomena such as drought and flooding in
+regions of Africa where such events may lead to significant impact on
+human life. Particularly, we were looking for a connection between
+ENSO -- a well studied set of tropical Pacific climate anomalies --
+and the trends in cloud cover and NDVI in South Africa and East
+Africa.
+
+There exist now many studies with the same idea, each showing various
+degrees of ENSO correlation. A study of note is that of
+\cite{anyamba2002}, whose study of NDVI anomaly in response to strong
+\elnino{} and \nina{} events during the turn of the millenium greatly
+informed our own analysis.
+
+We began our analysis by developing a novel method of cloud detection
+based on the Otsu method for thresholding. This choice of threshold
+was motivated by the hypothesis that any given Earth pixel in the
+satellite images we used would present a bimodality in pixel value
+over time, with a low pixel value peak corresponding to the ``true''
+value for that pixel, and a second peak at larger values corresponding
+the the days when cloud was present over that pixel (thus showing a
+higher pixel value). The efficacy of this method is certaintly
+dependent on the particular region being studied: if a pixel is in a
+frequently cloudy location, then it will show the above
+bimodality. However for most regions of interest cloudy days are not
+as likely as clear days, and so the the distribution of pixel values
+will appear to be log-normal rather than bimodal.\footnote{We posit
+  that this method would also be ineffective in a similar analysis for
+  England, though for the opposite reason: where this report studies
+  regions with generally clear skies, England has almost entirely
+  cloudy skies.} Using our method for thresholding, we produced cloud
+masks of questionable accuracy.
+
+The cloud masks were then used to analyse trends in both cloud
+fraction and NDVI.
+
+%% Local Variables:
+%% fill-column: 70
+%% TeX-master: "report"
+%% End:
