@@ -24,21 +24,11 @@ and the large peak corresponding to cloudy values.
 The task is then one of producing thresholds that reliably separate the two
 peaks. Otsu's method \citep{gonzalez2008} separates pixels into two groups, or
 \emph{classes}, by maximising the variance between these classes, making it an
-optimum method for thresholding\footnote{We have made use of \texttt{scipy}'s
-  Otsu thresholding implementation.}. An example of Otsu thresholding at work is
-shown in Figure \ref{fig:otsu} for a random pixel.
-\begin{figure}
-  \centering
-    \includegraphics[width=0.8\linewidth]{figures/otsu_bimodal.pdf}
-    \caption{The histogram of pixel values for a random pixel. Shown by the
-      vertical line is the threshold calculated using Otsu's method -- it can be
-      seen how well this method separates the two peaks.}
-    \label{fig:otsu}
-\end{figure}
-All pixels with a value below the threshold will be identified as land and all
-pixels with a value greater than or equal to the threshold will be identified as
-cloud. Please refer to Section \ref{sec:disc:thresh} for a discussion of
-suitable we determined Otsu's method to be in identifying cloud.
+optimum method for thresholding.  All pixels with a value below the threshold
+will be identified as land and all pixels with a value greater than or equal to
+the threshold will be identified as cloud. Please refer to Section
+\ref{sec:disc:thresh} for a discussion of how we determined Otsu's method
+to be suitable in identifying cloud.
 
 Now that we have the method for calculating the threshold of a single
 pixel all that remains is to apply it to the entire image, the process for doing
@@ -76,7 +66,7 @@ the given region.
 \begin{figure*}
   \centering
   \includegraphics[width=0.85\textwidth]{figures/ndvi_calibration_comparison.pdf}
-  \caption{Comparison between NDVI calculated for uncalibrated data (shon left),
+  \caption{Comparison between NDVI calculated for uncalibrated data (shown left),
     and calibrated data (shown right). The uncalibrated NDVI shows a wider range
     of values, with large areas where NDVI is close to zero (in which case
     $\rho_{\textrm{NIR}}\approx\rho_{\textrm{R}}$), and some regions where NDVI is
@@ -102,10 +92,8 @@ average, though occasionally the median is a better choice where outliers exist
 in the data. 
 
 Weather data are inherently noisy over day-to-day timescales, so first we smooth
-the data by taking monthly averages. As can be seen \ref{fig:smoothcomp}, the CF
-varies rapidly day-to-day and so obscures any underlying features in the
-data. Smoothing that data by averaging over a larger period reduces the daily
-variation, leaving the larger trends visible. 
+the data by taking monthly averages. Smoothing that data by averaging over a
+larger period reduces the daily variation, leaving the larger trends visible.
 
 Once we have baseline measurements, we can then calculate the anomalies which
 tell us how different a particular measurement is from the average for that time
