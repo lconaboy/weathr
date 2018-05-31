@@ -53,10 +53,17 @@ so is detailed in Figure \ref{fig:thr_fc}.
 \subsection{Cloud coverage}
 Using the thresholds calculated by the method in Figure \ref{fig:thr_fc} we
 produce daily cloud masks, which are arrays of the same size as the input image
-containing with values of 1 for cloud pixels and 0 for land pixels. The number
-of cloud pixels $n_{\mathrm{cloud}}$ for a given day, then, is found by summing
-the cloud mask. Cloud coverage is calculated as the ratio of cloud pixels to
-total land pixels in the image $N$
+containing with values of `1' for cloud pixels and `0' for land pixels. For
+cloud coverage we use the VIS0.6 and VIS0.8 bands from Table \ref{tab:seviri},
+as clouds are brighter in these bands than in the NIR band. From our preliminary
+analysis we found that cloud coverage was generally more extensive in the VIS0.6
+band, although this was not always the case. To err on the side of caution and
+produce a comprehensive cloud mask, we categorised a pixel as cloudy if it is
+classified as such in \emph{either} band.
+
+The number of cloud pixels $n_{\mathrm{cloud}}$ for a given day, then, is found
+by summing the cloud mask. Cloud coverage is calculated as the ratio of cloud
+pixels to total land pixels in the image $N$
 \begin{equation}
   \mathrm{CF} = \frac{n_{\mathrm{cloud}}}{N} \,,
   \label{eq:cloud_frac}
@@ -87,6 +94,7 @@ and without calibration is show in Figure \ref{fig:calibrationcomp}. With the
 calibrations complete, Equation \eqref{eq:ndvi} is used to calculate the NDVI.
 
 \subsection{Analysis}
+\label{sec:analysis}
 In order to make useful comparisons with our data products, we need some method
 of determining whether a measurement is anomalously large or small in comparison
 to some baseline value. The baseline value will generally be a year-long
