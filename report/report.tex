@@ -24,7 +24,7 @@
 \setlength{\columnsep}{0.5cm}
 \setlength{\parskip}{0pt}
 
-\usepackage[a4paper, total={7in,8in}]{geometry}
+\usepackage[a4paper, total={7in,9in}]{geometry}
 
 % MOM stop splitting the footnotes
 \interfootnotelinepenalty=10000
@@ -65,6 +65,12 @@ contents={%
 }
 
 \usepackage{geometry}
+
+% Hacky. On the page with the pixel distributions, putting both
+% figures on a single page makes the texr overflow onto the page
+% number. Haven't found a good way to move the page number for a
+% single page, so this moves page number for every page.
+\setlength{\footskip}{1in}
 
 \begin{document}
 
