@@ -386,6 +386,32 @@ neutral ONI, we also see this trend, namely during the period January
 prevelant), NDVI and WTIO/SWIO correlation becomes less prominent.
 
 \subsection{Limitations}
+There are some limitations to our study that we will acknowledge and
+discuss here. First and foremost of these is our small sample size;
+data were only available to us over the period 2008--2017. As discussed
+in Section \ref{sec:analysis}, the climate is an inherently noisy
+system (in fact, predicting the weather spawned one of the earliest
+studies of chaos by \cite{lorenz1963}) and so lots of data are needed
+to observe any trends, usually at least a decade's worth.
+
+A consequence of a small amount of data is that it leads to a small
+baseline from which to calculate anomalies. The baseline we use is
+derived from our entire dataset which, as can be seen from Figures
+\ref{fig:cf_temporal} and \ref{fig:ndvi_temporal}, contains a lot of
+ENSO events. For such a small period (8 years), it is unlikely that we
+have managed to capture a representative average baseline. This error
+will propagate into our anomalies, which are calculated from the
+baseline.
+
+A further stumbling block is that our thresholds do not work well with
+large deserts. We have addressed this problem by analysing non-arid
+regions, athough this clearly is not an optimal solution. It would be
+better in future work to employ other bands, particularly in the near
+infra-red, to distinguish between cloud and desert (see
+\cite{derrien1993} for an example). Any error in the thresholds will
+impact all products produced using them and, since the thresholds are
+essential to the project, it is important to consider and improve on
+any sources of error.
 
 %% Local Variables:
 %% fill-column: 80
