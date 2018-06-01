@@ -30,11 +30,40 @@ will appear to be log-normal rather than bimodal.\footnote{We posit
   that this method would also be ineffective in a similar analysis for
   England, though for the opposite reason: where this report studies
   regions with generally clear skies, England has almost entirely
-  cloudy skies.} Using our method for thresholding, we produced cloud
-masks of questionable accuracy.
+  cloudy skies.}
 
-The cloud masks were then used to analyse trends in both cloud
-fraction and NDVI.
+Using our thresholds we produced cloud masks. The cloud coverage
+calcaulated using these cloud masks was found to correlate well with
+published rainfall data, exhibiting the same seasonal modulation. When
+comparing to the ONI, we found that cloud fraction and ONI were
+generally anticorrelated for South Africa and correlated for East
+Africa, although in some cases the signal was weak. This is the
+expected signal from the literature. We also found that the anomalies
+in cloud fraction followed quite closely the Indian Ocean SSTAs,
+especially in East Africa for WTIO anomalies during the mature phase
+of \elnino{}. This supports the theory that \elnino{} can impact the
+East African climate through warming the Indian Ocean.
+
+Our temporal NDVI analysis led us to similar conclusions as for the
+cloud coverage analysis, namely that we found the NDVI and ONI to be
+anticorrelated for South Africa and correlated for East Africa. Our
+spatial NDVI analysis provided us with some results that were
+consistent with the literature, but also others that were quite
+different.
+
+The weakness of signals and producing results inconsistent with the
+literature, could be effects of both using a small baseline and taking
+box averages over areas where regional effects are important (this is
+particularly the case with East Africa).
+
+In future work we suggest the employment of other bands in the
+production of thresholds. In particular, the use of near-infrared
+bands and temperature thresholds could greatly improve the accuracy of
+our cloud masks. It also strikes us that cloud identification is ideal
+fodder for the burgeoning field of machine learning, and that accurate
+cloud masks could form the training set. There is still a long way to
+go, but remote sensing holds great promise for being able to predict
+the teleconnected effects of ocean-astmospheric systems.
 
 %% Local Variables:
 %% fill-column: 70
