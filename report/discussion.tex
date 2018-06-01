@@ -8,31 +8,29 @@
 \label{sec:disc}
 \subsection{Thresholding}
 \label{sec:disc:thresh}
-In Section \ref{sec:method:thr} we described our method for
-thresholding images, namely using Otsu's method. Figure \ref{fig:allp}
-is illustrative of the efficacy of this method, applying it to all
-land pixels for a single day (1/6/2008). Figure \ref{fig:allp_raw}
-shows the raw image from EUMETSAT, where cloud is clearly visible over
-western and equatorial Africa. Figure \ref{fig:allp_hist} shows the
-distribution of land pixels in Figure \ref{fig:allp_raw}. It is not
-clear whether the distribution is bimodal or log-normal, though it
-could be said that there are two peaks: one at a pixel value of $\sim50$
-and the other at a pixel value of $\sim110$. The broadness of this
-distribution is caused by taking values from the entire image, whereas
-in fact some places on the planet will be brighter in VIS0.8 than
-others. We have then applied an Otsu threshold to categorise pixels as
-`land' or `cloud', shown as white and green on the histogram. This is
-a crude way of doing things, and is only done to illustrate the
-process -- in reality, the Otsu threshold is calculated for \emph{each}
-pixel from the distribution of its values over a period of time, so
-the threshold value is more accurately scaled to that pixel. Figure
-\ref{fig:allp_im} shows the land pixels from Figure \ref{fig:allp_raw}
-where each pixels colour has been assigned according to whether it was
-categorised as `land', `cloud' or masked out. Using this very simple
-threshold manages to catch most of the cloud in western and equatorial
-Africa, although it clearly fails miserably over the Sahara. In our
-analysis we have overcome the shortcomings of the thresholding in the
-desert by avoiding arid regions.
+In Section \ref{sec:method:thr} we described our method for thresholding images,
+using Otsu's method. Figure \ref{fig:allp} is illustrative of the efficacy of
+this method, applying it to all land pixels for a single day. Figure
+\ref{fig:allp_raw} shows the raw image from EUMETSAT for 1st June 2008, where
+cloud is clearly visible over western and equatorial Africa. Figure
+\ref{fig:allp_hist} shows the distribution of land pixels in Figure
+\ref{fig:allp_raw}. It is not clear whether the distribution is bimodal or
+log-normal, though it could be said that there are two peaks: one at a pixel
+value of $\sim50$ and the other at a pixel value of $\sim110$. The broadness of this
+distribution is caused by taking values from the entire image, whereas in
+reality some places on the planet will be brighter in VIS0.8 than others. We
+have then applied an Otsu threshold to categorise pixels as ``land'' or
+``cloud'', shown as white and green on the histogram. This is a crude way of
+doing things, and is only done to illustrate the process -- in reality, the Otsu
+threshold is calculated for \emph{each} pixel from the distribution of its
+values over a period of time, so the threshold value is more accurately scaled
+to that pixel. Figure \ref{fig:allp_im} shows the land pixels from Figure
+\ref{fig:allp_raw} where each pixel's colour has been assigned according to
+whether it was categorised as ``land'', ``cloud'' or masked out. Using this very
+simple threshold manages to catch most of the cloud in western and equatorial
+Africa, although it clearly fails miserably over the Sahara. In our analysis we
+have overcome the shortcomings of the thresholding in the desert by avoiding
+arid regions.
 \begin{figure*}
   \centering
   \subcaptionbox{Raw image from
@@ -42,8 +40,8 @@ desert by avoiding arid regions.
   ~
   \subcaptionbox{Histogram of the distribution of all the
     land pixels in Figure \ref{fig:allp_raw}. Green
-    indicates where a pixel has been classified as `land'
-    and white indicates `cloud' and black corresponds to
+    indicates where a pixel has been classified as ``land''
+    and white indicates ``cloud'' and black corresponds to
     masked pixels.\label{fig:allp_hist}}
                 [0.33\textwidth]
                 {\includegraphics[width=0.33\textwidth]{figures/hist_all_pixels_01_06_2008_vis8}}
@@ -61,7 +59,7 @@ desert by avoiding arid regions.
 \end{figure*}
 It is useful to explore thresholding on the entire distribution, but
 more relevant to our analysis is to see how it works for single
-pixels. Figures \ref{pix_d_south} and \ref{pix_d_east} show the
+pixels. Figures \ref{fig:pix_d_south} and \ref{fig:pix_d_east} show the
 normalised pixel distributions for South Africa and East Africa, for
 three different pixels in the VIS0.6 and VIS0.8 bands. Also shown on
 the plot are various statistics of the data, including the value of
@@ -115,7 +113,7 @@ slightly overestimate.
 \end{figure*}
 
 
-\subsection{Cloud coverage}
+\subsection{Cloud Coverage}
 \label{sec:disc:cc}
 When calculating monthly values for cloud fraction, we have to average
 over all of the days for a given month. In calculating this average we
@@ -287,7 +285,7 @@ coverage in East Africa via lowering SSTs in the WTIO.
 From our analysis of cloud coverage for East and South Africa we are
 able to draw some tentative conclusions. For South Africa, we would
 expect \elnino{} events to precede drought conditions
-\cite{TODO}. This partly exhibited by a reduction in cloud coverage
+\cite{nicholson2000}. This partly exhibited by a reduction in cloud coverage
 following the mature phase of the 2014--2016 \elnino{}, however we
 don't observe a corresponding signal from the 2009/2010
 \elnino{}. Following the 2008/2009 and 2010/2011 \nina{} events we
@@ -301,7 +299,7 @@ forcing. On the other hand, \cite{alexander2002} propose that there is
 a clear link between Pacific and Indian Ocean SST anomalies,
 particularly in boreal winter and spring. In East Africa, we observe
 that \elnino{} events generally lead to an increase in cloud coverage,
-as reported by \cite{TODO}. However we also see that this increase in
+as reported by \cite{warren2007}. However we also see that this increase in
 cloud coverage is usually only present after the mature phase of the
 \elnino{} event, and that the growth phase leads to a suppression of
 cloud coverage. \cite{parhi2016} suggest a mechanism for this whereby
@@ -311,8 +309,8 @@ cloud fraction anomalies very closely, either preceding the anomalies
 by a month or occurring simultaneously. A possible reason for the
 suppression of cloud coverage in the growth stages of the \elnino{}
 events could be that this phase usually occurs during East Africa's
-`dry' season, and so exacerbates the scarcity of cloud already present
-\cite{TODO}. The signal for \nina{} events is much more obscure,
+``dry'' season, and so exacerbates the scarcity of cloud already present
+\citep{parhi2016}. The signal for \nina{} events is much more obscure,
 although it appears as if negative cloud fraction anomalies occur
 during these years, and that these anomalies are also very strongly
 correlated with WTIO SSTAs. This indicates the WTIO as a possible
@@ -321,7 +319,7 @@ mediator for ENSO effects in East Africa.
 \subsection{Vegetation}
 \label{sec:disc:ndvi}
 
-\subsubsection{Spatial response}
+\subsubsection{Spatial Response}
 Looking first at South Africa (Figure \ref{fig:ndvi_sp_south}) the
 NDVI distribution for DJF \elnino{} found in our study are consistent
 with those reported in \cite{anyamba2002} for the 1997/1998 \elnino{}
@@ -345,7 +343,7 @@ anomalies distributed to the west and negative anomalies along the
 southern coast, which is inconsistent with the rainfall anomalies
 found by \cite{deoliveira2018}.
 
-\subsubsection{Temporal response}
+\subsubsection{Temporal Response}
 
 The East African NDVI signal investigated by \cite{anyamba2002} shows a strong
 correlation with their chosen ENSO index (NINO 3.4). The strong \elnino{} in the
