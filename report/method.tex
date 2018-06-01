@@ -18,7 +18,7 @@ variation contributed by shadows cast by nearby clouds, the variation in
 \emph{solar zenith angle} throughout the year, and atmospheric interference
 effects. On a cloudy day a pixel's value will be systematically pulled towards
 higher than ground values. It follows then that the distribution of a pixel's
-value will be bimodal, with the lower peak corresponding to the ground value,
+value should be bimodal, with the lower peak corresponding to the ground value,
 and the large peak corresponding to cloudy values.
 
 The task is then one of producing thresholds that reliably separate the two
@@ -40,7 +40,7 @@ so is detailed in Figure \ref{fig:thr_fc}.
   \label{fig:thr_fc}
 \end{figure}
 
-\subsection{Cloud coverage}
+\subsection{Cloud Coverage}
 Using the thresholds calculated by the method in Figure \ref{fig:thr_fc} we
 produce daily cloud masks, which are arrays of the same size as the input image
 containing with values of `1' for cloud pixels and `0' for land pixels. For
@@ -87,9 +87,9 @@ calibrations complete, Equation \eqref{eq:ndvi} is used to calculate the NDVI.
 \label{sec:analysis}
 In order to make useful comparisons with our data products, we need some method
 of determining whether a measurement is anomalously large or small in comparison
-to some baseline value. The baseline value will generally be a year-long
-average, though occasionally the median is a better choice where outliers exist
-in the data. 
+to some baseline value. The baseline values will generally be monthly averages,
+though occasionally the median is a better choice where outliers exist in the
+data.
 
 Weather data are inherently noisy over day-to-day timescales, so first we smooth
 the data by taking monthly averages. Smoothing that data by averaging over a
