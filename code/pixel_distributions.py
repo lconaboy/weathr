@@ -29,7 +29,7 @@ def pixel_dist_for_region(region='capetown'):
             axe.hist(imgs[a, b, :], bins=10)
 
     # Add titles to first row only
-    titles = ['VIS6', 'VIS8', 'NIR']
+    titles = ['VIS0.6', 'VIS0.8', 'NIR']
     for ax, title in zip(axs[0], titles):
         ax.set_title(title)
 
@@ -49,38 +49,39 @@ def pixel_dist_for_region(region='capetown'):
 
             mean1 = np.mean(imgs[a, b, :])
             axe.vlines(mean1, 0, 1, transform=axe.get_xaxis_transform(), color='g',
-                      label='Mean')
+                      label=r'$\mu$')
 
             mean2 = np.mean(imgs[a, b, :][imgs[a, b, :] < otsu[a, b]])
             axe.vlines(mean2, 0, 1, transform=axe.get_xaxis_transform(), color='r',
-                      label='Mean < Otsu')
+                      label=r'$\mu$ < Otsu')
 
             med1 = np.median(imgs[a, b, :])
             axe.vlines(med1, 0, 1, transform=axe.get_xaxis_transform(), color='b',
-                      label='Median', linestyles=['dashed'])
+                       label=r'$\~{x}$', linestyles=['dashed'])
 
             (μ, σ) = norm.fit(imgs[a, b, :][imgs[a, b, :] < otsu[a, b]])
             fit = normpdf(np.arange(255), μ, σ)
             axe.plot(np.arange(255), fit, 'r--', linewidth=1, label='Gaussian fit < Otsu')
 
             axe.set_xlim(0, 255)
-            axe.text(0.95, 0.05, "$\sigma = {:.2f}$ \n $\mu = {:.2f}$".format(σ,μ),
+            axe.text(0.95, 0.05, "$\sigma^* = {:.2f}$ \n $\mu^* = {:.2f}$".format(σ,μ),
                      transform=axe.transAxes, horizontalalignment='right')
 
-    titles = ['VIS6', 'VIS8']
+    titles = ['VIS0.6', 'VIS0.8']
     for title, ax in zip(titles, axs):
         ax[0].set_ylabel(title)
 
     axs[0][0].legend()
+    axs[1][0].set_xlabel('Pixel value')
 
-    plt.suptitle('Pixel values distributions with statistics, in VIS6 and VIS8, {}'.format(region_to_string(region)),
+    plt.suptitle('Pixel values distributions with statistics, in VIS0.6 and VIS0.8, {}'.format(region_to_string(region)),
                  y=0.94)
     plt.savefig(figure_dir + 'pixel_distributions_stats_{}.pdf'.format(region))
 
     # Now let's look at the distribution when we include *every* pixel in
     # the (masked) image
     fig, axes = plt.subplots(1, 3, figsize=(12, 8), sharex=True)
-    titles = ['VIS6', 'VIS8', 'NIR']
+    titles = ['VIS0.6', 'VIS0.8', 'NIR']
     mask = (1 - image_region(land_mask, weathr_regions[region])).astype(bool)
 
     for img, otsu, axis, title in zip([vis6, vis8, nir], [otsu_vis6, otsu_vis8, otsu_nir], axes, titles):

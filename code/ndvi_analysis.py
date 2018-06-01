@@ -45,6 +45,33 @@ saved as numpy array into configured threshold_dir and threshold_fmt."""
 
     return None
 
+
+# for month in np.arange(1, 13):
+#     m = '{:02d}'.format(month)
+#     p = plot_ndvi_spatial('2008', m, 'capetown')
+#     plt.savefig('test_{}.png'.format(m))
+#     plt.cla()
+#     plt.clf()
+#     plt.close()
+
+def plot_ndvi_spatial(year, month, region):
+    from ndvi_spatial_analysis_functions import colourmaps
+
+    ndvi = np.load(ndvi_dir + ndvi_fmt.format(year, month, region) + ".npy")
+    mask = (1 - image_region(land_mask, weathr_regions[region])).astype(bool)
+    cmap = colourmaps(15)[0]
+
+    f, ax = plt.subplots(1, 1, figsize=(5,5), dpi=144)
+    plot1 = plt.imshow(ndvi, cmap=cmap, vmin=-0.7,
+                       vmax=0.7, origin='lower')
+    ax.text(0.78, 0.9, '{}-{}'.format(year, month),
+            transform=ax.transAxes, bbox=dict(facecolor='white', alpha=1), fontsize=8)
+    f.subplots_adjust(right=0.8)
+    cb_ax = f.add_axes([0.85, 0.15, 0.025, 0.7])
+    f.colorbar(plot1, cax=cb_ax, orientation='vertical', extend='both').set_label('NDVI')
+
+    return plot1
+
 def plot_ndvi_spatial_year_grid(year, region):
     from ndvi_spatial_analysis_functions import colourmaps
 
@@ -430,18 +457,21 @@ def plot_ndvi_with_oni_io(region, smooth=5):
     return None
 
 def plot_ndvi_distributions(region):
+    months = ['January', 'February', 'March', 'April', 'May',
+              'June', 'July', 'August', 'September', 'October',
+              'November', 'December']
     fig, axs = plt.subplots(4, 3, sharey=True, figsize=(8.27,11.69))
     for ax, month in zip(axs.ravel(), np.arange(1, 13)):
         m = '{:02d}'.format(month)
         mask = (1 - image_region(land_mask, weathr_regions[region])).astype(bool);
         fnames = sorted(glob.glob(ndvi_dir + ndvi_fmt.format('*', m, region) + '.npy'));
         monthlys = np.dstack([np.mean(np.load(fname)[mask]) for fname in fnames]).ravel();
-        ax.set_title(m)
+        ax.set_title(months[month - 1])
         ax.vlines(np.mean(monthlys), 0, 1, transform=ax.get_xaxis_transform(),
-                  color='r', label='mean')
+                  color='r', label=r'$\mu$')
         ax.vlines(np.median(monthlys), 0, 1, transform=ax.get_xaxis_transform(),
-                  color='k', label='median')
-        ax.hist(monthlys, bins=6); 
+                  color='k', label=r'$\~{x}$')
+        ax.hist(monthlys, bins=6, color='lightblue', alpha=0.5); 
 
     axs[3, 0].legend()
     axs[3, 0].set_xlabel('NDVI')
