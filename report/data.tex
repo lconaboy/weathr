@@ -78,29 +78,28 @@ the land mask provided by EUMETSAT.
     in Table \ref{tab:regions}.}
   \label{fig:regions}
 \end{figure}
-We also make use of data provided from other sources. For sea surface
-temperature (SST) anomalies, we use the time series anomalies provided
-by the National Oceanic and Atmospheric Administration
-(NOAA)\footnote{\url{https://stateoftheocean.osmc.noaa.gov/}}. NOAA
-provide SST anomalies for the Indian Ocean (IO) in the South Western
-(SWIO) and Western Tropical (WTIO) regions, as well as Ni{\~n}o 3.4
-SST anomalies. SWIO and WTIO anomalies are smoothed by taking three
-month means, and the SWIO anomalies are compared to the data for South
-Africa while the WTIO anomalies are compared to East Africa. We use
-the anomalies in this way because each IO region is in close proximity
-to its corresponding continental region, so it is reasonable to expect
-that the anomalies may directly impact the continental climate. The
-Ni{\~n}o 3.4 anomalies can be processed into the Oceanic Ni{\~n}o
-Index (ONI) by smoothing with three monthly means, much in the same
-way as the IO anomalies. \elnino\ events are then said to occur when
-the ONI surpasses $0.5^{\circ}$C for at least five consecutive three
-monthly periods. \nina\
-conditions are present when the ONI falls
-below $-0.5^{\circ}$C for the same time conditions.
+We also make use of data provided from other sources. For SSTAs, we use the time
+series anomalies provided by the National Oceanic and Atmospheric Administration
+(NOAA)\footnote{\url{https://stateoftheocean.osmc.noaa.gov/}}. NOAA provide
+SSTAs for the Indian Ocean (IO) in the South Western (SWIO) and Western Tropical
+(WTIO) regions, as well as Ni{\~n}o 3.4 SSTAs. The Ni{\~n}o 3.4 region extends
+from $5^{\circ}$N$-5^{\circ}$S, $170^{\circ}$W$-120^{\circ}$W and is one of the most commonly
+used regions for classifying ENSO events \citep{trenberth1997}. SWIO and WTIO
+anomalies are smoothed by taking three month means, and the SWIO anomalies are
+compared to the data for South Africa while the WTIO anomalies are compared to
+East Africa. We use the anomalies in this way because each IO region is in close
+proximity to its corresponding continental region, so it is reasonable to expect
+that the anomalies may directly impact the continental climate. The Ni{\~n}o 3.4
+anomalies can be processed into the Oceanic Ni{\~n}o Index (ONI) by smoothing
+with three monthly means, much in the same way as the IO
+anomalies. \elnino\ events are then said to occur when the ONI surpasses
+$0.5^{\circ}$C for at least five consecutive three monthly
+periods. \nina\ conditions are present when the ONI falls below $-0.5^{\circ}$C for
+the same time conditions.
 
 The final tool in our complement of climate measures is rainfall
 data. This is provided by the World
-Bank \footnote{\url{http://www.worldbank.org/}} and we use it to
+Bank\footnote{\url{http://www.worldbank.org/}} and we use it to
 examine the extent to which cloud coverage is useful as a proxy
 measure for rainfall.
 
@@ -120,7 +119,7 @@ spectral bands being observed. As is described in Section \ref{sec:ndvi_bands},
 our NDVI analysis will use data from two different bands (namely VIS0.8 and
 VIS0.6) and so we have to be careful when comparing the two.
 
-The \emph{MSG} satellites perform calibration using an on-board
+The MSG satellites perform calibration using an on-board
 \emph{black-body} source. For each of the channels, two values are
 calculated for every image:
 \begin{enumerate}
@@ -141,7 +140,7 @@ inspection the calibration values were not observed to change over a period of
 time. While this was not tested over the entirety of the data, we decided in the
 interest of time that the above quote and cursory test were justification enough
 that we could, at this time, take as constant the calibration values. Thus we
-chose the calibration values shown in Table \ref{tab:calibration}.
+settled on the calibration values shown in Table \ref{tab:calibration}.
 % TODO Perhaps add a note for future work that would include the true
 % calibration values / show that they do not vary significantly enough
 % to warrant inclusion.
@@ -217,14 +216,14 @@ While the particular choice of central wavelength differs between
 publications, the bands used in NDVI calculations are often described
 in literature as \emph{near infrared} (NIR) and \emph{red} (R)
 bands. We note here that this may lead to confusion. For example, we
-have three visual bands available for our investigation shown in Table
+have three bands available for our investigation shown in Table
 \ref{tab:seviri}. Na{\"i}vely we may then expect that NDVI
 calculations are to be performed with the NIR band corresponding to a
 central wavelength of $1.64\mu$m (NIR in Table \ref{tab:seviri}), and R
 corresponding to a central wavelength of $0.81\mu$m (VIS0.8 in Table
 \ref{tab:seviri}). However, \cite{msgndvi2015} instead adopts for NIR
 a value of $0.81\mu$m (VIS0.8 in Table \ref{tab:seviri}), and for R a
-value of $0.64\mu$m (VIS0.6 in Table \ref{tab:seviri}).
+value of $0.64\mu$m (VIS0.6 in Table \ref{tab:seviri}). The validity of these bands can be seen from Figure \ref{fig:leaf_spec}.
 
 So it should be kept in mind that wherever in the following NDVI
 analysis we refer to ``NIR'' we are in fact using the data for
