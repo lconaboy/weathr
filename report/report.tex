@@ -13,7 +13,7 @@
 \captionsetup[table]{font=small}
 \captionsetup[subfigure]{font=scriptsize}
 
-%% \usepackage{microtype}
+\usepackage{microtype}
 \usepackage{sectsty}
 \sectionfont{\bfseries \normalsize \uppercase}
 \subsectionfont{\normalsize}
@@ -89,12 +89,11 @@ contents={%
     \includegraphics[width=0.33\textwidth]{figures/uon_logo}
     \vspace{3cm}
     
-    \textsf{\textbf{\Huge \elnino{} and Africa}} \\ 
-    \vspace{2cm}
-           {\Large Luke Conaboy and Mark G. Skilbeck} \\
-           \vspace{1cm}
-           {\Large\today}
-           \vspace{2cm}
+    % \textsf{\textbf{\huge Investigating the response in African climate anomalies to the \elnino{}--Southern Oscillation} \par} \\
+    {\Huge \bfseries Investigating the response in African climate anomalies to the \elnino{}--Southern Oscillation \par} 
+      \vspace{2cm}
+      {\Large Luke Conaboy and Mark G. Skilbeck} \\
+      \vspace{1cm} {\Large\today} \vspace{2cm}
     \begin{abstract}
       We have explored the use of remote sensing methods in examining
       the effects of \elnino{}, \nina{} and other ocean-atmosphere
@@ -131,6 +130,14 @@ contents={%
 
 \newpage
 \restoregeometry
+\thispagestyle{empty}
+\onecolumn{\tableofcontents}
+
+\newpage
+\thispagestyle{empty}
+\mbox{}
+
+\twocolumn
 
 \clearpage
 \setcounter{page}{1}
